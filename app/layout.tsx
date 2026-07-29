@@ -8,6 +8,7 @@ import { Notifications } from '@/components/notifications';
 import { QuickLog } from '@/components/quick-log';
 import { QuickWish } from '@/components/quick-wish';
 import { FeedbackLink } from '@/components/feedback';
+import { Analytics } from '@vercel/analytics/next';
 import { loadSnapshot, loadTransactionsForMonth } from '@/lib/db/repository';
 import { buildNotices } from '@/lib/model/notifications';
 import { monthKeyOf } from '@/lib/snapshot';
@@ -154,6 +155,14 @@ export default async function RootLayout({
         </footer>
 
         {inApp && <MobileNav />}
+
+        {/*
+          Page views only, no cookie and no identifier — which is the reason it
+          is acceptable in an app where every page is somebody's salary. It
+          reports which screens testers actually reach, and nothing about what
+          is on them.
+        */}
+        <Analytics />
       </body>
     </html>
   );
