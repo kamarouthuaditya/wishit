@@ -133,6 +133,22 @@ export function RunningBalance({
 }
 
 /** A validation line, shown only when a step bounced a submission back. */
+/**
+ * Said once, on the first screen after a code is accepted.
+ *
+ * Verifying used to drop people straight into a form. The account had been
+ * created, the address confirmed and the session minted, and nothing on screen
+ * mentioned any of it — so the one moment worth confirming looked identical to
+ * being bounced back to the start.
+ */
+export function StepNotice({ children }: { children: ReactNode }) {
+  return (
+    <p className="border border-good/50 bg-good-soft px-4 py-3 text-[13px] text-good">
+      {children}
+    </p>
+  );
+}
+
 export function StepError({ children }: { children: ReactNode }) {
   return (
     <p

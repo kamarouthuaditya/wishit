@@ -3,7 +3,7 @@ import { loadSnapshot } from '@/lib/db/repository';
 import { currentUser } from '@/lib/supabase/server';
 import { saveOnboardingIncome } from '@/lib/actions';
 import { onboardingGuard } from '@/lib/onboarding';
-import { StepError, StepHeading } from '@/components/onboarding';
+import { StepError, StepHeading, StepNotice } from '@/components/onboarding';
 import { Button, Field, Input, Select } from '@/components/ui';
 import { IconArrowRight } from '@/components/icons';
 
@@ -19,13 +19,13 @@ export const dynamic = 'force-dynamic';
 export default async function IncomeStepPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; created?: string }>;
 }) {
   const snapshot = await loadSnapshot();
   const elsewhere = onboardingGuard(snapshot.profile, 'income');
   if (elsewhere) redirect(elsewhere);
 
-  const { error } = await searchParams;
+  const { error, created } = await searchParams;
 
   // The name came in at sign-up; do not ask for it twice.
   const user = await currentUser();
@@ -47,6 +47,13 @@ export default async function IncomeStepPage({
         title="What comes in"
         blurb="One number does most of the work here: what actually reaches your account each month. Everything the app says later is a share of it."
       />
+
+      {created && (
+        <StepNotice>
+          Your account is created and your email is confirmed — you are signed
+          in. Six short steps and the numbers start meaning something.
+        </StepNotice>
+      )}
 
       {error === 'salary' && (
         <StepError>

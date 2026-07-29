@@ -27,6 +27,17 @@ export interface Driver {
     patch: Partial<T>,
   ): Promise<T>;
   remove(table: TableName, id: string): Promise<void>;
+  /**
+   * `list`, but guaranteed to hit the database.
+   *
+   * Next memoises identical GET fetches inside a single render, so a second
+   * `list` of the same table during one request is answered from the first
+   * one's response. Almost everywhere that is a saving. In the one place that
+   * re-reads *because* something changed underneath it — recovering from a
+   * lost insert race — it is the bug: the retry is served the "no rows" answer
+   * that caused the insert in the first place.
+   */
+  listFresh<T>(table: TableName): Promise<T[]>;
   /** Replaces every row in a table. Used by the setup wizard. */
   replaceAll<T extends object>(table: TableName, rows: Partial<T>[]): Promise<T[]>;
 }
@@ -72,6 +83,26 @@ export class DbError extends Error {
 export const UNIQUE_VIOLATION = '23505';
 
 /**
+ * Deliberately not `error instanceof DbError`.
+ *
+ * The same module can end up in more than one server bundle, and a class from
+ * one copy fails `instanceof` against a class from the other — so the check
+ * passed every test and then silently failed in a build, which is the worst
+ * shape a bug can take. The code on the object is the thing that matters, and
+ * it survives being carried across a bundle boundary.
+ */
+export function isUniqueViolation(error: unknown): boolean {
+  if (typeof error !== 'object' || error === null) return false;
+  const code = (error as { code?: unknown }).code;
+  if (code === UNIQUE_VIOLATION) return true;
+  const message = (error as { message?: unknown }).message;
+  return (
+    typeof message === 'string' &&
+    /duplicate key value|unique constraint/i.test(message)
+  );
+}
+
+/**
  * Every Supabase failure lands here, because one of them is not really a
  * failure: a session that could not be refreshed.
  *
@@ -98,6 +129,14 @@ const supabaseDriver: Driver = {
   async list<T>(table: TableName) {
     const { data, error } = await (await supabase())
       .from(table).select('*');
+    if (error) fail(table, error);
+    return (data ?? []) as T[];
+  },
+  async listFresh<T>(table: TableName) {
+    // The ordering is not for the caller's benefit — it changes the request URL,
+    // which is what puts this outside the memoised `select=*` of `list`.
+    const { data, error } = await (await supabase())
+      .from(table).select('*').order('id', { ascending: true });
     if (error) fail(table, error);
     return (data ?? []) as T[];
   },
@@ -180,6 +219,11 @@ async function writeLocal(db: LocalDb): Promise<void> {
 const localDriver: Driver = {
   kind: 'local',
   async list<T>(table: TableName) {
+    const db = await readLocal();
+    return (db[table] ?? []) as T[];
+  },
+  // Nothing to bypass: a file read was never memoised.
+  async listFresh<T>(table: TableName) {
     const db = await readLocal();
     return (db[table] ?? []) as T[];
   },

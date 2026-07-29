@@ -1,7 +1,7 @@
 import 'server-only';
 import { redirect } from 'next/navigation';
 import { resumePath } from '@/lib/onboarding';
-import { DbError, UNIQUE_VIOLATION, driver } from './driver';
+import { driver, isUniqueViolation } from './driver';
 import type {
   CreditCardRow,
   ExpenseItemRow,
@@ -77,11 +77,13 @@ export async function getProfile(): Promise<ProfileRow> {
      * row instead. Without this, the very first load of every new account is a
      * 500: the layout and the page both insert, and one of them always loses.
      */
-    const duplicate =
-      error instanceof DbError && error.code === UNIQUE_VIOLATION;
-    if (!duplicate) throw error;
+    if (!isUniqueViolation(error)) throw error;
 
-    const after = await db.list<ProfileRow>('profile');
+    // `listFresh`, not `list`: the memoised answer to that read is the empty
+    // one that sent us into the insert, so re-reading through it would find
+    // nothing and rethrow — which is exactly how this bug survived its
+    // first fix.
+    const after = await db.listFresh<ProfileRow>('profile');
     if (after.length === 0) throw error;
     return pickProfile(after);
   }

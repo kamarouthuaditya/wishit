@@ -257,7 +257,9 @@ export async function verifyEmail(
 
   (await cookies()).delete(PENDING_EMAIL);
   revalidatePath('/', 'layout');
-  redirect('/welcome');
+  // `created` is what turns a silent redirect into "your account exists and
+  // you are signed in", said on the screen they land on.
+  redirect('/welcome?created=1');
 }
 
 /** Sends another sign-up code to the same address. */
