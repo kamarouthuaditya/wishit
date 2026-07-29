@@ -1,7 +1,7 @@
 import 'server-only';
 import { redirect } from 'next/navigation';
 import { resumePath } from '@/lib/onboarding';
-import { driver } from './driver';
+import { DbError, UNIQUE_VIOLATION, driver } from './driver';
 import type {
   CreditCardRow,
   ExpenseItemRow,
@@ -65,9 +65,26 @@ export async function getProfile(): Promise<ProfileRow> {
   const rows = await db.list<ProfileRow>('profile');
   if (rows.length > 0) return pickProfile(rows);
 
-  const created = await db.insert<ProfileRow>('profile', DEFAULT_PROFILE);
-  const after = await db.list<ProfileRow>('profile');
-  return after.length > 0 ? pickProfile(after) : created;
+  try {
+    const created = await db.insert<ProfileRow>('profile', DEFAULT_PROFILE);
+    const after = await db.list<ProfileRow>('profile');
+    return after.length > 0 ? pickProfile(after) : created;
+  } catch (error) {
+    /*
+     * Losing the race is the expected outcome for one of the two inserts, not
+     * an error to show anybody. Migration 0009's unique index is what makes the
+     * loser fail — that is the point of it — so the loser reads the winner's
+     * row instead. Without this, the very first load of every new account is a
+     * 500: the layout and the page both insert, and one of them always loses.
+     */
+    const duplicate =
+      error instanceof DbError && error.code === UNIQUE_VIOLATION;
+    if (!duplicate) throw error;
+
+    const after = await db.list<ProfileRow>('profile');
+    if (after.length === 0) throw error;
+    return pickProfile(after);
+  }
 }
 
 /** One read, everything the engine and the UI need. */

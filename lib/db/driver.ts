@@ -51,6 +51,27 @@ function supabase(): Promise<SupabaseClient> {
 }
 
 /**
+ * A failure with the database's own error code still attached.
+ *
+ * Callers occasionally need to tell one failure from another — a unique
+ * violation on first run is a race to recover from, not an outage — and
+ * matching on the text of a message is how that turns into a bug the next time
+ * Postgres rewords one.
+ */
+export class DbError extends Error {
+  constructor(
+    message: string,
+    readonly code?: string,
+  ) {
+    super(message);
+    this.name = 'DbError';
+  }
+}
+
+/** Postgres: a unique index rejected the row. */
+export const UNIQUE_VIOLATION = '23505';
+
+/**
  * Every Supabase failure lands here, because one of them is not really a
  * failure: a session that could not be refreshed.
  *
@@ -69,7 +90,7 @@ function fail(
 
   if (expired) redirect('/login?expired=1');
 
-  throw new Error(`${table}: ${error.message}`);
+  throw new DbError(`${table}: ${error.message}`, error.code);
 }
 
 const supabaseDriver: Driver = {
