@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local JSON store (your salary lives here)
+.wishit/
+
+# Local screenshot harness (see AGENTS notes)
+.shot.mjs

@@ -1,26 +1,519 @@
 @import "tailwindcss";
 
+/*
+ * Wishit: two grounds, one product. Sharp, typographic, lime.
+ *
+ * Light is the default, and it is not the dark theme with the numbers flipped.
+ * The scene is the fifteen-second use: 8:40am on a train, phone at full
+ * brightness in daylight, logging the ₹340 breakfast before it is forgotten.
+ * Glare eats thin lime strokes, so in light the accent arrives as a block —
+ * a button, a chart fill, a chip — and anything drawn thin (text, hairlines,
+ * the trend line, the focus ring) is carried by a deep leaf green instead.
+ *
+ * Dark is the ten-minute decision session at 11pm with the lamp on, and it is
+ * lime on a tinted near-black, one figure the brightest thing on screen.
+ * It applies only when explicitly chosen (`data-theme="dark"`), never from an
+ * OS preference, because light is the default the product ships with.
+ *
+ * Money is the third ground and the one departure from the brand hue: banknote
+ * ink on black. Where dark is lime drawn bright, money runs the accent the
+ * other way — the block is a deep engraved green and the label on it is pale,
+ * the way a note is printed. Same two roles, opposite weights.
+ *
+ * Neutrals are tinted toward the accent hue rather than grey in every theme:
+ * chroma 0.010-0.026 is enough to stop the surface reading as plastic. Nothing
+ * here is #000 or #fff.
+ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+
+  /*
+   * The brand pair. These two, and only these two, are what an account may
+   * override at runtime — every other accent role below is derived from
+   * `--lime` with relative colour syntax, so a custom accent moves the whole
+   * family and can never land as unreadable text on paper.
+   */
+  --lime: oklch(0.855 0.171 122);
+  --forest: oklch(0.345 0.107 133);
+
+  /*
+   * Ground is `#EAFFD0` — the brand's pale wash, which is the primary text
+   * colour in dark. Using it as the paper here is what ties the two themes
+   * together: the same tint, once as the lightest ink on a near-black page and
+   * once as the page itself.
+   *
+   * White base, with `#EAFFD0` diluted into it rather than laid on top: the
+   * page is the wash at a strength you notice without naming, and the brand
+   * colour proper is kept for the things that need to be seen — the lime block,
+   * the chip, the selection. At full strength across a page it stops being an
+   * accent and becomes the product's only idea.
+   *
+   * The ladder runs the other way from dark: paper is the lightest thing,
+   * panels sit ~2% below it, hover another 2%. An input on `--ground` inside a
+   * `--surface` panel therefore reads as a white field cut into the panel,
+   * which is the same relationship dark gets from a dark well.
+   */
+  --ground: oklch(0.990 0.012 127);
+  --surface: oklch(0.968 0.018 127);
+  --surface-lift: oklch(0.945 0.024 127);
+
+  /*
+   * Accent roles. `--accent` is the one you can print at 1px: 6.3:1 on paper.
+   * `--accent-fill` stays lime, which is 1.4:1 on paper and so is only ever a
+   * block with `--on-accent` sitting on it at 10.5:1.
+   */
+  --accent: oklch(0.470 0.118 138);
+  --accent: oklch(from var(--lime) 0.470 0.118 calc(h + 16));
+  --accent-hover: oklch(0.385 0.105 138);
+  --accent-hover: oklch(from var(--lime) 0.385 0.105 calc(h + 16));
+  --accent-fill: var(--lime);
+  --accent-fill-hover: oklch(0.800 0.175 122);
+  --accent-fill-hover: oklch(from var(--lime) 0.800 0.175 h);
+  --on-accent: oklch(0.250 0.055 138);
+  --on-accent: oklch(from var(--lime) 0.250 0.055 calc(h + 16));
+  --accent-wash: oklch(0.895 0.090 138);
+  --accent-wash: oklch(from var(--lime) 0.895 0.090 calc(h + 16));
+  --accent-dim: oklch(from var(--lime) l c h / 0.45);
+  /*
+   * The edge on a lime block. On a lime-washed page the fill is 1.4:1 against
+   * its own ground, so without a hairline the primary button stops being a
+   * shape and becomes a smudge of text. Dark has no such problem, and there the
+   * edge is the fill itself: declared, invisible, one class either way.
+   *
+   * This was briefly removed while the button carried a gradient, because a
+   * flat hairline cannot match a gradient and the dark theme's invisible edge
+   * stopped being invisible. The fill is flat again, so the trick works again.
+   */
+  --accent-edge: var(--accent);
+
+  /*
+   * The hover plate, and the label that rides in on it. The fill slides in from
+   * whichever edge the pointer crossed, so it has to be a colour the button is
+   * plainly not — the accent's opposite pole. Light and dark start bright, so
+   * the plate is dark; money starts dark, so its plate is the bright one.
+   */
+  --accent-press: var(--accent);
+  --on-accent-press: var(--ground);
+
+  /* Text. 15:1, 7:1, 5.1:1 — checked on the wash and the paper, all of it AA. */
+  --ink: oklch(0.255 0.026 140);
+  --ink-soft: oklch(0.455 0.020 138);
+  --ink-faint: oklch(0.520 0.019 136);
+
+  /*
+   * Hairlines have to work harder on paper than on black. A 1px rule is the
+   * only thing separating two panels in a system with no shadows and no
+   * corners, and at the dark theme's relative weight it would vanish in glare —
+   * so light runs them appreciably darker against their ground.
+   */
+  --line: oklch(0.830 0.022 127);
+  --line-strong: oklch(0.700 0.030 127);
+
+  /* Semantic. Used to mean something, never to decorate. */
+  --good: var(--accent);
+  --good-soft: oklch(0.930 0.075 127);
+  --warn: oklch(0.545 0.110 72);
+  --warn-soft: oklch(0.950 0.035 82);
+  --bad: oklch(0.515 0.180 25);
+  --bad-soft: oklch(0.945 0.024 25);
+
+  /*
+   * The trend area. Lime over a lime page is invisible, so light fills with the
+   * drawable accent at low alpha: a sage wash that is unmistakably not the
+   * ground it sits on.
+   */
+  --chart-fill: oklch(0.470 0.118 138 / 0.28);
+  --chart-fill: oklch(from var(--lime) 0.470 0.118 calc(h + 16) / 0.28);
+
+  /* Motion. Ease-out-expo, no bounce. */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --t-state: 140ms;
+  --t-enter: 220ms;
+  --t-panel: 320ms;
+  /* The hover plate crossing a button. Slower than a state change because it
+     is travel, not a colour swap, and the eye follows the edge of it. */
+  --t-fill: 420ms;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  /*
+   * A tinted near-black rather than #000. The page is `#090b07`: black to look
+   * at, with just enough green in it to belong to the accent rather than read
+   * as a grey chassis. The earlier `#12150f` was a lifted charcoal, and lifting
+   * the ground costs every bright thing on top of it — the hero figure, a lime
+   * link, a warning — the contrast that makes it feel lit at 11pm.
+   *
+   * Value has to do more work down here, because two colours this dark are
+   * closer in luminance than the same lightness gap higher up. So the steps
+   * widen rather than stay even — 6.7 and 5.6 points against the old 4.5 — and
+   * the panels still separate *better* than before (1.12 and 1.17 against 1.11
+   * and 1.14) while sitting on a page that is genuinely black.
+   */
+  --ground: oklch(0.145 0.010 132);
+  --surface: oklch(0.212 0.012 132);
+  --surface-lift: oklch(0.268 0.014 132);
+
+  /* On black, lime is legible at any weight, so ink and fill are the same. */
+  --accent: var(--lime);
+  --accent-hover: oklch(from var(--lime) 0.920 0.120 h);
+  --accent-fill: var(--lime);
+  --accent-fill-hover: oklch(from var(--lime) 0.800 0.175 h);
+  --on-accent: var(--ground);
+  --accent-wash: var(--forest);
+  --accent-dim: oklch(from var(--lime) l c h / 0.14);
+  /* Lime on a near-black page needs no edge, so the edge is the fill. */
+  --accent-edge: var(--accent-fill);
+  /* Deep forest under bright lime: 7.4:1 for the label, and 1.78 against the
+     page, so the filled button is still a shape once the lime is gone. */
+  --accent-press: var(--forest);
+  --on-accent-press: var(--lime);
+
+  --ink: oklch(0.973 0.049 122);
+  --ink-soft: oklch(0.800 0.022 122);
+  /* Lifted with the ground, so hints stay AA on a hovered row (4.5:1). */
+  --ink-faint: oklch(0.650 0.016 122);
+
+  /* Eased down with the ground: held at the old values a hairline on the
+     blacker panel turns into a drawn rule instead of a seam. */
+  --line: oklch(0.325 0.015 132);
+  --line-strong: oklch(0.415 0.019 132);
+
+  /* The tint fills track the lifted ground — a callout has to sit just above a
+     hovered row, and no further, or it becomes a slab. */
+  --good: var(--lime);
+  --good-soft: oklch(0.285 0.065 130);
+  --warn: oklch(0.800 0.130 78);
+  --warn-soft: oklch(0.295 0.055 78);
+  --bad: oklch(0.680 0.170 25);
+  --bad-soft: oklch(0.288 0.068 25);
+
+  --chart-fill: oklch(from var(--forest) l c h / 0.55);
+}
+
+/*
+ * Money — black, and green only where the app wants something from you.
+ *
+ * The scene is the same 11pm decision session as dark, run by someone who wants
+ * the app to look like the thing it models rather than like the rest of the
+ * product. So it is not dark with the hue moved: the ladder, the accent split,
+ * and the edge rule are all re-derived on a blacker ground.
+ *
+ * The rule that makes it work: **green is reserved for the block and the
+ * figure.** Buttons, chips, selection, the trend line, a highlighted number —
+ * those are the note. Everything a note is printed *on* is neutral: the page,
+ * the panels, the hairlines, and all three inks are near-black or near-grey,
+ * carrying chroma 0.005–0.007 so they are never flatly #000 and never read as
+ * green either. Money is the only theme in the product where the ground does
+ * not carry the accent hue.
+ *
+ * Hue is 158, the green of engraved currency, not the lime at 122 and
+ * deliberately not the acid green of a terminal. Chroma is held at or under
+ * 0.135 wherever green appears — the neon-on-black look is a thing this product
+ * is against, and the difference between a banknote and a crypto dashboard is
+ * mostly saturation.
+ */
+[data-theme='money'] {
+  color-scheme: dark;
+
+  /*
+   * The brand pair is remapped rather than kept: on this ground lime would be
+   * the one thing not made of money. `--lime` still names the drawable end of
+   * the accent and `--forest` the tinted ground, so every derived role and any
+   * future runtime override behaves exactly as it does in the other two.
+   *
+   * L 0.660 is the floor for the drawable one, and it is a floor rather than a
+   * preference: green text has to clear 4.5:1 on a *hovered* row, not just on
+   * the page, and at 0.640 it lands at 4.4:1. Darker than this and the highlight
+   * stops being readable, which is why the genuinely dark green lives on the
+   * button block, where a pale label sits on it instead.
+   */
+  --lime: oklch(0.660 0.135 158);
+  --forest: oklch(0.300 0.070 158);
+
+  /*
+   * Black and its shades, and nothing more. Chroma 0.005 keeps the page off
+   * pure #000 without tinting it: at this strength the green is a warmth you
+   * would not name, not a colour. Withholding the hue costs the ladder its
+   * cheapest separator, so value does all of the work here — the same wide 6.5
+   * and 5.5 point steps dark uses, but with no tint helping them apart, and the
+   * hairlines lifted to match.
+   */
+  --ground: oklch(0.145 0.005 158);
+  --surface: oklch(0.210 0.006 158);
+  --surface-lift: oklch(0.265 0.007 158);
+
+  /*
+   * The accent split, inverted from dark. `--accent` is the drawable one at
+   * 6.8:1 on the page — highlighted figures, the trend line, focus. It is the
+   * only green that is ever text. `--accent-fill` is the deep note green at
+   * L 0.420, unreadable as ink and exactly right as a plate, with a pale label
+   * on it at 7:1. Printed, not lit.
+   */
+  --accent: var(--lime);
+  --accent-hover: oklch(from var(--lime) 0.745 0.130 h);
+  --accent-fill: oklch(from var(--lime) 0.420 0.115 h);
+  --accent-fill-hover: oklch(from var(--lime) 0.490 0.125 h);
+  --on-accent: oklch(from var(--lime) 0.960 0.018 h);
+  --accent-wash: var(--forest);
+  --accent-dim: oklch(from var(--lime) l c h / 0.16);
+  /*
+   * Light needs an edge because the fill is too bright for its page; money
+   * needs one because the fill is too dark for its own — 2.5:1 against black,
+   * which is a button that dissolves at arm's length. Dark needs none.
+   */
+  --accent-edge: var(--accent);
+  /*
+   * The one theme where the plate runs the other way. Money's block is already
+   * the dark green, so darkening it further collides with the black page —
+   * 1.46 against the ground, a button that vanishes as you hover it. The plate
+   * is the drawable accent instead, and the label on it goes to the page.
+   */
+  --accent-press: var(--accent);
+  --on-accent-press: var(--ground);
+
+  /* Grey, not mint. 16.6:1, 7.6:1 on a hovered row, 4.6:1 for the faint one. */
+  --ink: oklch(0.940 0.006 158);
+  --ink-soft: oklch(0.780 0.006 158);
+  --ink-faint: oklch(0.640 0.006 158);
+
+  --line: oklch(0.330 0.006 158);
+  --line-strong: oklch(0.430 0.007 158);
+
+  --good: var(--accent);
+  --good-soft: oklch(0.290 0.065 158);
+  --warn: oklch(0.800 0.130 78);
+  --warn-soft: oklch(0.300 0.058 78);
+  --bad: oklch(0.680 0.170 25);
+  --bad-soft: oklch(0.295 0.070 25);
+
+  /* Forest at 60%: this forest is the darker of the two, so the wash has to
+     push harder than dark's to clear a page of the same depth. */
+  --chart-fill: oklch(from var(--forest) l c h / 0.60);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-paper: var(--ground);
+  --color-surface: var(--surface);
+  --color-surface-lift: var(--surface-lift);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-faint: var(--ink-faint);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+
+  /*
+   * `accent` is the drawable one and `accent-fill` is the block. Reaching for
+   * `bg-accent-fill` without `text-on-accent` is the one way to get an
+   * unreadable control in light, so the two travel together.
+   */
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-fill: var(--accent-fill);
+  --color-accent-fill-hover: var(--accent-fill-hover);
+  --color-accent-edge: var(--accent-edge);
+  --color-accent-press: var(--accent-press);
+  --color-on-accent-press: var(--on-accent-press);
+  --color-on-accent: var(--on-accent);
+  --color-accent-soft: var(--accent-wash);
+  --color-accent-dim: var(--accent-dim);
+  --color-forest: var(--accent-wash);
+
+  --color-good: var(--good);
+  --color-good-soft: var(--good-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-bad: var(--bad);
+  --color-bad-soft: var(--bad-soft);
+
+  --font-sans: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-playfair), ui-serif, Georgia, serif;
+
+  /*
+   * Sharp edges are a rule, not a preference, so they are enforced at the token
+   * layer: every `rounded-*` utility in the codebase compiles to zero. No
+   * component can reintroduce a curve by accident.
+   */
+  --radius-xs: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-4xl: 0px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* `rounded-full` resolves to a literal, not a token, so it needs saying. */
+.rounded-full,
+.rounded-\[999px\] {
+  border-radius: 0;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Anchors must not land under the sticky header. */
+    scroll-padding-block-start: 6rem;
+  }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.55;
+    text-rendering: optimizeLegibility;
+  }
+
+  /*
+   * Antialiasing is a dark-mode fix: light text on black needs thinning or it
+   * blooms. Dark text on paper does not, and smoothing it makes 12px labels
+   * spindly in daylight, so it is applied only where it earns its place.
+   */
+  [data-theme='dark'] body,
+  [data-theme='money'] body {
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Playfair carries the headings. Never below 18px, never over a number. */
+  h1,
+  h2.display,
+  .font-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    font: inherit;
+    color: inherit;
+  }
+
+  input[type="number"] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Spinners make dense money forms jump around. */
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+
+  /*
+   * The date picker glyph ships near-black, which is right on paper and
+   * invisible on black — so only dark repaints it.
+   */
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+  }
+
+  [data-theme='dark'] input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.85) sepia(0.4) saturate(4) hue-rotate(45deg);
+  }
+
+  /* Same repaint, rotated further round: mint, not lime. */
+  [data-theme='money'] input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.88) sepia(0.35) saturate(3) hue-rotate(80deg);
+  }
+
+  ::placeholder {
+    color: var(--ink-faint);
+  }
+
+  ::selection {
+    background: var(--accent-wash);
+    color: var(--ink);
+  }
+
+  /* One focus treatment for the whole app: a square ring, always visible. */
+  :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* Money must align down a column. */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
+  /* The section label: 12px caps, wide tracking, quiet. */
+  .eyebrow {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+}
+
+/* --------------------------------------------------------------- motion --- */
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes flash {
+  from {
+    background-color: var(--accent-dim);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+.rise {
+  animation: rise var(--t-enter) var(--ease) both;
+}
+
+/* Staggered entrance, capped: past eight items nobody is watching. */
+.stagger > * {
+  animation: rise var(--t-enter) var(--ease) both;
+}
+.stagger > *:nth-child(1) { animation-delay: 0ms; }
+.stagger > *:nth-child(2) { animation-delay: 40ms; }
+.stagger > *:nth-child(3) { animation-delay: 80ms; }
+.stagger > *:nth-child(4) { animation-delay: 120ms; }
+.stagger > *:nth-child(5) { animation-delay: 160ms; }
+.stagger > *:nth-child(6) { animation-delay: 200ms; }
+.stagger > *:nth-child(7) { animation-delay: 240ms; }
+.stagger > *:nth-child(n + 8) { animation-delay: 280ms; }
+
+/* A figure that just changed gets one flash, then is left alone. */
+.flash {
+  animation: flash 400ms var(--ease) both;
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
