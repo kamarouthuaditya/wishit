@@ -7,7 +7,8 @@ app refuses to serve without it.
 ## 1. The database
 
 Create a Supabase project, then run every file in `supabase/migrations/` in the
-SQL editor **in numbered order**, `0001` through `0010`. They are not idempotent
+SQL editor **in numbered order**, `0001` through the highest-numbered file in
+that directory. They are not idempotent
 as a set — `0009` deletes duplicate profile rows and `0006` claims pre-account
 rows for `aditya@onshorelabs.co.in` — so read the top of each before running it
 on a database that already has data.
