@@ -171,10 +171,28 @@ Never Playfair below 18px, and never for numbers in a table.
 charts, the focus ring. If something needs to read as separate, it gets a
 hairline, a background shift, or space, never a curve.
 
-Cards are not the default answer. Most groupings are a hairline rule plus a
-label. Where a panel is genuinely warranted it gets: 1px `--line` border, a
-`--surface` fill, a label row in 12px caps, and generous internal rhythm
-(20–24px). No nested panels, ever.
+Cards are not the default answer, but **a list of rows is a container**. A
+hairline rule plus a faint label was the original grouping, and on a page of
+rows it failed: every separator on the screen was the same 1px `--line`, so the
+rule between two rows and the rule between two sections carried identical
+weight, and nothing said where a group ended. `Section` is the answer — 1px
+`--line` border, `--surface` fill, a header band on `--surface-lift` divided by
+`--line-strong`, rows inside separated by hairlines. Where a panel of prose or
+figures is warranted, `Card` still applies: same border and fill, 20–24px
+internal rhythm.
+
+Still no nested panels. One border level: what opens *inside* a section — an
+edit form, an expanded row — is a **well**, not a second box. It drops to
+`--ground`, spans the full width by cancelling the body padding (`-mx-5 px-5`),
+and its parent row stays lit at `--surface-lift` so the pair reads as one
+thing. Ground inside surface is the ladder working in the other direction, and
+it is how a row says "this belongs to me".
+
+**A section heading is ink; a field label is faint.** Both were 12px caps in
+`--ink-faint`, which put `FIXED` at the weight of the word `general` under a
+row — a heading losing to the rows it introduces. `.section-title` is 13px/700
+in `--ink`; `.eyebrow` stays 12px/600 in `--ink-faint` and only ever names the
+control beneath it.
 
 ## Depth
 
@@ -281,6 +299,13 @@ invisible. A wash tuned for one ground disappears on the others.
 
 - Rounded corners of any radius.
 - A card wrapping a single number.
+- A `select` with no border of its own, sitting in a joined strip. The arrow
+  becomes the only sign it opens anything. Controls without labels get their
+  own box.
+- `<input list>` standing in for a dropdown. It is a combobox on paper and a
+  plain text field on screen, so people type three spellings of one category
+  into what is meant to be a closed set. Use a real `select`, with an option
+  that swaps in a text field when the set genuinely needs a new member.
 - Gradient text, glassmorphism, coloured side-stripes on panels.
 - Emoji standing in for icons.
 - Two figures on one screen claiming to be the same thing and disagreeing.

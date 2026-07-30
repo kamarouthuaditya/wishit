@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui';
+import { CategorySelect } from '@/components/category-select';
 import { useRef, useState } from 'react';
 import { saveExpense } from '@/lib/actions';
 import { IconPlus } from '@/components/icons';
@@ -18,6 +19,12 @@ import { isoDate } from '@/lib/format';
  * and dates are real but rare, so they sit behind one toggle rather than
  * widening the row to eight controls.
  */
+/** One control's box: the field treatment, minus the label a `Field` adds. */
+const control =
+  'border border-line bg-paper px-3 py-3 text-ink outline-none ' +
+  'transition-colors duration-[140ms] hover:border-line-strong focus:border-accent ' +
+  'placeholder:text-ink-faint';
+
 export function ExpenseComposer({
   cards,
   categories,
@@ -41,17 +48,28 @@ export function ExpenseComposer({
         }}
         className="mx-auto max-w-6xl space-y-3"
       >
-        <div className="flex flex-wrap items-stretch gap-px border border-line bg-line">
+        <p className="eyebrow">New line</p>
+
+        {/*
+          Separate bordered controls rather than one joined strip of segments
+          divided by 1px gaps. In the strip a `select` had no edge of its own,
+          so the two dropdowns read as words sitting in the row — the arrow was
+          the only clue they could be opened at all. Each control owns its box
+          now, and the selects keep the platform's own arrow and popup.
+        */}
+        <div className="flex flex-wrap items-stretch gap-2">
           <input
             ref={nameRef}
             name="name"
             required
             placeholder="Rent, Gym, Netflix…"
             aria-label="What it is"
-            className="min-w-[9rem] flex-[1.4] bg-paper px-3 py-3 text-[15px] outline-none placeholder:text-ink-faint"
+            className={`${control} min-w-[9rem] flex-[1.4] text-[15px]`}
           />
 
-          <div className="flex min-w-[7rem] flex-1 items-center gap-2 bg-paper px-3">
+          <div
+            className={`${control} flex min-w-[7rem] flex-1 items-center gap-2 px-3 py-0`}
+          >
             <span aria-hidden className="text-[15px] text-ink-faint">
               ₹
             </span>
@@ -71,7 +89,7 @@ export function ExpenseComposer({
             name="frequency_months"
             defaultValue="1"
             aria-label="How often"
-            className="min-w-[7rem] bg-paper px-3 py-3 text-[14px] text-ink-soft outline-none"
+            className={`${control} min-w-[8rem] text-[14px]`}
           >
             <option value="1">monthly</option>
             <option value="3">quarterly</option>
@@ -83,7 +101,7 @@ export function ExpenseComposer({
             name="type"
             defaultValue="fixed"
             aria-label="Kind"
-            className="min-w-[7rem] bg-paper px-3 py-3 text-[14px] text-ink-soft outline-none"
+            className={`${control} min-w-[8rem] text-[14px]`}
           >
             <option value="fixed">fixed</option>
             <option value="variable">variable</option>
@@ -110,18 +128,15 @@ export function ExpenseComposer({
 
           {open && (
             <div className="rise flex flex-wrap items-center gap-x-3 gap-y-2">
-              <input
-                name="category"
-                list="wishit-expense-categories"
-                placeholder="category"
-                aria-label="Category"
-                className="border border-line bg-paper px-2 py-1 text-[12px] outline-none placeholder:text-ink-faint focus:border-accent"
+              <CategorySelect
+                categories={categories}
+                className="mt-0 min-w-[9rem] py-1 text-[12px]"
               />
               <select
                 name="paid_by_card_id"
                 defaultValue=""
                 aria-label="Paid from"
-                className="border border-line bg-paper px-2 py-1 text-[12px] text-ink-soft outline-none focus:border-accent"
+                className="border border-line bg-paper px-2 py-1 text-[12px] text-ink outline-none transition-colors duration-[140ms] hover:border-line-strong focus:border-accent"
               >
                 <option value="">bank account</option>
                 {cards.map((card) => (
@@ -149,11 +164,6 @@ export function ExpenseComposer({
           )}
         </div>
 
-        <datalist id="wishit-expense-categories">
-          {categories.map((c) => (
-            <option key={c} value={c} />
-          ))}
-        </datalist>
       </form>
     </div>
   );

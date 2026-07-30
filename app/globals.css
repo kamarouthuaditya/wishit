@@ -458,6 +458,23 @@
     text-transform: uppercase;
     color: var(--ink-faint);
   }
+
+  /*
+   * The header of a section, as opposed to the label of a field.
+   *
+   * Both were `.eyebrow` — 12px caps in `--ink-faint` — which put "FIXED" at
+   * the weight of the word "general" under a row, so a section heading lost to
+   * the rows it was supposed to be introducing. A heading is ink, and it is the
+   * strongest thing in its own band; a label stays faint, because it is only
+   * there to name the control under it.
+   */
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
 }
 
 /* --------------------------------------------------------------- motion --- */

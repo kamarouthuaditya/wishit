@@ -13,6 +13,12 @@ import { IconPlus } from '@/components/icons';
  * sentence; a date and a priority are refinements, so they wait behind a
  * toggle.
  */
+/** One control's box. Matches the expense composer, deliberately. */
+const control =
+  'border border-line bg-paper px-3 py-3 text-ink outline-none ' +
+  'transition-colors duration-[140ms] hover:border-line-strong focus:border-accent ' +
+  'placeholder:text-ink-faint';
+
 export function GoalComposer() {
   const [open, setOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -30,17 +36,21 @@ export function GoalComposer() {
         }}
         className="mx-auto max-w-6xl space-y-3"
       >
-        <div className="flex flex-wrap items-stretch gap-px border border-line bg-line">
+        <p className="eyebrow">New goal</p>
+
+        <div className="flex flex-wrap items-stretch gap-2">
           <input
             ref={nameRef}
             name="name"
             required
             placeholder="Emergency fund, laptop, trip…"
             aria-label="What you are saving for"
-            className="min-w-[10rem] flex-[1.6] bg-paper px-3 py-3 text-[15px] outline-none placeholder:text-ink-faint"
+            className={`${control} min-w-[10rem] flex-[1.6] text-[15px]`}
           />
 
-          <div className="flex min-w-[8rem] flex-1 items-center gap-2 bg-paper px-3">
+          <div
+            className={`${control} flex min-w-[8rem] flex-1 items-center gap-2 py-0`}
+          >
             <span aria-hidden className="text-[15px] text-ink-faint">
               ₹
             </span>

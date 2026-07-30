@@ -7,7 +7,8 @@ import { monthlyBalance } from '@/lib/model/balance';
 import { isBilledIn, nextBilledMonth } from '@/lib/model/billing';
 import { monthKey, monthTitle } from '@/lib/model/spending';
 import { inr } from '@/lib/format';
-import { Button, Field, Input, Money, Select } from '@/components/ui';
+import { Button, Field, Input, Money, Section, Select } from '@/components/ui';
+import { CategorySelect } from '@/components/category-select';
 import { ExpenseComposer } from '@/components/expense-composer';
 import { IconCard, IconClock, IconEdit } from '@/components/icons';
 import { ConfirmButton } from '@/components/confirm-button';
@@ -87,7 +88,7 @@ export default async function ExpensesPage() {
       </header>
 
       {balance.notYetStarted > 0 && (
-        <p className="flex items-center gap-2 border border-line px-4 py-3 text-[13px] text-ink-faint">
+        <p className="flex items-center gap-2 border border-line bg-surface px-4 py-3 text-[13px] text-ink-faint">
           <IconClock size={15} />
           {inr(balance.notYetStarted)} of lines start later and are not in the
           balance yet.
@@ -100,7 +101,7 @@ export default async function ExpensesPage() {
         looks cheaper than the year is.
       */}
       {balance.notDueThisMonth > 0 && (
-        <p className="flex items-center gap-2 border border-line px-4 py-3 text-[13px] text-ink-faint">
+        <p className="flex items-center gap-2 border border-line bg-surface px-4 py-3 text-[13px] text-ink-faint">
           <IconClock size={15} />
           {inr(balance.notDueThisMonth)} of periodic bills are not due this month.
           They land whole in the months they renew.
@@ -125,20 +126,19 @@ export default async function ExpensesPage() {
         if (rows.length === 0) return null;
 
         return (
-          <section key={group.type}>
-            <div className="flex items-baseline justify-between gap-4 border-b border-line-strong pb-2">
-              <div>
-                <h2 className="eyebrow">{group.title}</h2>
-                <p className="mt-1 text-[13px] text-ink-faint">{group.hint}</p>
-              </div>
-              <p className="tnum text-[15px] font-semibold">
+          <Section
+            key={group.type}
+            title={group.title}
+            hint={group.hint}
+            aside={
+              <>
                 <Money amount={group.total} />
                 <span className="ml-1 text-[11px] font-normal text-ink-faint">
                   this month
                 </span>
-              </p>
-            </div>
-
+              </>
+            }
+          >
             <ul className="divide-y divide-line">
               {rows.map((row) => (
                 <ExpenseRow
@@ -149,7 +149,7 @@ export default async function ExpensesPage() {
                 />
               ))}
             </ul>
-          </section>
+          </Section>
         );
       })}
 
@@ -203,9 +203,13 @@ function ExpenseRow({
   const card = cards.find((c) => c.id === row.paid_by_card_id);
 
   return (
-    <li className="group">
-      <details >
-        <summary className="flex cursor-pointer list-none items-baseline gap-4 py-3 transition-colors duration-[140ms] hover:bg-surface-lift">
+    <li>
+      {/*
+        `-mx-5 px-5` so the hover band and the open editor reach the section's
+        border instead of stopping short of it inside the body padding.
+      */}
+      <details className="group">
+        <summary className="-mx-5 flex cursor-pointer list-none items-baseline gap-4 px-5 py-3 transition-colors duration-[140ms] hover:bg-surface-lift group-open:bg-surface-lift">
           <span className="min-w-0 flex-1">
             <span className="block truncate text-[15px]">{row.name}</span>
             <span className="mt-0.5 flex flex-wrap items-center gap-x-3 text-[12px] text-ink-faint">
@@ -241,7 +245,7 @@ function ExpenseRow({
 
         <form
           action={saveExpense}
-          className="grid gap-4 border-t border-line bg-paper px-4 py-4 sm:grid-cols-2 lg:grid-cols-4"
+          className="-mx-5 grid gap-x-4 gap-y-5 border-y border-line bg-paper px-5 py-5 sm:grid-cols-2 lg:grid-cols-4"
         >
           <input type="hidden" name="id" value={row.id} />
           <input type="hidden" name="type" value={row.type} />
@@ -250,11 +254,7 @@ function ExpenseRow({
             <Input name="name" defaultValue={row.name} />
           </Field>
           <Field label="Category">
-            <Input
-              name="category"
-              list="wishit-expense-categories"
-              defaultValue={row.category}
-            />
+            <CategorySelect categories={categories} defaultValue={row.category} />
           </Field>
           <Field
             label="Amount per bill"
@@ -315,12 +315,6 @@ function ExpenseRow({
           </div>
         </form>
       </details>
-
-      <datalist id="wishit-expense-categories">
-        {categories.map((c) => (
-          <option key={c} value={c} />
-        ))}
-      </datalist>
     </li>
   );
 }

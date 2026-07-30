@@ -80,6 +80,58 @@ export function Card({
 }
 
 /**
+ * A run of rows with a header that means it.
+ *
+ * The list pages used to be a hairline rule, a faint 12px label, and rows
+ * hanging off the page ground. Every separator on the screen was the same 1px
+ * `--line`, so the rule between two rows and the rule between two sections
+ * carried identical weight, and nothing said where one group ended. Sections
+ * are a container now: a border, a `--surface` fill, and a header band that is
+ * a shade lighter than the body so the heading sits on something.
+ *
+ * Still one level deep — the rows inside are separated by hairlines, never by
+ * a second box. `Card` remains for a panel of prose or figures; this is for a
+ * list that needs to be a group.
+ */
+export function Section({
+  title,
+  hint,
+  aside,
+  footer,
+  children,
+  className = '',
+}: {
+  title: ReactNode;
+  hint?: ReactNode;
+  /** The section's own figure, right-aligned in the header band. */
+  aside?: ReactNode;
+  /** Sits under the rows, inside the border — an add form, usually. */
+  footer?: ReactNode;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <section className={`border border-line bg-surface ${className}`}>
+      <header className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-line-strong bg-surface-lift px-5 py-3">
+        <div className="min-w-0">
+          <h2 className="section-title">{title}</h2>
+          {hint && (
+            <p className="mt-1 max-w-prose text-[12.5px] leading-snug text-ink-faint">
+              {hint}
+            </p>
+          )}
+        </div>
+        {aside && <div className="tnum shrink-0 text-[15px] font-semibold">{aside}</div>}
+      </header>
+
+      <div className="px-5">{children}</div>
+
+      {footer && <div className="border-t border-line px-5 py-4">{footer}</div>}
+    </section>
+  );
+}
+
+/**
  * A figure with its label. `large` is the hero treatment: Playfair, 48px, the
  * brightest thing on the screen.
  */

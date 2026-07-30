@@ -28,6 +28,7 @@ import {
   Input,
   Money,
   Pill,
+  Section,
   Select,
 } from '@/components/ui';
 import { IconCheck, IconEdit, IconTransfer } from '@/components/icons';
@@ -43,6 +44,12 @@ const FREQUENCIES = [
   { value: '6', label: 'Half-yearly' },
   { value: '12', label: 'Yearly' },
 ];
+
+/** One control's box, for the add rows that have no room for labels. */
+const control =
+  'border border-line bg-paper px-3 py-2.5 text-ink outline-none ' +
+  'transition-colors duration-[140ms] hover:border-line-strong focus:border-accent ' +
+  'placeholder:text-ink-faint';
 
 /**
  * Goals, as a list.
@@ -88,9 +95,13 @@ export default async function GoalsPage() {
         </dl>
       </header>
 
+      {/*
+        A control bar, so it reads as something that governs the list below it
+        rather than a stray field between the title and the goals.
+      */}
       <form
         action={updateProfile}
-        className="flex flex-wrap items-center gap-3 border-b border-line pb-4"
+        className="flex flex-wrap items-center gap-3 border border-line bg-surface px-5 py-3"
       >
         <span className="eyebrow">Split surplus by</span>
         <div className="min-w-[16rem] max-w-sm flex-1">
@@ -99,8 +110,8 @@ export default async function GoalsPage() {
             defaultValue={snapshot.profile.allocation_mode}
             className="mt-0 py-1.5 text-[13px]"
           >
-          <option value="waterfall">Priority order — fill the top goal first</option>
-          <option value="fixed">Fixed amount into each</option>
+            <option value="waterfall">Priority order — fill the top goal first</option>
+            <option value="fixed">Fixed amount into each</option>
             <option value="proportional">Split proportionally</option>
           </Select>
         </div>
@@ -114,35 +125,96 @@ export default async function GoalsPage() {
           No goals yet. An emergency fund is the usual first — add one below.
         </Empty>
       ) : (
-        <ul className="divide-y divide-line border-y border-line">
-          {snapshot.goals.map((row) => (
-            <GoalRow
-              key={row.id}
-              row={row}
-              snapshot={snapshot}
-              anchor={anchor}
-              withCommitted={withCommitted}
-              clean={clean}
-              balanceLeft={balance.balance}
-            />
-          ))}
-        </ul>
+        <Section
+          title="Goals"
+          hint="In priority order — the top one is filled first, and a protected goal is drawn on last"
+          aside={
+            <>
+              <Money amount={balance.goalContributions} />
+              <span className="ml-1 text-[11px] font-normal text-ink-faint">
+                /mo
+              </span>
+            </>
+          }
+        >
+          <ul className="divide-y divide-line">
+            {snapshot.goals.map((row) => (
+              <GoalRow
+                key={row.id}
+                row={row}
+                snapshot={snapshot}
+                anchor={anchor}
+                withCommitted={withCommitted}
+                clean={clean}
+                balanceLeft={balance.balance}
+              />
+            ))}
+          </ul>
+        </Section>
       )}
 
-      <section>
-        <div className="flex items-baseline justify-between gap-4 border-b border-line-strong pb-2">
-          <div>
-            <h2 className="eyebrow">Savings &amp; investments</h2>
-            <p className="mt-1 text-[13px] text-ink-faint">
-              SIPs, deposits, retirement — committed before anything is left over
-            </p>
-          </div>
-          <p className="tnum text-[15px] font-semibold">
+      <Section
+        title="Savings & investments"
+        hint="SIPs, deposits, retirement — committed before anything is left over"
+        aside={
+          <>
             <Money amount={plan.investments} />
-            <span className="ml-1 text-[11px] font-normal text-ink-faint">/mo</span>
-          </p>
-        </div>
-
+            <span className="ml-1 text-[11px] font-normal text-ink-faint">
+              this month
+            </span>
+          </>
+        }
+        footer={
+          /*
+            Each control in its own box. It was one strip of segments split by
+            1px gaps, which left the frequency `select` with no edge of its own
+            — a word in a row, with a small arrow as the only hint that it
+            opened anything.
+          */
+          <form action={saveExpense} className="flex flex-wrap items-stretch gap-2">
+            <input type="hidden" name="type" value="investment" />
+            <input type="hidden" name="effective_from" value={isoDate()} />
+            <input
+              name="name"
+              required
+              placeholder="Index SIP, recurring deposit…"
+              aria-label="Name"
+              className={`${control} min-w-[10rem] flex-[1.5] text-[14px]`}
+            />
+            <div
+              className={`${control} flex min-w-[7rem] flex-1 items-center gap-2 py-0`}
+            >
+              <span aria-hidden className="text-ink-faint">
+                ₹
+              </span>
+              <input
+                name="amount"
+                type="number"
+                step="1"
+                required
+                placeholder="0"
+                aria-label="Amount per instalment"
+                className="tnum w-full bg-transparent py-2.5 text-[15px] outline-none placeholder:text-ink-faint"
+              />
+            </div>
+            <select
+              name="frequency_months"
+              defaultValue="1"
+              aria-label="How often"
+              className={`${control} min-w-[8rem] text-[13px]`}
+            >
+              {FREQUENCIES.map((f) => (
+                <option key={f.value} value={f.value}>
+                  {f.label.toLowerCase()}
+                </option>
+              ))}
+            </select>
+            <Button type="submit" className="px-4 py-2.5 text-[12px]">
+              Add
+            </Button>
+          </form>
+        }
+      >
         {savingsLines.length === 0 ? (
           <p className="py-4 text-[13px] text-ink-faint">
             Nothing yet. Add a line below — a SIP or a recurring deposit.
@@ -154,54 +226,7 @@ export default async function GoalsPage() {
             ))}
           </ul>
         )}
-
-        <form
-          action={saveExpense}
-          className="mt-4 flex flex-wrap items-stretch gap-px border border-line bg-line"
-        >
-          <input type="hidden" name="type" value="investment" />
-          <input type="hidden" name="effective_from" value={isoDate()} />
-          <input
-            name="name"
-            required
-            placeholder="Index SIP, recurring deposit…"
-            aria-label="Name"
-            className="min-w-[10rem] flex-[1.5] bg-paper px-3 py-2.5 text-[14px] outline-none placeholder:text-ink-faint"
-          />
-          <div className="flex min-w-[7rem] flex-1 items-center gap-2 bg-paper px-3">
-            <span aria-hidden className="text-ink-faint">
-              ₹
-            </span>
-            <input
-              name="amount"
-              type="number"
-              step="1"
-              required
-              placeholder="0"
-              aria-label="Amount per instalment"
-              className="tnum w-full bg-transparent py-2.5 text-[15px] outline-none placeholder:text-ink-faint"
-            />
-          </div>
-          <select
-            name="frequency_months"
-            defaultValue="1"
-            aria-label="How often"
-            className="bg-paper px-3 py-2.5 text-[13px] text-ink-soft outline-none"
-          >
-            {FREQUENCIES.map((f) => (
-              <option key={f.value} value={f.value}>
-                {f.label.toLowerCase()}
-              </option>
-            ))}
-          </select>
-          <Button
-            type="submit"
-            className="px-4 py-2.5 text-[12px]"
-          >
-            Add
-          </Button>
-        </form>
-      </section>
+      </Section>
 
       <GoalComposer />
     </div>
@@ -293,7 +318,7 @@ function GoalRow({
   return (
     <li className={dormant ? 'opacity-60' : ''}>
       <details className="group">
-        <summary className="grid cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] items-center gap-x-5 gap-y-2 py-4 transition-colors duration-[140ms] hover:bg-surface-lift">
+        <summary className="-mx-5 grid cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] items-center gap-x-5 gap-y-2 px-5 py-4 transition-colors duration-[140ms] hover:bg-surface-lift group-open:bg-surface-lift">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-[16px]">{row.name}</span>
@@ -344,7 +369,14 @@ function GoalRow({
           </div>
         </summary>
 
-        <div className="space-y-5 border-t border-line bg-paper px-4 py-5">
+        {/*
+          The open goal's own well: the page ground, inset inside the section's
+          surface, so everything under the heading plainly belongs to the goal
+          above it. It used to sit on the same ground as the rows either side of
+          it, which is what made a long expanded goal read as page furniture
+          rather than as one goal's controls.
+        */}
+        <div className="-mx-5 space-y-6 border-y border-line bg-paper px-5 py-5">
           {dormant ? (
             <p className="text-[14px] text-ink-soft">
               {isDone
@@ -401,8 +433,8 @@ function GoalRow({
             </>
           )}
 
-          <div className="border-t border-line pt-4">
-            <h3 className="eyebrow flex items-center gap-2">
+          <div className="border-t border-line pt-5">
+            <h3 className="section-title flex items-center gap-2 text-[12px]">
               <IconTransfer size={13} />
               Move money in
             </h3>
@@ -414,7 +446,7 @@ function GoalRow({
             />
           </div>
 
-          <div className="flex flex-wrap items-center gap-4 border-t border-line pt-4">
+          <div className="flex flex-wrap items-center gap-4 border-t border-line pt-5">
             <form action={setGoalStatus}>
               <input type="hidden" name="id" value={row.id} />
               <input type="hidden" name="status" value={isDone ? 'active' : 'done'} />
@@ -617,9 +649,9 @@ function SavingsRow({ row }: { row: ExpenseItemRow }) {
   const nextDue = nextBilledMonth(row, monthKey());
 
   return (
-    <li className="group">
-      <details>
-        <summary className="flex cursor-pointer list-none items-baseline gap-4 py-3 transition-colors duration-[140ms] hover:bg-surface-lift">
+    <li>
+      <details className="group">
+        <summary className="-mx-5 flex cursor-pointer list-none items-baseline gap-4 px-5 py-3 transition-colors duration-[140ms] hover:bg-surface-lift group-open:bg-surface-lift">
           <span className="min-w-0 flex-1">
             <span className="block truncate text-[15px]">{row.name}</span>
             {every > 1 && (
@@ -642,7 +674,7 @@ function SavingsRow({ row }: { row: ExpenseItemRow }) {
 
         <form
           action={saveExpense}
-          className="grid gap-4 border-t border-line bg-paper px-4 py-4 sm:grid-cols-2 lg:grid-cols-4"
+          className="-mx-5 grid gap-x-4 gap-y-5 border-y border-line bg-paper px-5 py-5 sm:grid-cols-2 lg:grid-cols-4"
         >
           <input type="hidden" name="id" value={row.id} />
           <input type="hidden" name="type" value="investment" />
