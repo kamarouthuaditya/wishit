@@ -176,18 +176,25 @@ hairline rule plus a faint label was the original grouping, and on a page of
 rows it failed: every separator on the screen was the same 1px `--line`, so the
 rule between two rows and the rule between two sections carried identical
 weight, and nothing said where a group ended. `Section` is the answer — 1px
-`--line` border, `--surface` fill, a header band on `--surface-lift` divided by
-2px of `--line-strong`, rows inside separated by hairlines. Where a panel of
-prose or figures is warranted, `Card` still applies: same border and fill,
-20–24px internal rhythm.
+`--line` border, `--surface` fill, rows inside separated by hairlines. Where a
+panel of prose or figures is warranted, `Card` still applies: same border and
+fill, 20–24px internal rhythm.
 
-**Inside a section, every ground token is spent once.** The header band is the
-only `--surface-lift`; rows sit on the panel's `--surface`; a row under the
-pointer, or open, drops to `--ground`. The band and the row hover were both
-`--surface-lift` at first, which meant a pointer anywhere in the list put a
-second identical band on screen and the heading stopped reading as a heading.
-A row going *down* is also the truer direction: it is opening a well, not
-rising off the panel.
+**A section's heading sits outside its box.** Two attempts at a header band
+inside failed identically: a band carrying a label on the left and a figure on
+the right is the exact shape of the rows beneath it, so no amount of tuning the
+fill stopped it reading as a slightly paler first row. `--surface-lift` against
+`--surface` is 5.6 points in dark and about 2 in light, which is nowhere near
+enough to overcome a repeated shape. The heading goes on the page ground with
+air around it, at 15px caps against the rows' 15px regular, and the box below
+holds data and nothing else — so the border marks where the group begins rather
+than merely wrapping it.
+
+**Inside that box, two ground tokens.** Rows on `--surface`; a row under the
+pointer, or open, drops to `--ground` and takes its editor with it. Down is the
+truer direction: the row is opening a well, not rising off the panel.
+`--surface-lift` is not spent inside a section at all. It still bands the header
+of a `Dialog`, which has no rows above or below to be confused with.
 
 Still no nested panels. One border level: what opens *inside* a section — an
 edit form, an expanded row — is that same **well**, not a second box. It sits
@@ -195,10 +202,9 @@ on `--ground` and spans the full width by cancelling the body padding
 (`-mx-5 px-5`), continuous with the row that opened it, so the pair reads as one
 thing.
 
-The band carries two signals, not one, because in light the fills are ~2% apart
-and a ground shift alone would not survive glare: `--surface-lift` **and** a 2px
-`--line-strong` rule under it, with the section's figure at 17px against the
-rows' 15px.
+The section's figure stays at 17px against the rows' 15px. Two signals rather
+than one — position and size — because in light the grounds are ~2% apart and a
+fill difference alone does not survive glare.
 
 **A field that does not apply is absent, not greyed out.** The wishlist form
 disabled its five payment fields when the mode did not use them, so paying cash
