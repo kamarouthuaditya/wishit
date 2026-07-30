@@ -13,8 +13,10 @@ import { isProduction } from '@/lib/env';
  */
 
 // `/forgot-password` and its verify step have to be reachable without a
-// session — they are the way back in for someone who cannot sign in.
-const PUBLIC_PATHS = ['/login', '/signup', '/forgot-password'];
+// session — they are the way back in for someone who cannot sign in. `/auth` is
+// where Google returns with its code: there is no session yet at that moment,
+// and bouncing it to /login would throw the code away.
+const PUBLIC_PATHS = ['/login', '/signup', '/forgot-password', '/auth'];
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });

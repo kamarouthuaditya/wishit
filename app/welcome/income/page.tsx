@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { loadSnapshot } from '@/lib/db/repository';
 import { currentUser } from '@/lib/supabase/server';
+import { nameFromUser } from '@/lib/user-name';
 import { saveOnboardingIncome } from '@/lib/actions';
 import { onboardingGuard } from '@/lib/onboarding';
 import { StepError, StepHeading, StepNotice } from '@/components/onboarding';
@@ -28,14 +29,10 @@ export default async function IncomeStepPage({
 
   const { error, created } = await searchParams;
 
-  // The name came in at sign-up; do not ask for it twice.
+  // The name came in at sign-up, or from Google; do not ask for it twice.
   const user = await currentUser();
-  const meta = (user?.user_metadata ?? {}) as {
-    first_name?: string;
-    last_name?: string;
-  };
   const knownName =
-    [meta.first_name, meta.last_name].filter(Boolean).join(' ') ||
+    nameFromUser(user) ||
     (snapshot.profile.name === 'Me' ? '' : snapshot.profile.name);
 
   const salary = snapshot.income.find((i) => i.type === 'salary');

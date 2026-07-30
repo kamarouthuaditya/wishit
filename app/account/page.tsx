@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { currentUser, isAuthConfigured } from '@/lib/supabase/server';
 import { signOut } from '@/lib/auth-actions';
 import { loadSnapshot } from '@/lib/db/repository';
+import { nameFromUser } from '@/lib/user-name';
 import { saveProfileName } from '@/lib/actions';
 import { initials } from '@/components/avatar';
 import { Button, Field, Input } from '@/components/ui';
@@ -28,14 +29,12 @@ export default async function AccountPage() {
   if (isAuthConfigured && !user) redirect('/login');
 
   const snapshot = await loadSnapshot();
-  const meta = (user?.user_metadata ?? {}) as {
-    first_name?: string;
-    last_name?: string;
-  };
 
-  const first = meta.first_name ?? snapshot.profile.name.split(' ')[0] ?? '';
-  const last = meta.last_name ?? snapshot.profile.name.split(' ').slice(1).join(' ');
-  const fullName = [first, last].filter(Boolean).join(' ') || snapshot.profile.name;
+  // A Google account has a name too, under its own keys — see lib/user-name.ts.
+  const known = nameFromUser(user) || snapshot.profile.name;
+  const first = known.split(' ')[0] ?? '';
+  const last = known.split(' ').slice(1).join(' ');
+  const fullName = known || snapshot.profile.name;
 
   return (
     <div className="mx-auto max-w-2xl space-y-8">

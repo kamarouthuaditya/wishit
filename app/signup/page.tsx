@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { currentUser } from '@/lib/supabase/server';
 import { AuthForm } from '@/components/auth-form';
+import { GoogleButton } from '@/components/google-button';
 import { Card } from '@/components/ui';
 
 export const dynamic = 'force-dynamic';
@@ -18,6 +19,20 @@ export default async function SignupPage() {
       </p>
       <div className="mt-6">
         <Card>
+          {/* Google is the same button on both screens: with an OAuth provider
+              there is no difference between signing up and signing in, and
+              asking somebody to pick the right one of two identical doors is a
+              question the app can answer itself. */}
+          <GoogleButton />
+
+          <div className="my-5 flex items-center gap-3">
+            <span className="h-px flex-1 bg-line" />
+            <span className="text-[11px] uppercase tracking-[0.08em] text-ink-faint">
+              or
+            </span>
+            <span className="h-px flex-1 bg-line" />
+          </div>
+
           <AuthForm mode="sign-up" />
         </Card>
       </div>

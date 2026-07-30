@@ -1,13 +1,14 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { supabaseServer } from '@/lib/supabase/server';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { isMailConfigured, sendCodeEmail } from '@/lib/mail';
 import { issueCode, redeemCode, type Redemption } from '@/lib/auth-code-store';
+import { safeNext } from '@/lib/next-path';
 import { limitMessage, rateLimit } from '@/lib/rate-limit';
 
 /**
@@ -68,6 +69,57 @@ export async function signIn(
 
   revalidatePath('/', 'layout');
   redirect('/');
+}
+
+/**
+ * Signing in with Google.
+ *
+ * The handshake starts on the server so the PKCE verifier is written as an
+ * httpOnly cookie rather than left in `localStorage` where a script on the page
+ * could read it. `signInWithOAuth` mints the consent URL and the cookie; the
+ * browser goes to Google; Google returns a code to `/auth/callback`, which
+ * trades it for the session.
+ *
+ * No password, so nothing here goes near the OTP flow the email sign-up uses:
+ * Google has already established the address belongs to them.
+ */
+export async function signInWithGoogle(formData: FormData): Promise<void> {
+  const supabase = await supabaseServer();
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${await siteOrigin()}/auth/callback?next=${encodeURIComponent(
+        safeNext(formData.get('next')),
+      )}`,
+      // Otherwise a browser signed into one Google account skips the chooser,
+      // which is wrong on a shared machine and maddening on a personal one
+      // with two accounts.
+      queryParams: { prompt: 'select_account' },
+    },
+  });
+
+  if (error || !data.url) redirect('/login?error=google');
+  redirect(data.url);
+}
+
+/**
+ * Where this deployment lives, from the request itself.
+ *
+ * Vercel serves the same build on a project domain, a branch domain and every
+ * preview URL, and Google will only return to the address it was sent from, so
+ * a hard-coded origin would break every deployment but one. `NEXT_PUBLIC_SITE_URL`
+ * wins when it is set, for the case where a custom domain must be canonical.
+ */
+async function siteOrigin(): Promise<string> {
+  const configured = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (configured) return configured.replace(/\/$/, '');
+
+  const head = await headers();
+  const host = head.get('x-forwarded-host') ?? head.get('host') ?? 'localhost:3000';
+  const protocol =
+    head.get('x-forwarded-proto') ?? (host.startsWith('localhost') ? 'http' : 'https');
+  return `${protocol}://${host}`;
 }
 
 /** Where the address being verified is parked between the two steps. */
