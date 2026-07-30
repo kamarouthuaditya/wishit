@@ -51,7 +51,19 @@ export function Dialog({
       onClick={(event) => {
         if (event.target === ref.current) ref.current?.close();
       }}
-      className="w-[min(56rem,calc(100vw-2rem))] border border-line-strong bg-surface p-0 text-ink backdrop:bg-[oklch(0_0_0/0.6)]"
+      /*
+       * `m-auto` puts it back in the middle. A modal `<dialog>` is centred by
+       * the UA stylesheet with `margin: auto` against `inset: 0`, and Tailwind's
+       * preflight zeroes `margin` on every element — `::backdrop` included — so
+       * the dialog was landing in the top-left corner.
+       *
+       * The backdrop tints and blurs. Blur is otherwise banned here as
+       * decoration; behind a modal it is doing work, pushing a page of live
+       * figures far enough back that the form in front is the only thing worth
+       * reading. Kept at 3px: enough to defocus, not enough to smear the page
+       * into frosted glass.
+       */
+      className="rise m-auto w-[min(56rem,calc(100vw-2rem))] border border-line-strong bg-surface p-0 text-ink backdrop:bg-[oklch(0_0_0/0.55)] backdrop:backdrop-blur-[3px]"
     >
       <header className="flex items-baseline justify-between gap-4 border-b-2 border-line-strong bg-surface-lift px-5 py-3.5">
         <div className="min-w-0">
