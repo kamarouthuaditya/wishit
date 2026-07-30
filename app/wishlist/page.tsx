@@ -1,11 +1,10 @@
 import Link from 'next/link';
 import { loadReadySnapshot } from '@/lib/db/repository';
-import { setWishlistStatus } from '@/lib/actions';
 import { candidatePlans, toEngineInput } from '@/lib/model/to-engine';
 import { evaluatePurchase } from '@/lib/engine';
 import { monthlyBalance } from '@/lib/model/balance';
 import { inr } from '@/lib/format';
-import { Button, Empty, Field, Money, Pill, Select } from '@/components/ui';
+import { Button, Empty, Money, Pill, Section } from '@/components/ui';
 import {
   BreachList,
   CheckpointTable,
@@ -13,6 +12,7 @@ import {
   ImpactHeadline,
 } from '@/components/impact-view';
 import { WishlistItemForm } from '@/components/wishlist-item-form';
+import { WishlistAdd } from '@/components/wishlist-add';
 import { IconArrowRight, IconEdit } from '@/components/icons';
 import { PageGuide } from '@/components/page-guide';
 import type { WishlistItemRow } from '@/lib/db/types';
@@ -105,40 +105,32 @@ export default async function WishlistPage({
           something the moment you think of it.
         </Empty>
       ) : (
-        <section>
-          <div className="flex flex-wrap items-baseline justify-between gap-4 border-b border-line-strong pb-2">
-            <div>
-              <h2 className="eyebrow">Weigh them together</h2>
-              <p className="mt-1 text-[13px] text-ink-faint">
-                Tick several: three purchases you can each afford alone can still
-                be ruinous as a set.
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="text-[12px] text-ink-faint">
+        <Section
+          title="Weigh them together"
+          hint="Tick several: three purchases you can each afford alone can still be ruinous as a set."
+          aside={
+            <span className="flex items-center gap-3 text-[12px] font-normal">
+              <span className="text-ink-faint">
                 {selected.length === 0
                   ? 'nothing selected'
                   : `${selected.length} selected`}
               </span>
-              <Button type="submit" form="scenario">
+              <Button type="submit" form="scenario" size="sm">
                 Evaluate
               </Button>
               {selected.length > 0 && (
-                <Link
-                  href="/wishlist"
-                  className="text-[12px] text-ink-faint hover:text-accent"
-                >
+                <Link href="/wishlist" className="text-ink-faint hover:text-accent">
                   Clear
                 </Link>
               )}
-            </div>
-          </div>
-
+            </span>
+          }
+        >
           <ul className="divide-y divide-line">
             {[...active, ...archived].map((item) => {
               const gone = item.status === 'purchased' || item.status === 'dropped';
               return (
-                <li key={item.id} className="group flex items-start gap-3">
+                <li key={item.id} className="flex items-start gap-3">
                   <input
                     type="checkbox"
                     name="sim"
@@ -150,8 +142,13 @@ export default async function WishlistPage({
                     aria-label={`Include ${item.name} in the scenario`}
                   />
 
-                  <details className="min-w-0 flex-1">
-                    <summary className="flex cursor-pointer list-none flex-wrap items-center gap-x-4 gap-y-2 py-3 transition-colors duration-[140ms] hover:bg-surface-lift">
+                  {/*
+                    `-mr-5 pr-5` on the right and `-ml-7 pl-7` on the well below
+                    take the row out to the section's border on both sides; 7 is
+                    the checkbox column, 16px of box plus the 12px gap.
+                  */}
+                  <details className="group min-w-0 flex-1">
+                    <summary className="-mr-5 flex cursor-pointer list-none flex-wrap items-center gap-x-4 gap-y-2 py-3 pr-5 transition-colors duration-[140ms] hover:bg-paper group-open:bg-paper">
                       <span className="min-w-0 flex-1">
                         <span className="flex flex-wrap items-center gap-2">
                           <span
@@ -176,37 +173,22 @@ export default async function WishlistPage({
                       </span>
                     </summary>
 
-                    <div className="space-y-5 border-t border-line bg-paper px-4 py-5">
-                      <div className="flex flex-wrap items-end justify-between gap-4">
-                        <form
-                          action={setWishlistStatus}
-                          className="flex flex-wrap items-end gap-3"
-                        >
-                          <input type="hidden" name="id" value={item.id} />
-                          <div className="w-64">
-                            <Field
-                              label="Status"
-                              hint="Only committed items enter your projections"
-                            >
-                              <Select name="status" defaultValue={item.status}>
-                                <option value="idea">Idea</option>
-                                <option value="planned">Considering</option>
-                                <option value="committed">
-                                  Committed — counts against surplus
-                                </option>
-                                <option value="purchased">Purchased</option>
-                                <option value="dropped">Dropped</option>
-                              </Select>
-                            </Field>
-                          </div>
-                          <Button variant="ghost" type="submit">
-                            Update
-                          </Button>
-                        </form>
-
+                    <div className="-ml-7 -mr-5 border-y border-line bg-paper py-5 pl-7 pr-5">
+                      {/*
+                        The status quick-set is gone: the full form below has a
+                        Status field of its own, so the panel opened with two
+                        controls for one value and a Save that meant something
+                        different in each. What is left beside the heading is the
+                        one thing the form cannot do — the page that spells out
+                        what this purchase costs in months.
+                      */}
+                      <div className="mb-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                        <h3 className="section-title text-[12px]">
+                          Edit {item.name}
+                        </h3>
                         <Link
                           href={`/wishlist/${item.id}`}
-                          className="inline-flex items-center gap-1 pb-2 text-[13px] text-accent"
+                          className="inline-flex items-center gap-1 text-[13px] text-accent"
                         >
                           What it costs in time
                           <IconArrowRight size={14} />
@@ -220,7 +202,7 @@ export default async function WishlistPage({
               );
             })}
           </ul>
-        </section>
+        </Section>
       )}
 
       {stacked && (
@@ -242,18 +224,7 @@ export default async function WishlistPage({
         </section>
       )}
 
-      <section>
-        <h2 className="eyebrow border-b border-line-strong pb-2">
-          Add something in full
-        </h2>
-        <p className="mt-2 text-[13px] text-ink-faint">
-          Or use <strong>Want</strong> in the header for a name and a price, and
-          fill the rest in later.
-        </p>
-        <div className="mt-4">
-          <WishlistItemForm />
-        </div>
-      </section>
+      <WishlistAdd />
     </div>
   );
 }

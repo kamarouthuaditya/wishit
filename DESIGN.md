@@ -200,6 +200,20 @@ and a ground shift alone would not survive glare: `--surface-lift` **and** a 2px
 `--line-strong` rule under it, with the section's figure at 17px against the
 rows' 15px.
 
+**A field that does not apply is absent, not greyed out.** The wishlist form
+disabled its five payment fields when the mode did not use them, so paying cash
+meant reading five dead controls — a form asking questions it had already
+decided were irrelevant. Unmounting keeps the property that made disabling
+attractive: an absent control is not submitted, so switching from EMI to cash
+still clears the EMI figures rather than leaving stale numbers behind. Keep
+`muted` for a field that is temporarily unavailable and will come back; drop the
+field when it belongs to a branch you are not on.
+
+**A form's fields are grouped, and the groups are named.** Twelve controls in one
+flat four-column grid put "Tenure (months)" at the width and weight of "Reason"
+and said nothing about which fields move together. Group by the question being
+answered, each under a 12px `.section-title` with a hairline above it.
+
 **Editing is a disclosure; creating earns a dialog.** Everything that changes an
 existing row opens under that row, because the row is the context and a modal
 would hide the figure being changed. Creating has no row to sit under, and the

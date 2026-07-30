@@ -616,12 +616,12 @@ export async function saveWishlistItem(formData: FormData): Promise<void> {
   refresh();
 }
 
-export async function setWishlistStatus(formData: FormData): Promise<void> {
-  const id = optionalStr(formData.get('id'));
-  const status = str(formData.get('status'), 'idea') as WishlistItemRow['status'];
-  if (id) await driver().update<WishlistItemRow>('wishlist_item', id, { status });
-  refresh();
-}
+/*
+ * `setWishlistStatus` used to live here, writing the one field from a select at
+ * the top of an item's panel. The panel also carried the full form, which has a
+ * Status field of its own, so an open item showed two controls for one value
+ * and two Saves that meant different things. The full form is the survivor.
+ */
 
 export async function deleteWishlistItem(formData: FormData): Promise<void> {
   const id = optionalStr(formData.get('id'));
