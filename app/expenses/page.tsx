@@ -209,7 +209,7 @@ function ExpenseRow({
         border instead of stopping short of it inside the body padding.
       */}
       <details className="group">
-        <summary className="-mx-5 flex cursor-pointer list-none items-baseline gap-4 px-5 py-3 transition-colors duration-[140ms] hover:bg-surface-lift group-open:bg-surface-lift">
+        <summary className="-mx-5 flex cursor-pointer list-none items-baseline gap-4 px-5 py-3 transition-colors duration-[140ms] hover:bg-paper group-open:bg-paper">
           <span className="min-w-0 flex-1">
             <span className="block truncate text-[15px]">{row.name}</span>
             <span className="mt-0.5 flex flex-wrap items-center gap-x-3 text-[12px] text-ink-faint">
@@ -306,7 +306,7 @@ function ExpenseRow({
           </Field>
 
           <div className="flex items-end gap-2 pb-1">
-            <Button type="submit">Save</Button>
+            <Button type="submit" size="sm">Save</Button>
             <ConfirmButton
               action={deleteExpense}
               id={row.id}

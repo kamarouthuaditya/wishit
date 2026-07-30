@@ -5,6 +5,12 @@ import { useRef, useState } from 'react';
 import { saveGoal } from '@/lib/actions';
 import { IconPlus } from '@/components/icons';
 
+/** One control's box. Matches the expense composer, deliberately. */
+const control =
+  'border border-line bg-paper px-3 py-2.5 text-ink outline-none ' +
+  'transition-colors duration-[140ms] hover:border-line-strong focus:border-accent ' +
+  'placeholder:text-ink-faint';
+
 /**
  * Adding a goal, pinned to the bottom of the page.
  *
@@ -13,12 +19,6 @@ import { IconPlus } from '@/components/icons';
  * sentence; a date and a priority are refinements, so they wait behind a
  * toggle.
  */
-/** One control's box. Matches the expense composer, deliberately. */
-const control =
-  'border border-line bg-paper px-3 py-3 text-ink outline-none ' +
-  'transition-colors duration-[140ms] hover:border-line-strong focus:border-accent ' +
-  'placeholder:text-ink-faint';
-
 export function GoalComposer() {
   const [open, setOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -62,14 +62,11 @@ export function GoalComposer() {
               required
               placeholder="target"
               aria-label="Target amount"
-              className="tnum w-full bg-transparent py-3 text-[16px] font-medium outline-none placeholder:text-ink-faint"
+              className="tnum w-full bg-transparent py-2.5 text-[16px] font-medium outline-none placeholder:text-ink-faint"
             />
           </div>
 
-          <Button
-            type="submit"
-            className="px-5 py-3 text-[13px]"
-          >
+          <Button type="submit" className="px-5">
             <IconPlus size={15} />
             Add goal
           </Button>

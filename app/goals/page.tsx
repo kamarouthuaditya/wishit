@@ -115,7 +115,7 @@ export default async function GoalsPage() {
             <option value="proportional">Split proportionally</option>
           </Select>
         </div>
-        <Button variant="ghost" type="submit" className="px-3 py-1.5 text-[12px]">
+        <Button variant="ghost" type="submit" size="sm">
           Apply
         </Button>
       </form>
@@ -209,7 +209,7 @@ export default async function GoalsPage() {
                 </option>
               ))}
             </select>
-            <Button type="submit" className="px-4 py-2.5 text-[12px]">
+            <Button type="submit" size="sm">
               Add
             </Button>
           </form>
@@ -318,7 +318,7 @@ function GoalRow({
   return (
     <li className={dormant ? 'opacity-60' : ''}>
       <details className="group">
-        <summary className="-mx-5 grid cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] items-center gap-x-5 gap-y-2 px-5 py-4 transition-colors duration-[140ms] hover:bg-surface-lift group-open:bg-surface-lift">
+        <summary className="-mx-5 grid cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] items-center gap-x-5 gap-y-2 px-5 py-4 transition-colors duration-[140ms] hover:bg-paper group-open:bg-paper">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-[16px]">{row.name}</span>
@@ -415,7 +415,7 @@ function GoalRow({
                     />
                   </Field>
                 </div>
-                <Button variant="ghost" type="submit">
+                <Button variant="ghost" type="submit" size="sm">
                   Save
                 </Button>
                 <p className="flex-1 text-[12px] text-ink-faint">
@@ -450,7 +450,7 @@ function GoalRow({
             <form action={setGoalStatus}>
               <input type="hidden" name="id" value={row.id} />
               <input type="hidden" name="status" value={isDone ? 'active' : 'done'} />
-              <Button variant="ghost" type="submit">
+              <Button variant="ghost" type="submit" size="sm">
                 <IconCheck size={14} />
                 {isDone ? 'Reopen' : 'Mark done'}
               </Button>
@@ -539,7 +539,7 @@ function GoalEditor({ row }: { row: GoalRow }) {
       </label>
 
       <div className="flex items-end gap-2 pb-1">
-        <Button type="submit">Save</Button>
+        <Button type="submit" size="sm">Save</Button>
         <ConfirmButton
           action={deleteGoal}
           id={row.id}
@@ -651,7 +651,7 @@ function SavingsRow({ row }: { row: ExpenseItemRow }) {
   return (
     <li>
       <details className="group">
-        <summary className="-mx-5 flex cursor-pointer list-none items-baseline gap-4 px-5 py-3 transition-colors duration-[140ms] hover:bg-surface-lift group-open:bg-surface-lift">
+        <summary className="-mx-5 flex cursor-pointer list-none items-baseline gap-4 px-5 py-3 transition-colors duration-[140ms] hover:bg-paper group-open:bg-paper">
           <span className="min-w-0 flex-1">
             <span className="block truncate text-[15px]">{row.name}</span>
             {every > 1 && (
@@ -706,7 +706,7 @@ function SavingsRow({ row }: { row: ExpenseItemRow }) {
             />
           </Field>
           <div className="flex items-end gap-2 pb-1">
-            <Button type="submit">Save</Button>
+            <Button type="submit" size="sm">Save</Button>
             <ConfirmButton
               action={deleteExpense}
               id={row.id}

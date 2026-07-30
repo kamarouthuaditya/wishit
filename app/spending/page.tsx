@@ -402,7 +402,7 @@ function EntryRow({
             One-off
           </label>
           <div className="flex items-end gap-2 pb-1">
-            <Button type="submit">Save</Button>
+            <Button type="submit" size="sm">Save</Button>
             <ConfirmButton
               action={deleteTransaction}
               id={tx.id}

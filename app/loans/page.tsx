@@ -514,7 +514,9 @@ function LoanForm({
         No-cost EMI
       </label>
       <div className="flex gap-2 pb-1">
-        <Button type="submit">{row ? 'Save' : 'Add loan'}</Button>
+        <Button type="submit" size={row ? 'sm' : 'md'}>
+          {row ? 'Save' : 'Add loan'}
+        </Button>
         {row && (
           <ConfirmButton
             action={deleteLoan}

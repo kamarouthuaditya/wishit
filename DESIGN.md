@@ -177,16 +177,36 @@ rows it failed: every separator on the screen was the same 1px `--line`, so the
 rule between two rows and the rule between two sections carried identical
 weight, and nothing said where a group ended. `Section` is the answer — 1px
 `--line` border, `--surface` fill, a header band on `--surface-lift` divided by
-`--line-strong`, rows inside separated by hairlines. Where a panel of prose or
-figures is warranted, `Card` still applies: same border and fill, 20–24px
-internal rhythm.
+2px of `--line-strong`, rows inside separated by hairlines. Where a panel of
+prose or figures is warranted, `Card` still applies: same border and fill,
+20–24px internal rhythm.
+
+**Inside a section, every ground token is spent once.** The header band is the
+only `--surface-lift`; rows sit on the panel's `--surface`; a row under the
+pointer, or open, drops to `--ground`. The band and the row hover were both
+`--surface-lift` at first, which meant a pointer anywhere in the list put a
+second identical band on screen and the heading stopped reading as a heading.
+A row going *down* is also the truer direction: it is opening a well, not
+rising off the panel.
 
 Still no nested panels. One border level: what opens *inside* a section — an
-edit form, an expanded row — is a **well**, not a second box. It drops to
-`--ground`, spans the full width by cancelling the body padding (`-mx-5 px-5`),
-and its parent row stays lit at `--surface-lift` so the pair reads as one
-thing. Ground inside surface is the ladder working in the other direction, and
-it is how a row says "this belongs to me".
+edit form, an expanded row — is that same **well**, not a second box. It sits
+on `--ground` and spans the full width by cancelling the body padding
+(`-mx-5 px-5`), continuous with the row that opened it, so the pair reads as one
+thing.
+
+The band carries two signals, not one, because in light the fills are ~2% apart
+and a ground shift alone would not survive glare: `--surface-lift` **and** a 2px
+`--line-strong` rule under it, with the section's figure at 17px against the
+rows' 15px.
+
+**Buttons come in two sizes, and rank is what picks one.** `md` (`px-4 py-2`,
+13px) is a page's own action — the thing the screen exists for. `sm` (`px-3
+py-1.5`, 12px) is an action on one row: a Save beside a 14px field, repeated
+down a list. Every row action was `md`, so a section of six rows carried six
+buttons at the weight of the page's primary action, and the eye had nowhere to
+rest. The uppercase tracking eases with the size (0.06em → 0.05em), because
+letterspacing tuned for 13px reads as a gap at 12px.
 
 **A section heading is ink; a field label is faint.** Both were 12px caps in
 `--ink-faint`, which put `FIXED` at the weight of the word `general` under a
@@ -285,8 +305,9 @@ sticky header.
 
 Every amount is `tabular-nums`, right-aligned in tables, never wrapped. Tone follows
 meaning: `--bad` for negative, `--good` for a balance that survives, plain
-`--ink` for a neutral figure. A table row highlights to `--surface-lift` on
-hover and shows its actions there.
+`--ink` for a neutral figure. A row highlights on hover and shows its actions
+there — to `--ground` inside a `Section`, where lift belongs to the header
+band, and to `--surface-lift` on a bare table that has no band to compete with.
 
 Charts inherit the same palette: `--accent` for the actual line, `--chart-fill`
 for its area, `--ink-faint` hairlines for axes, `--bad` dashed for the emergency

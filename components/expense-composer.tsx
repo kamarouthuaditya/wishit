@@ -7,6 +7,12 @@ import { saveExpense } from '@/lib/actions';
 import { IconPlus } from '@/components/icons';
 import { isoDate } from '@/lib/format';
 
+/** One control's box: the field treatment, minus the label a `Field` adds. */
+const control =
+  'border border-line bg-paper px-3 py-2.5 text-ink outline-none ' +
+  'transition-colors duration-[140ms] hover:border-line-strong focus:border-accent ' +
+  'placeholder:text-ink-faint';
+
 /**
  * Adding an expense, pinned to the bottom of the page.
  *
@@ -19,12 +25,6 @@ import { isoDate } from '@/lib/format';
  * and dates are real but rare, so they sit behind one toggle rather than
  * widening the row to eight controls.
  */
-/** One control's box: the field treatment, minus the label a `Field` adds. */
-const control =
-  'border border-line bg-paper px-3 py-3 text-ink outline-none ' +
-  'transition-colors duration-[140ms] hover:border-line-strong focus:border-accent ' +
-  'placeholder:text-ink-faint';
-
 export function ExpenseComposer({
   cards,
   categories,
@@ -81,7 +81,7 @@ export function ExpenseComposer({
               required
               placeholder="0"
               aria-label="Amount per bill"
-              className="tnum w-full bg-transparent py-3 text-[16px] font-medium outline-none placeholder:text-ink-faint"
+              className="tnum w-full bg-transparent py-2.5 text-[16px] font-medium outline-none placeholder:text-ink-faint"
             />
           </div>
 
@@ -107,10 +107,7 @@ export function ExpenseComposer({
             <option value="variable">variable</option>
           </select>
 
-          <Button
-            type="submit"
-            className="px-5 py-3 text-[13px]"
-          >
+          <Button type="submit" className="px-5">
             <IconPlus size={15} />
             Add
           </Button>

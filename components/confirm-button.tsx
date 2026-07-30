@@ -27,12 +27,15 @@ export function ConfirmButton({
   id,
   label = 'Delete',
   confirm,
+  size = 'sm',
 }: {
   action: (formData: FormData) => Promise<void>;
   id: string;
   label?: string;
   /** What is about to happen, in one sentence. */
   confirm: string;
+  /** Row actions are `sm`; this only ever sits on a row. */
+  size?: 'sm' | 'md';
 }) {
   const [armed, setArmed] = useState(false);
 
@@ -40,6 +43,7 @@ export function ConfirmButton({
     return (
       <Button
         variant="danger"
+        size={size}
         type="button"
         onClick={() => setArmed(true)}
         aria-label={confirm}
@@ -62,6 +66,7 @@ export function ConfirmButton({
       <input type="hidden" name="id" value={id} />
       <Button
         variant="danger"
+        size={size}
         type="submit"
         formAction={action}
         formNoValidate
@@ -69,7 +74,12 @@ export function ConfirmButton({
       >
         Yes, delete
       </Button>
-      <Button variant="ghost" type="button" onClick={() => setArmed(false)}>
+      <Button
+        variant="ghost"
+        size={size}
+        type="button"
+        onClick={() => setArmed(false)}
+      >
         Keep
       </Button>
     </span>

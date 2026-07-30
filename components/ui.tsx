@@ -85,13 +85,24 @@ export function Card({
  * The list pages used to be a hairline rule, a faint 12px label, and rows
  * hanging off the page ground. Every separator on the screen was the same 1px
  * `--line`, so the rule between two rows and the rule between two sections
- * carried identical weight, and nothing said where one group ended. Sections
- * are a container now: a border, a `--surface` fill, and a header band that is
- * a shade lighter than the body so the heading sits on something.
+ * carried identical weight, and nothing said where one group ended.
  *
- * Still one level deep — the rows inside are separated by hairlines, never by
- * a second box. `Card` remains for a panel of prose or figures; this is for a
- * list that needs to be a group.
+ * Three layers, and each token is spent once. The header band is the only
+ * `--surface-lift` in the section; the rows sit on the panel's own `--surface`;
+ * a row under the pointer, or open, drops to `--ground` and takes its editor
+ * with it. That last part is the fix for a header that would not stay a header:
+ * the band and the row hover were both `--surface-lift`, so the moment a
+ * pointer entered the list there were two identical bands on screen and the
+ * heading stopped reading as one. A row going *down* into the panel is also
+ * the honest direction — it is opening a well, not rising.
+ *
+ * The band is divided by 2px of `--line-strong` rather than the 1px `--line`
+ * between rows, because in light the fills are ~2% apart and the rule has to
+ * carry the separation on its own.
+ *
+ * Still one level deep — rows are separated by hairlines, never by a second
+ * box. `Card` remains for a panel of prose or figures; this is for a list that
+ * needs to be a group.
  */
 export function Section({
   title,
@@ -112,7 +123,7 @@ export function Section({
 }) {
   return (
     <section className={`border border-line bg-surface ${className}`}>
-      <header className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-line-strong bg-surface-lift px-5 py-3">
+      <header className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b-2 border-line-strong bg-surface-lift px-5 py-3.5">
         <div className="min-w-0">
           <h2 className="section-title">{title}</h2>
           {hint && (
@@ -121,7 +132,12 @@ export function Section({
             </p>
           )}
         </div>
-        {aside && <div className="tnum shrink-0 text-[15px] font-semibold">{aside}</div>}
+        {/*
+          The section's figure outranks a row's: 17px against the rows' 15px,
+          so the header wins on type as well as on ground. Two signals, because
+          in light the ground barely moves.
+        */}
+        {aside && <div className="tnum shrink-0 text-[17px] font-semibold">{aside}</div>}
       </header>
 
       <div className="px-5">{children}</div>

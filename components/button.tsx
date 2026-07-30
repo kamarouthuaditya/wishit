@@ -45,13 +45,29 @@ function nearestEdge(event: MouseEvent, el: HTMLElement): Edge {
   );
 }
 
+/**
+ * Two sizes, and the smaller one is not a shrunken version of the larger.
+ *
+ * `md` is a page's own action: the thing you came to the screen to do. `sm` is
+ * an action on one row of a list, where the button shares a line with a 14px
+ * field and repeats down the page. At `md` those read as the loudest thing in
+ * a section — a Save on every row, at the weight of the primary action of the
+ * whole page.
+ */
+const SIZE = {
+  md: 'px-4 py-2 text-[13px] tracking-[0.06em]',
+  sm: 'px-3 py-1.5 text-[12px] tracking-[0.05em]',
+} as const;
+
 export function Button({
   variant = 'primary',
+  size = 'md',
   className = '',
   children,
   ...rest
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: 'primary' | 'ghost' | 'danger';
+  size?: keyof typeof SIZE;
 }) {
   const plate = useRef<HTMLSpanElement>(null);
 
@@ -126,10 +142,10 @@ export function Button({
           : undefined
       }
       className={
-        'inline-flex cursor-pointer items-center justify-center gap-2 px-4 py-2 text-[13px] ' +
-        'font-medium uppercase tracking-[0.06em] transition-all duration-[140ms] ' +
+        'inline-flex cursor-pointer items-center justify-center gap-2 ' +
+        'font-medium uppercase transition-all duration-[140ms] ' +
         'disabled:cursor-not-allowed disabled:opacity-50 ' +
-        `${map[variant]} ${className}`
+        `${SIZE[size]} ${map[variant]} ${className}`
       }
     >
       {isPrimary && (
