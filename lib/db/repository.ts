@@ -1,4 +1,5 @@
 import 'server-only';
+import { cache } from 'react';
 import { redirect } from 'next/navigation';
 import { resumePath } from '@/lib/onboarding';
 import { driver, isUniqueViolation } from './driver';
@@ -60,7 +61,7 @@ function pickProfile(rows: ProfileRow[]): ProfileRow {
  * rest of its life with two profiles. Migration 0009 stops it happening at all;
  * this stops it mattering on a database that has not run it yet.
  */
-export async function getProfile(): Promise<ProfileRow> {
+export const getProfile = cache(async function getProfile(): Promise<ProfileRow> {
   const db = driver();
   const rows = await db.list<ProfileRow>('profile');
   if (rows.length > 0) return pickProfile(rows);
@@ -87,10 +88,25 @@ export async function getProfile(): Promise<ProfileRow> {
     if (after.length === 0) throw error;
     return pickProfile(after);
   }
-}
+});
 
-/** One read, everything the engine and the UI need. */
-export async function loadSnapshot(): Promise<Snapshot> {
+/**
+ * One read, everything the engine and the UI need.
+ *
+ * `cache` rather than a bare function, and the same for `getProfile` above.
+ * Three components ask for this on every onboarding screen — the root layout,
+ * the welcome layout and the step itself — and each answer is nine queries to a
+ * database roughly 450ms away. The driver's `list` leans on Next memoising
+ * identical GETs within a render to collapse those, which mostly works and is
+ * invisible when it does not; this makes the deduplication a property of the
+ * function instead of a property of the transport, and it also stops the
+ * sorting and filtering below running three times for one answer.
+ *
+ * Scope is one request, so a Server Action that writes and then redirects still
+ * hands the next render a fresh read. Every action in `lib/actions.ts` reads
+ * before it writes and never after, so nothing here can serve a stale row.
+ */
+export const loadSnapshot = cache(async function loadSnapshot(): Promise<Snapshot> {
   const db = driver();
   const [profile, income, expenses, loans, goals, wishlist, cards, scenarios, snapshots] =
     await Promise.all([
@@ -116,7 +132,7 @@ export async function loadSnapshot(): Promise<Snapshot> {
     scenarios,
     snapshots: [...snapshots].sort((a, b) => a.month.localeCompare(b.month)),
   };
-}
+});
 
 /**
  * The same read, for pages that only make sense once setup is done.

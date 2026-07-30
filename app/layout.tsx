@@ -63,22 +63,42 @@ export default async function RootLayout({
   // that redirects straight back to it, which is not navigation — it is a
   // corridor of locked doors.
 
-  // One read for the whole chrome: the balance strip and the quick-log button
-  // both need it, and two loads for one header would be silly.
-  const snapshot = signedIn ? await loadSnapshot().catch(() => null) : null;
+  /*
+   * Both reads at once, and only one of each per request.
+   *
+   * These are the two independent things the chrome needs, and they used to run
+   * in series: the snapshot, then — once it said setup was finished — a month of
+   * transactions for the notices. Against a database about 450ms away that
+   * second await was pure addition, because it could not start until the first
+   * had landed. Run together they cost what the slower one costs.
+   *
+   * The transactions are fetched before anything has established they are
+   * wanted, which during onboarding they are not. That is deliberate: latency
+   * dominates so completely here that nine parallel reads (~490ms) cost barely
+   * more than one (~450ms), so an extra request alongside them is free in the
+   * only currency that matters, while making it conditional would put it back
+   * in series for everybody who has finished setting up.
+   *
+   * `loadSnapshot` is memoised per request, which is what makes this affordable
+   * at all: the welcome layout and the step inside it both ask for the same
+   * snapshot, and all three callers now share this one read instead of racing
+   * to make their own.
+   */
+  const [snapshot, transactions] = signedIn
+    ? await Promise.all([
+        loadSnapshot().catch(() => null),
+        loadTransactionsForMonth(monthKeyOf()).catch(() => []),
+      ])
+    : [null, []];
+
+  const inApp = snapshot?.profile.setup_complete === true;
+
   const categories = snapshot
     ? [...new Set(snapshot.expenses.map((e) => e.category))].sort()
     : [];
-  const inApp = signedIn && snapshot?.profile.setup_complete === true;
 
-  // Notices are derived from the same read, plus this month's log.
-  const notices =
-    snapshot?.profile.setup_complete
-      ? buildNotices(
-          snapshot,
-          await loadTransactionsForMonth(monthKeyOf()).catch(() => []),
-        )
-      : [];
+  // Notices are for the app proper. Mid-onboarding there is nothing to notice.
+  const notices = inApp && snapshot ? buildNotices(snapshot, transactions) : [];
 
   return (
     <html
