@@ -11,10 +11,11 @@ import type { Snapshot } from '@/lib/db/types';
  * re-derived per page — two pages disagreeing about the balance is worse than
  * either of them being slightly wrong.
  *
- * Expenses and income are monthly equivalents (a yearly bill counts as a
- * twelfth), because that is the number you want when deciding what to commit
- * to. Everything below them comes straight off the simulation's first month, so
- * the dashboard cashflow card and this agree line for line.
+ * Everything here is what this month actually costs. A half-yearly gym is its
+ * whole bill in the month it renews and nothing in the five between, because
+ * that is how it is paid — out of that month's salary, in one go, not set aside
+ * in sixths. Every figure comes off the simulation's first month, so the
+ * dashboard cashflow card and this agree line for line.
  */
 export interface MonthlyBalance {
   income: number;
@@ -30,11 +31,17 @@ export interface MonthlyBalance {
   /** What is left after all of it. Negative means overcommitted. */
   balance: number;
   /**
-   * Budget lines dated to start after this month, monthly equivalent. Not in
-   * any figure above — they are not costing anything yet — but shown, so a line
-   * you have entered never looks silently ignored.
+   * Budget lines dated to start after this month, at what they will be billed.
+   * Not in any figure above — they are not costing anything yet — but shown, so
+   * a line you have entered never looks silently ignored.
    */
   notYetStarted: number;
+  /**
+   * Running lines that are not billed this month: the half-yearly gym between
+   * renewals. Also not in any figure above, and worth showing for the opposite
+   * reason — a month with no renewals in it is roomy, not rich.
+   */
+  notDueThisMonth: number;
 }
 
 /**
@@ -62,10 +69,11 @@ export interface BalanceRow {
  * drift from the figure above it. It drifted twice before this existed: the
  * card was built from the simulation's first month, which charges an annual
  * bonus in the month it lands and a half-yearly bill in full, while the header
- * averages both. Two defensible bases, one screen, two different answers.
+ * averaged both. There is one basis now — the simulation's — and the averaging
+ * is gone, so the two cannot disagree about a renewal.
  *
- * Month-by-month exactness lives in the projection table, where it is labelled
- * as such.
+ * What that costs is a figure that moves between months. The projection table
+ * is where the whole run is visible at once.
  */
 export function balanceRows(balance: MonthlyBalance): BalanceRow[] {
   const available =
@@ -127,5 +135,6 @@ export function monthlyBalance(snapshot: Snapshot): MonthlyBalance {
     goalContributions: waterfall.goalContributions,
     balance,
     notYetStarted: plan.upcoming.total,
+    notDueThisMonth: plan.notDueThisMonth,
   };
 }

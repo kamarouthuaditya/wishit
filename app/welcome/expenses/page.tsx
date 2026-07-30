@@ -59,7 +59,7 @@ export default async function ExpensesStepPage() {
         caveat={
           expenses.length === 0
             ? 'Your whole salary, because nothing has been taken out of it yet.'
-            : `After ${expenses.length} ${expenses.length === 1 ? 'line' : 'lines'}. A yearly bill counts as a twelfth here.`
+            : `After ${expenses.length} ${expenses.length === 1 ? 'line' : 'lines'}. A yearly bill counts in the month it renews, not spread across the year.`
         }
       />
 

@@ -100,7 +100,7 @@ describe('cardDue', () => {
     expect(due.open.total).toBe(0);
   });
 
-  it('reports recurring lines charged to the card at their monthly rate', () => {
+  it('reports what the card is billed this month, in full', () => {
     const due = cardDue(
       CARD,
       [],
@@ -108,7 +108,9 @@ describe('cardDue', () => {
       NOW,
     );
 
-    expect(due.recurringMonthly).toBe(2_200); // 1,200 + 12,000/12
+    // The monthly line only. The annual one renews in its own month, and this
+    // is not it — smoothing it to 1,000 would describe a bill nobody receives.
+    expect(due.recurringMonthly).toBe(1_200);
   });
 
   it('works out utilisation against the limit', () => {

@@ -12,7 +12,8 @@ import { toEngineInput } from '@/lib/model/to-engine';
 import { buildSavingsPlan, planningTotals, simulate } from '@/lib/engine';
 import { deadlineMonths } from '@/lib/model/funding';
 import { monthlyBalance } from '@/lib/model/balance';
-import { monthTitle } from '@/lib/model/spending';
+import { monthKey, monthTitle } from '@/lib/model/spending';
+import { nextBilledMonth } from '@/lib/model/billing';
 import type { TransferParty } from '@/lib/model/transfer';
 import { GoalTransfer } from '@/components/goal-transfer';
 import { GoalComposer } from '@/components/goal-composer';
@@ -611,7 +612,9 @@ function SavingsPace({
 
 function SavingsRow({ row }: { row: ExpenseItemRow }) {
   const every = Math.max(1, row.frequency_months ?? 1);
-  const monthly = Number(row.amount) / every;
+  // Full amount and its month, the same as an expense row: an annual deposit is
+  // an annual deposit, not a twelfth of one you never actually make.
+  const nextDue = nextBilledMonth(row, monthKey());
 
   return (
     <li className="group">
@@ -621,13 +624,16 @@ function SavingsRow({ row }: { row: ExpenseItemRow }) {
             <span className="block truncate text-[15px]">{row.name}</span>
             {every > 1 && (
               <span className="text-[12px] text-ink-faint">
-                {inr(Number(row.amount))} every {every} months
+                every {every} months
+                {nextDue ? ` · next ${monthTitle(nextDue)}` : ' · ended'}
               </span>
             )}
           </span>
           <span className="tnum shrink-0 text-[15px]">
-            {inr(monthly)}
-            <span className="ml-1 text-[11px] text-ink-faint">/mo</span>
+            {inr(Number(row.amount))}
+            <span className="ml-1 text-[11px] text-ink-faint">
+              {every > 1 ? 'a time' : '/mo'}
+            </span>
           </span>
           <span className="shrink-0 text-ink-faint opacity-0 transition-opacity group-hover:opacity-100">
             <IconEdit size={15} />

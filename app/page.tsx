@@ -143,7 +143,7 @@ export default async function DashboardPage() {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
         <Card
           title="Monthly cashflow"
-          hint="A typical month, averaged: a yearly bill counts as a twelfth, a bonus as a month of itself"
+          hint="This month as it is actually paid: a renewal lands whole in the month it renews, a bonus in the month it arrives"
           lead
         >
           <dl>
@@ -318,8 +318,15 @@ function Hero({
 
           {balance.notYetStarted > 0 && (
             <p className="mt-3 text-[12px] text-ink-faint">
-              {inr(balance.notYetStarted)} a month of budget lines start later and
-              are not counted yet.
+              {inr(balance.notYetStarted)} of budget lines start later and are not
+              counted yet.
+            </p>
+          )}
+
+          {balance.notDueThisMonth > 0 && (
+            <p className="mt-2 text-[12px] text-ink-faint">
+              {inr(balance.notDueThisMonth)} of periodic bills are not due this
+              month. A quiet month is roomier than the year is.
             </p>
           )}
         </div>
@@ -791,7 +798,8 @@ function Projection({
             Savings balance grows by more than the balance left, because goal
             money is still your money — it sits inside the same pot, earmarked. A
             month where a half-yearly or annual bill lands shows the whole bill in{' '}
-            <em>out</em>, not the monthly average the header uses.
+            <em>out</em>, which is also what the header does for the month it is
+            quoting — the two agree.
           </p>
         </div>
       </details>

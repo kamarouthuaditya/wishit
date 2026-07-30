@@ -33,22 +33,13 @@ function sumActive(lines: RecurringLine[] | undefined, month: number): number {
   );
 }
 
-/**
- * What a line works out to per month, for planning rather than simulation.
- * A ₹9,000 gym paid every 6 months is ₹1,500 a month of your budget even
- * though nothing leaves in five of those months.
+/*
+ * `monthlyEquivalent` used to live here: a line's amount divided by its billing
+ * period, for planning rather than simulation. Nothing calls it now. The
+ * planning figures charge a bill in the month it is billed, the same as the
+ * simulation, because dividing described a way of paying — a twelfth set aside
+ * each month — that nobody was actually doing.
  */
-export function monthlyEquivalent(line: RecurringLine): number {
-  return line.amount / Math.max(1, Math.round(line.everyMonths ?? 1));
-}
-
-/** Monthly-equivalent total for a set of lines, ignoring billing timing. */
-export function monthlyEquivalentTotal(
-  lines: RecurringLine[] | undefined,
-): number {
-  if (!lines) return 0;
-  return lines.reduce((total, line) => total + monthlyEquivalent(line), 0);
-}
 
 function salaryAt(input: EngineInput, month: number): number {
   const steps = input.income.salarySteps ?? [];
@@ -59,7 +50,13 @@ function salaryAt(input: EngineInput, month: number): number {
   return amount;
 }
 
-function bonusAt(input: EngineInput, month: number): number {
+/**
+ * The bonus in a given month. Exported because `planningTotals` has to ask the
+ * same question for month 1: a lump bonus is income in the month it lands and
+ * nothing in the other eleven, and the header used to divide it by twelve
+ * regardless of what the profile said.
+ */
+export function bonusAt(input: EngineInput, month: number): number {
   const bonus = input.income.bonus;
   if (!bonus || bonus.amount <= 0) return 0;
   if (input.income.bonusMode === 'amortised') return bonus.amount / 12;

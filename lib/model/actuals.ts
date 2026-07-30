@@ -1,4 +1,5 @@
 import { daysElapsed } from '@/lib/model/spending';
+import { isBilledIn } from '@/lib/model/billing';
 import type { ExpenseItemRow, TransactionRow } from '@/lib/db/types';
 import { now as clockNow } from '@/lib/clock';
 
@@ -57,9 +58,11 @@ export interface BudgetLine {
 }
 
 /**
- * Monthly-equivalent budget per category for a given `YYYY-MM`: a quarterly
- * bill counts as a third of itself, and a line that had not started (or had
- * already ended) does not count at all.
+ * Budget per category for a given `YYYY-MM`, counting only what is billed in
+ * that month. A quarterly bill is its whole self in the month it renews and
+ * absent from the other two, which is what you are actually spending against —
+ * a third of it every month is a budget nobody keeps. A line that had not
+ * started, or had already ended, does not count at all.
  */
 export function budgetsByCategory(
   expenses: ExpenseItemRow[],
@@ -67,13 +70,11 @@ export function budgetsByCategory(
 ): Map<string, BudgetLine> {
   const budgets = new Map<string, BudgetLine>();
   for (const row of expenses) {
-    if (row.effective_from.slice(0, 7) > month) continue;
-    if (row.effective_to && row.effective_to.slice(0, 7) < month) continue;
+    if (!isBilledIn(row, month)) continue;
 
-    const monthly = Number(row.amount) / Math.max(1, row.frequency_months ?? 1);
     const existing = budgets.get(row.category);
     budgets.set(row.category, {
-      amount: (existing?.amount ?? 0) + monthly,
+      amount: (existing?.amount ?? 0) + Number(row.amount),
       type: existing?.type ?? row.type,
     });
   }

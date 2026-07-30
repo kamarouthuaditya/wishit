@@ -4,6 +4,8 @@ import { deleteExpense, saveExpense, seedDefaultExpenses } from '@/lib/actions';
 import { toEngineInput } from '@/lib/model/to-engine';
 import { planningTotals } from '@/lib/engine';
 import { monthlyBalance } from '@/lib/model/balance';
+import { isBilledIn, nextBilledMonth } from '@/lib/model/billing';
+import { monthKey, monthTitle } from '@/lib/model/spending';
 import { inr } from '@/lib/format';
 import { Button, Field, Input, Money, Select } from '@/components/ui';
 import { ExpenseComposer } from '@/components/expense-composer';
@@ -40,7 +42,7 @@ export default async function ExpensesPage() {
     {
       type: 'fixed' as const,
       title: 'Fixed',
-      hint: 'Same every month: rent, insurance, subscriptions',
+      hint: 'Rent, insurance, subscriptions — billed, not averaged',
       total: plan.fixed,
     },
     {
@@ -87,8 +89,21 @@ export default async function ExpensesPage() {
       {balance.notYetStarted > 0 && (
         <p className="flex items-center gap-2 border border-line px-4 py-3 text-[13px] text-ink-faint">
           <IconClock size={15} />
-          {inr(balance.notYetStarted)} a month of lines start later and are not in
-          the balance yet.
+          {inr(balance.notYetStarted)} of lines start later and are not in the
+          balance yet.
+        </p>
+      )}
+
+      {/*
+        The quiet half of the same idea. Lines that are running but not billed
+        this month are missing from every total above, and a month without them
+        looks cheaper than the year is.
+      */}
+      {balance.notDueThisMonth > 0 && (
+        <p className="flex items-center gap-2 border border-line px-4 py-3 text-[13px] text-ink-faint">
+          <IconClock size={15} />
+          {inr(balance.notDueThisMonth)} of periodic bills are not due this month.
+          They land whole in the months they renew.
         </p>
       )}
 
@@ -119,7 +134,7 @@ export default async function ExpensesPage() {
               <p className="tnum text-[15px] font-semibold">
                 <Money amount={group.total} />
                 <span className="ml-1 text-[11px] font-normal text-ink-faint">
-                  /mo
+                  this month
                 </span>
               </p>
             </div>
@@ -176,7 +191,15 @@ function ExpenseRow({
   categories: string[];
 }) {
   const every = Math.max(1, row.frequency_months ?? 1);
-  const monthly = Number(row.amount) / every;
+  /*
+   * The row used to show `amount / every` — a half-yearly ₹9,000 gym read
+   * ₹1,500/mo, which is a figure that never leaves the account. It shows the
+   * bill now, and when the bill is, because that is the pair of facts you need
+   * to know whether next month can take it.
+   */
+  const thisMonth = monthKey();
+  const dueThisMonth = isBilledIn(row, thisMonth);
+  const nextDue = nextBilledMonth(row, thisMonth);
   const card = cards.find((c) => c.id === row.paid_by_card_id);
 
   return (
@@ -189,7 +212,10 @@ function ExpenseRow({
               <span>{row.category}</span>
               {every > 1 && (
                 <span>
-                  {inr(Number(row.amount))} every {every} months
+                  every {every} months
+                  {nextDue
+                    ? ` · ${dueThisMonth ? 'due this month' : `next ${monthTitle(nextDue)}`}`
+                    : ' · ended'}
                 </span>
               )}
               {card && (
@@ -202,8 +228,10 @@ function ExpenseRow({
           </span>
 
           <span className="tnum shrink-0 text-[15px]">
-            {inr(monthly)}
-            <span className="ml-1 text-[11px] text-ink-faint">/mo</span>
+            {inr(Number(row.amount))}
+            <span className="ml-1 text-[11px] text-ink-faint">
+              {every > 1 ? 'a bill' : '/mo'}
+            </span>
           </span>
 
           <span className="shrink-0 text-ink-faint opacity-0 transition-opacity duration-[140ms] group-hover:opacity-100 group-focus-within:opacity-100">
@@ -230,7 +258,11 @@ function ExpenseRow({
           </Field>
           <Field
             label="Amount per bill"
-            hint={every > 1 ? `${inr(monthly)} a month` : undefined}
+            hint={
+              every > 1 && nextDue
+                ? `charged in full, next ${monthTitle(nextDue)}`
+                : undefined
+            }
           >
             <Input
               name="amount"

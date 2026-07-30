@@ -118,21 +118,29 @@ describe('planningTotals and effective dates', () => {
     expect(planningTotals(input).fixed).toBe(0);
   });
 
-  it('still counts a quarterly line that started long ago', () => {
-    const input = inputWith([
-      toRecurring(
-        expenseRow({
-          id: 'quarterly',
-          amount: 9_000,
-          frequency_months: 3,
-          effective_from: '2025-02-01',
-        }),
-        ANCHOR,
-      ),
-    ]);
-    // 9,000 every three months is 3,000 a month of budget, whichever month the
-    // bill happens to land in.
-    expect(planningTotals(input).fixed).toBe(3_000);
+  it('counts a quarterly line that started long ago in its billing months', () => {
+    const line = toRecurring(
+      expenseRow({
+        id: 'quarterly',
+        amount: 9_000,
+        frequency_months: 3,
+        effective_from: '2025-02-01',
+      }),
+      ANCHOR,
+    );
+
+    // The cycle from February 2025 puts a bill in month 1 of this horizon, so
+    // the whole 9,000 is charged there rather than a third of it every month.
+    expect(line.fromMonth).toBe(1);
+    const plan = planningTotals(inputWith([line]));
+    expect(plan.fixed).toBe(9_000);
+    expect(plan.notDueThisMonth).toBe(0);
+
+    // Shift the cycle by a month and it drops out of this month entirely.
+    const offCycle = { ...line, fromMonth: 2 };
+    const off = planningTotals(inputWith([offCycle]));
+    expect(off.fixed).toBe(0);
+    expect(off.notDueThisMonth).toBe(9_000);
   });
 
   it('excludes an EMI that has not been drawn down yet', () => {

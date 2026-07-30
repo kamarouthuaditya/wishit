@@ -135,14 +135,14 @@ export const GUIDES = {
         {
           action: 'Add “Car insurance” — Fixed, ₹12,000, billed Yearly.',
           result:
-            'The row shows ₹1,000/mo. You are quietly setting aside a twelfth of it every month instead of being ambushed in March.',
+            'The row shows ₹12,000 and the month it renews. It costs nothing for eleven months and the whole ₹12,000 in the twelfth, which is how you actually pay it — so set “Starts” to the last renewal, or the app will expect it in the wrong month.',
         },
       ],
       takeaway:
         'You are now done with this page. When you actually buy groceries on Tuesday, that goes on Spending — not here.',
     },
     notes: [
-      'A line can have a start and an end date. Lines that start later are excluded from the balance until they begin, and are called out at the top of the page.',
+      'A line can have a start and an end date. Lines that start later are excluded from the balance until they begin, and are called out at the top of the page. So are lines that are running but not billed this month — the balance is what this month costs, not an average month.',
       'Set “Paid from” to a card when the bill is auto-debited to it — the cost then lands on that card’s bill instead of leaving your bank on the day.',
     ],
   },

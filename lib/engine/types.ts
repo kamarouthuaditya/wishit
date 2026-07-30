@@ -12,8 +12,8 @@
  *
  * `everyMonths` handles things billed quarterly or yearly - a gym paid every 6
  * months is charged in full in its due month, not smoothed. That keeps the
- * simulation honest about the month the money actually leaves. Use
- * `monthlyEquivalent` when you want the smoothed figure for planning.
+ * simulation honest about the month the money actually leaves, and the planning
+ * figures in `planningTotals` now answer on the same basis.
  */
 export interface RecurringLine {
   id: string;

@@ -1,4 +1,4 @@
-import { monthlyEquivalentTotal, simulate } from './simulate';
+import { bonusAt, isDue, simulate } from './simulate';
 import type { EngineInput, LoanLine, MonthState, RecurringLine } from './types';
 
 export interface WaterfallRow {
@@ -88,10 +88,10 @@ export interface PlanningTotals {
   /** available − investments. What is genuinely spare. */
   spare: number;
   /**
-   * Lines dated to start after this month, monthly equivalent. Excluded from
-   * every figure above — a subscription starting in September is not part of
-   * July's budget — but worth showing, because "why is my rent missing?" has
-   * to have an answer.
+   * Lines dated to start after this month, at what they will be billed.
+   * Excluded from every figure above — a subscription starting in September is
+   * not part of July's budget — but worth showing, because "why is my rent
+   * missing?" has to have an answer.
    */
   upcoming: {
     fixed: number;
@@ -100,6 +100,15 @@ export interface PlanningTotals {
     loanEmis: number;
     total: number;
   };
+  /**
+   * Running lines that are simply not billed this month: the half-yearly gym in
+   * the five months between renewals. Not an outgoing now and not upcoming
+   * either — the row exists and is running, it just costs nothing this month.
+   *
+   * Kept separate so the balance card can say why a line it knows about is
+   * missing from the total, and so nobody reads the quiet month as free money.
+   */
+  notDueThisMonth: number;
 }
 
 /**
@@ -121,34 +130,56 @@ function startsLater(line: RecurringLine): boolean {
   return (line.beginsMonth ?? line.fromMonth ?? 1) > 1;
 }
 
+/** Full billed amounts, not monthly equivalents. See `planningTotals`. */
+function sumAmounts(lines: RecurringLine[] | undefined): number {
+  if (!lines) return 0;
+  return lines.reduce((total, line) => total + line.amount, 0);
+}
+
 /**
- * Averaged monthly figures for budgeting, as opposed to the exact
- * month-by-month billing the simulation uses. A ₹9,000 gym billed every six
- * months shows up here as ₹1,500, which is the number you want when deciding
- * how much can go into savings each month.
+ * What this month actually costs, as opposed to what an average month costs.
+ *
+ * A ₹9,000 gym billed every six months is ₹9,000 in the month it renews and
+ * nothing in the other five. It used to be ₹1,500 every month here, on the
+ * argument that a smoothed number is the one you budget against — but that
+ * number only describes somebody who sets ₹1,500 aside, and the money does not
+ * leave that way. The renewal is paid in one go out of that month's salary, so
+ * that is the month it is charged.
+ *
+ * The cost of this is a figure that moves: five roomy months and one tight one,
+ * where before there were six identical ones. `notDueThisMonth` exists so the
+ * roomy months can say what is coming rather than looking like a windfall, and
+ * the projection table remains the place to see the whole run at once.
  */
 export function planningTotals(input: EngineInput): PlanningTotals {
-  const bonus = input.income.bonus;
+  // Billed this month, in full — the same test the simulation applies to month
+  // 1, so the header and the cashflow card cannot disagree about a renewal.
+  const dueNow = (line: RecurringLine) => inEffect(line) && isDue(line, 1);
+  const runningButNotDue = (line: RecurringLine) =>
+    inEffect(line) && !isDue(line, 1);
+
   const income =
     input.income.netSalary +
-    monthlyEquivalentTotal(input.income.otherIncome) +
-    (bonus ? bonus.amount / 12 : 0);
+    sumAmounts(input.income.otherIncome?.filter(dueNow)) +
+    bonusAt(input, 1);
 
   // Only what is actually running this month. Counting a line dated to start in
   // September against July's income overstates the outgoings all year.
-  const fixed = monthlyEquivalentTotal(input.fixedExpenses?.filter(inEffect));
-  const variable = monthlyEquivalentTotal(input.variableExpenses?.filter(inEffect));
-  const investments = monthlyEquivalentTotal(
-    (input.investments ?? []).filter(inEffect),
-  );
+  const fixed = sumAmounts(input.fixedExpenses?.filter(dueNow));
+  const variable = sumAmounts(input.variableExpenses?.filter(dueNow));
+  const investments = sumAmounts((input.investments ?? []).filter(dueNow));
 
-  const upcomingFixed = monthlyEquivalentTotal(
-    input.fixedExpenses?.filter(startsLater),
-  );
-  const upcomingVariable = monthlyEquivalentTotal(
-    input.variableExpenses?.filter(startsLater),
-  );
-  const upcomingInvestments = monthlyEquivalentTotal(
+  const notDueThisMonth = [
+    ...(input.fixedExpenses ?? []),
+    ...(input.variableExpenses ?? []),
+    ...(input.investments ?? []),
+  ]
+    .filter(runningButNotDue)
+    .reduce((total, line) => total + line.amount, 0);
+
+  const upcomingFixed = sumAmounts(input.fixedExpenses?.filter(startsLater));
+  const upcomingVariable = sumAmounts(input.variableExpenses?.filter(startsLater));
+  const upcomingInvestments = sumAmounts(
     (input.investments ?? []).filter(startsLater),
   );
 
@@ -186,6 +217,7 @@ export function planningTotals(input: EngineInput): PlanningTotals {
       total:
         upcomingFixed + upcomingVariable + upcomingInvestments + upcomingLoanEmis,
     },
+    notDueThisMonth,
   };
 }
 

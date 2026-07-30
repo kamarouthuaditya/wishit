@@ -2,8 +2,6 @@ import { describe, expect, it } from 'vitest';
 import {
   buildSavingsPlan,
   isDue,
-  monthlyEquivalent,
-  monthlyEquivalentTotal,
   monthlyFor,
   monthsAt,
   planningTotals,
@@ -64,15 +62,6 @@ describe('bills that are not monthly', () => {
     expect(result.months[6].fixed).toBe(0); // month 7, line has ended
   });
 
-  it('divides out to a monthly figure for budgeting', () => {
-    expect(monthlyEquivalent(gym)).toBe(1_500);
-    expect(monthlyEquivalent({ ...gym, everyMonths: 12 })).toBe(750);
-    expect(monthlyEquivalent({ ...gym, everyMonths: undefined })).toBe(9_000);
-    expect(monthlyEquivalentTotal([gym, { ...gym, id: 'b', everyMonths: 3 }])).toBe(
-      1_500 + 3_000,
-    );
-  });
-
   it('leaves the rupee-exact invariant alone when nothing is periodic', () => {
     const result = simulate(workedExample());
     expect(Math.round(result.months[11].corpus)).toBe(90_000 + 12 * 23_500);
@@ -80,7 +69,7 @@ describe('bills that are not monthly', () => {
 });
 
 describe('planning totals', () => {
-  it('smooths periodic bills so the budget number holds still', () => {
+  it('charges a periodic bill in full in the month it renews', () => {
     const input = workedExample();
     input.fixedExpenses!.push({
       id: 'gym',
@@ -92,16 +81,46 @@ describe('planning totals', () => {
 
     const plan = planningTotals(input);
     expect(plan.income).toBe(1_20_000);
-    expect(plan.fixed).toBe(44_500 + 1_500); // gym counted as ₹1,500 a month
+    expect(plan.fixed).toBe(44_500 + 9_000); // renewal month: the whole bill
     expect(plan.variable).toBe(20_000);
     expect(plan.loanEmis).toBe(12_000);
-    expect(plan.available).toBe(1_20_000 - 46_000 - 20_000 - 12_000);
+    expect(plan.available).toBe(1_20_000 - 53_500 - 20_000 - 12_000);
     expect(plan.spare).toBe(plan.available - 20_000); // less the SIP
+    expect(plan.notDueThisMonth).toBe(0);
   });
 
-  it('spreads a bonus across the year', () => {
+  it('leaves it out of the months between renewals, and says so', () => {
+    const input = workedExample();
+    // Renews in month 3, so month 1 — the month being planned — is free of it.
+    input.fixedExpenses!.push({
+      id: 'gym',
+      name: 'Gym',
+      amount: 9_000,
+      fromMonth: 3,
+      beginsMonth: -3,
+      everyMonths: 6,
+    });
+
+    const plan = planningTotals(input);
+    expect(plan.fixed).toBe(44_500);
+    expect(plan.notDueThisMonth).toBe(9_000);
+    // Not upcoming: the line is running, it is simply not billed this month.
+    expect(plan.upcoming.fixed).toBe(0);
+  });
+
+  it('counts a lump bonus only in the month it lands', () => {
     const input = workedExample();
     input.income.bonus = { amount: 1_20_000, month: 4 };
+    expect(planningTotals(input).income).toBe(1_20_000);
+
+    input.income.bonus = { amount: 1_20_000, month: 1 };
+    expect(planningTotals(input).income).toBe(2_40_000);
+  });
+
+  it('still spreads a bonus the profile asked to amortise', () => {
+    const input = workedExample();
+    input.income.bonus = { amount: 1_20_000, month: 4 };
+    input.income.bonusMode = 'amortised';
     expect(planningTotals(input).income).toBe(1_30_000);
   });
 });

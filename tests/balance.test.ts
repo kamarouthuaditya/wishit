@@ -155,13 +155,27 @@ describe('monthlyBalance', () => {
     expect(monthlyBalance(snapshot).goalContributions).toBeCloseTo(6_000, 0);
   });
 
-  it('spreads a line billed less often than monthly', () => {
-    const snapshot = snapshotFixture();
-    snapshot.expenses.push(
+  it('charges a line billed less often than monthly in full, in its own month', () => {
+    // Renewing next month — the month being planned — so the whole 120,000 is
+    // charged there. A twelfth of it every month would describe somebody
+    // setting money aside, which is not how the bill gets paid.
+    const due = snapshotFixture();
+    due.expenses.push(
+      expense('Annual FD', 120_000, 'investment', {
+        frequency_months: 12,
+        effective_from: monthsFromNow(1),
+      }),
+    );
+    expect(monthlyBalance(due).savings).toBe(120_000);
+
+    // The same line renewing in January is nothing to this month at all — but
+    // it is running, so it is reported rather than silently dropped.
+    const quiet = snapshotFixture();
+    quiet.expenses.push(
       expense('Annual FD', 120_000, 'investment', { frequency_months: 12 }),
     );
-
-    expect(monthlyBalance(snapshot).savings).toBe(10_000);
+    expect(monthlyBalance(quiet).savings).toBe(0);
+    expect(monthlyBalance(quiet).notDueThisMonth).toBe(120_000);
   });
 
   it('counts a committed wishlist EMI', () => {

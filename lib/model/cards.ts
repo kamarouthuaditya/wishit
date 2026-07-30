@@ -4,6 +4,7 @@ import type {
   TransactionRow,
 } from '@/lib/db/types';
 import { now as clockNow } from '@/lib/clock';
+import { isBilledIn } from '@/lib/model/billing';
 
 /**
  * What a card actually owes, from what you recorded.
@@ -39,7 +40,7 @@ export interface CardDue {
   closed: CardCycle;
   /** Still accruing; becomes next month's bill. */
   open: CardCycle;
-  /** Recurring budget lines charged to this card, monthly equivalent. */
+  /** Recurring budget lines this card is billed for this month, in full. */
   recurringMonthly: number;
   /** closed.total as a share of the limit, 0 when there is no limit. */
   utilisation: number;
@@ -111,12 +112,16 @@ export function cardDue(
   const closedSpend = sumBetween(transactions, card.id, previousStatement, lastStatement);
   const openSpend = sumBetween(transactions, card.id, lastStatement, nextStatement);
 
+  // What the card is charged this month, not a smoothed share of it: an annual
+  // insurance premium on this card is the whole premium in its renewal month
+  // and nothing in the other eleven, which is the bill you have to find.
+  const thisMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
   const recurringMonthly = expenses
-    .filter((e) => e.paid_by_card_id === card.id && e.is_active)
-    .reduce(
-      (sum, e) => sum + Number(e.amount) / Math.max(1, e.frequency_months ?? 1),
-      0,
-    );
+    .filter(
+      (e) =>
+        e.paid_by_card_id === card.id && e.is_active && isBilledIn(e, thisMonth),
+    )
+    .reduce((sum, e) => sum + Number(e.amount), 0);
 
   const closedDue = dueFor(lastStatement);
   const limit = Number(card.credit_limit) || 0;
