@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, type ButtonHTMLAttributes, type MouseEvent } from 'react';
+import { useRef, useState, type ButtonHTMLAttributes, type MouseEvent } from 'react';
 
 /**
  * Buttons press rather than lift: 985 scale for 90ms, no shadow, nothing cast.
@@ -56,6 +56,25 @@ export function Button({
   const plate = useRef<HTMLSpanElement>(null);
 
   /*
+   * Whether the plate is covering the button, tracked here rather than read off
+   * `:hover` in CSS.
+   *
+   * The label used to invert on `group-hover` while the plate moved on pointer
+   * events, and the two could disagree. A row that re-renders under a still
+   * pointer — every Server Action in the app revalidates, so this is the normal
+   * case, not an edge — comes back with the plate collapsed against its edge and
+   * no `mouseenter` to refill it, because the pointer never moved. The label,
+   * driven by CSS, stayed inverted over a bare lime block: `--ground` on
+   * `--accent-fill` in light, and in dark `--on-accent-press` *is* `--lime`, so
+   * the button became a blank green rectangle. Any layout shift that slides a
+   * button under a resting cursor does the same thing.
+   *
+   * One source for both halves means the worst case is now an uninverted label
+   * on a filled plate, which is merely wrong rather than unreadable.
+   */
+  const [filled, setFilled] = useState(false);
+
+  /*
    * Clip-path rather than a transform, deliberately. The plate animates in
    * place with no compositor layer of its own, so it cannot drift a subpixel
    * off the square corners and leave a seam along the edge it came from.
@@ -90,10 +109,20 @@ export function Button({
   return (
     <button
       {...rest}
-      onMouseEnter={isPrimary ? (e) => moveTo(e, FULL, true) : undefined}
+      onMouseEnter={
+        isPrimary
+          ? (e) => {
+              moveTo(e, FULL, true);
+              setFilled(true);
+            }
+          : undefined
+      }
       onMouseLeave={
         isPrimary
-          ? (e) => moveTo(e, EDGE[nearestEdge(e, e.currentTarget as HTMLElement)])
+          ? (e) => {
+              moveTo(e, EDGE[nearestEdge(e, e.currentTarget as HTMLElement)]);
+              setFilled(false);
+            }
           : undefined
       }
       className={
@@ -119,7 +148,8 @@ export function Button({
       <span
         className={
           isPrimary
-            ? 'relative z-10 inline-flex items-center gap-2 transition-colors duration-[var(--t-fill)] ease-[var(--ease)] group-hover:text-on-accent-press'
+            ? 'relative z-10 inline-flex items-center gap-2 transition-colors duration-[var(--t-fill)] ' +
+              `ease-[var(--ease)] ${filled ? 'text-on-accent-press' : ''}`
             : 'inline-flex items-center gap-2'
         }
       >
