@@ -25,7 +25,16 @@
  * here is #000 or #fff.
  */
 
-:root {
+/*
+ * Light is the absence of the attribute, so it is declared on the root. It is
+ * also declared for `[data-theme='light']`, which is not the same thing said
+ * twice: the theme picker draws each option as a small window in the theme it
+ * offers, and a light preview sitting inside a dark page needs somewhere to
+ * read light values from. Every block below is a plain attribute selector
+ * rather than `:root[data-theme]`, so all three themes nest.
+ */
+:root,
+[data-theme='light'] {
   color-scheme: light;
 
   /*

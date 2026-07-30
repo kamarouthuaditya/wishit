@@ -93,7 +93,10 @@ export default async function AccountPage() {
 
       <section className="border border-line bg-surface">
         <h2 className="eyebrow border-b border-line px-5 py-3">Appearance</h2>
-        <div className="flex flex-wrap items-center justify-between gap-4 p-5">
+        {/* Stacked rather than set beside the copy: the picker is three cards
+            now, and squeezed into the right half of a row they are too small
+            to be previews of anything. */}
+        <div className="space-y-4 p-5">
           <p className="max-w-prose text-[13px] text-ink-soft">
             Light by default, for logging in daylight. Dark and money both suit
             the late session, money in black with note green on the buttons and
