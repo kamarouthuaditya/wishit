@@ -16,10 +16,10 @@ import { monthKey, monthTitle } from '@/lib/model/spending';
 import { nextBilledMonth } from '@/lib/model/billing';
 import type { TransferParty } from '@/lib/model/transfer';
 import { GoalTransfer } from '@/components/goal-transfer';
-import { GoalComposer } from '@/components/goal-composer';
+import { GoalsAdd } from '@/components/goals-add';
 import { ContributionNote } from '@/components/contribution-note';
 import { PageGuide } from '@/components/page-guide';
-import { inr, isoDate, monthLabel, pct } from '@/lib/format';
+import { inr, monthLabel, pct } from '@/lib/format';
 import {
   Bar,
   Button,
@@ -45,12 +45,6 @@ const FREQUENCIES = [
   { value: '12', label: 'Yearly' },
 ];
 
-/** One control's box, for the add rows that have no room for labels. */
-const control =
-  'border border-line bg-paper px-3 py-2.5 text-ink outline-none ' +
-  'transition-colors duration-[140ms] hover:border-line-strong focus:border-accent ' +
-  'placeholder:text-ink-faint';
-
 /**
  * Goals, as a list.
  *
@@ -73,6 +67,19 @@ export default async function GoalsPage() {
   const plan = planningTotals(input);
   const balance = monthlyBalance(snapshot);
   const savingsLines = snapshot.expenses.filter((e) => e.type === 'investment');
+
+  // A new goal lands below the ones already ranked rather than tying for first.
+  const nextPriority =
+    snapshot.goals.reduce((lowest, g) => Math.max(lowest, g.priority), 0) + 1;
+
+  const categories = [
+    ...new Set([
+      ...snapshot.expenses.map((e) => e.category),
+      'investment',
+      'insurance',
+      'retirement',
+    ]),
+  ].sort();
 
   return (
     <div className="space-y-8 pb-28">
@@ -164,60 +171,10 @@ export default async function GoalsPage() {
             </span>
           </>
         }
-        footer={
-          /*
-            Each control in its own box. It was one strip of segments split by
-            1px gaps, which left the frequency `select` with no edge of its own
-            — a word in a row, with a small arrow as the only hint that it
-            opened anything.
-          */
-          <form action={saveExpense} className="flex flex-wrap items-stretch gap-2">
-            <input type="hidden" name="type" value="investment" />
-            <input type="hidden" name="effective_from" value={isoDate()} />
-            <input
-              name="name"
-              required
-              placeholder="Index SIP, recurring deposit…"
-              aria-label="Name"
-              className={`${control} min-w-[10rem] flex-[1.5] text-[14px]`}
-            />
-            <div
-              className={`${control} flex min-w-[7rem] flex-1 items-center gap-2 py-0`}
-            >
-              <span aria-hidden className="text-ink-faint">
-                ₹
-              </span>
-              <input
-                name="amount"
-                type="number"
-                step="1"
-                required
-                placeholder="0"
-                aria-label="Amount per instalment"
-                className="tnum w-full bg-transparent py-2.5 text-[15px] outline-none placeholder:text-ink-faint"
-              />
-            </div>
-            <select
-              name="frequency_months"
-              defaultValue="1"
-              aria-label="How often"
-              className={`${control} min-w-[8rem] text-[13px]`}
-            >
-              {FREQUENCIES.map((f) => (
-                <option key={f.value} value={f.value}>
-                  {f.label.toLowerCase()}
-                </option>
-              ))}
-            </select>
-            <Button type="submit" size="sm">
-              Add
-            </Button>
-          </form>
-        }
       >
         {savingsLines.length === 0 ? (
           <p className="py-4 text-[13px] text-ink-faint">
-            Nothing yet. Add a line below — a SIP or a recurring deposit.
+            Nothing yet. Add one below — a SIP or a recurring deposit.
           </p>
         ) : (
           <ul className="divide-y divide-line">
@@ -228,7 +185,7 @@ export default async function GoalsPage() {
         )}
       </Section>
 
-      <GoalComposer />
+      <GoalsAdd categories={categories} nextPriority={nextPriority} />
     </div>
   );
 }

@@ -200,6 +200,17 @@ and a ground shift alone would not survive glare: `--surface-lift` **and** a 2px
 `--line-strong` rule under it, with the section's figure at 17px against the
 rows' 15px.
 
+**Editing is a disclosure; creating earns a dialog.** Everything that changes an
+existing row opens under that row, because the row is the context and a modal
+would hide the figure being changed. Creating has no row to sit under, and the
+alternative was a two-field strip that bought its brevity by omitting eight
+fields, so every goal arrived half-specified and had to be opened and edited
+immediately. `Dialog` wraps the platform's `<dialog>` — focus trapping, `Esc`,
+the top layer and `aria-modal` come free, and the top layer is the only way to
+be sure a sticky bar cannot paint over it. It carries the same header band as a
+`Section`. This is the one modal in the product; a second one needs an argument
+this good.
+
 **Buttons come in two sizes, and rank is what picks one.** `md` (`px-4 py-2`,
 13px) is a page's own action — the thing the screen exists for. `sm` (`px-3
 py-1.5`, 12px) is an action on one row: a Save beside a 14px field, repeated
