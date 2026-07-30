@@ -11,6 +11,16 @@ import { IconTrash } from '@/components/icons';
  * its balance, or a loan with its schedule. Rather than a modal — which stops
  * the world for a decision this small — the button turns into its own
  * confirmation in place, and reverts if you click anywhere else in the row.
+ *
+ * Every caller renders this inside the row's edit form, so the confirmation is
+ * a `formAction` on a submit button rather than a form of its own. It used to
+ * be its own `<form>`, which nested one form inside another: the browser sent
+ * the submit to the outer form, whose action is React's "unexpectedly
+ * submitted" placeholder, and the delete never ran. Nothing on screen said so
+ * — the row simply stayed.
+ *
+ * `formNoValidate` because the enclosing form is an edit form full of required
+ * fields, and an empty amount is no reason to refuse to delete the row.
  */
 export function ConfirmButton({
   action,
@@ -45,12 +55,20 @@ export function ConfirmButton({
       <span className="text-[12px] text-warn" role="alert">
         {confirm}
       </span>
-      <form action={action}>
-        <input type="hidden" name="id" value={id} />
-        <Button variant="danger" type="submit" className="border-bad/50">
-          Yes, delete
-        </Button>
-      </form>
+      {/*
+        Named `id` like the enclosing form's own hidden field and carrying the
+        same value, so the action gets a row id either way round.
+      */}
+      <input type="hidden" name="id" value={id} />
+      <Button
+        variant="danger"
+        type="submit"
+        formAction={action}
+        formNoValidate
+        className="border-bad/50"
+      >
+        Yes, delete
+      </Button>
       <Button variant="ghost" type="button" onClick={() => setArmed(false)}>
         Keep
       </Button>
