@@ -6,7 +6,7 @@ import { monthlyBalance } from '@/lib/model/balance';
 import { inr } from '@/lib/format';
 import { StepBack, StepHeading } from '@/components/onboarding';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { Button } from '@/components/ui';
+import { SubmitButton } from '@/components/submit-button';
 import { IconArrowRight } from '@/components/icons';
 
 export const dynamic = 'force-dynamic';
@@ -98,10 +98,10 @@ export default async function AppearanceStepPage() {
 
       <div className="flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-line pt-5">
         <form action={finishOnboarding}>
-          <Button type="submit">
+          <SubmitButton pendingLabel="Opening…">
             Open my dashboard
             <IconArrowRight size={15} />
-          </Button>
+          </SubmitButton>
         </form>
         <span className="text-[13px] text-ink-faint">
           Setup does not come back.

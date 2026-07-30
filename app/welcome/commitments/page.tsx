@@ -5,7 +5,8 @@ import { onboardingGuard } from '@/lib/onboarding';
 import { monthlyBalance } from '@/lib/model/balance';
 import { inr } from '@/lib/format';
 import { RunningBalance, StepFooter, StepHeading } from '@/components/onboarding';
-import { Money, Button } from '@/components/ui';
+import { Money } from '@/components/ui';
+import { SubmitButton, SubmitText } from '@/components/submit-button';
 import { IconPlus } from '@/components/icons';
 
 export const dynamic = 'force-dynamic';
@@ -96,13 +97,13 @@ export default async function CommitmentsStepPage() {
             />
           </label>
 
-          <Button
-            type="submit"
+          <SubmitButton
             className="px-5 py-3 text-[13px]"
+            pendingLabel="Adding…"
           >
             <IconPlus size={15} />
             Add
-          </Button>
+          </SubmitButton>
         </div>
         <p className="text-[12px] text-ink-faint">
           Outstanding is estimated as EMI × months left until you set the real
@@ -128,12 +129,7 @@ export default async function CommitmentsStepPage() {
                 <Money amount={Number(loan.emi)} />
                 <form action={deleteLoan}>
                   <input type="hidden" name="id" value={loan.id} />
-                  <button
-                    type="submit"
-                    className="cursor-pointer text-[12px] text-ink-faint transition-colors duration-[140ms] hover:text-bad"
-                  >
-                    Remove
-                  </button>
+                  <SubmitText pendingLabel="Removing…">Remove</SubmitText>
                 </form>
               </span>
             </li>

@@ -5,7 +5,8 @@ import { onboardingGuard } from '@/lib/onboarding';
 import { monthlyBalance } from '@/lib/model/balance';
 import { inr } from '@/lib/format';
 import { RunningBalance, StepFooter, StepHeading } from '@/components/onboarding';
-import { Money, Pill, Button } from '@/components/ui';
+import { Money, Pill } from '@/components/ui';
+import { SubmitButton, SubmitText } from '@/components/submit-button';
 import { IconPlus } from '@/components/icons';
 
 export const dynamic = 'force-dynamic';
@@ -66,13 +67,14 @@ export default async function GoalsStepPage() {
               usual first goal, and it is protected — nothing else is allowed to
               raid it.
             </p>
-            <button
-              type="submit"
-              className="mt-4 inline-flex cursor-pointer items-center gap-2 border border-line-strong px-4 py-2 text-[13px] font-medium uppercase tracking-[0.06em] transition-all duration-[140ms] hover:border-accent hover:text-accent active:scale-[0.985]"
+            <SubmitButton
+              variant="ghost"
+              className="mt-4"
+              pendingLabel="Adding…"
             >
               <IconPlus size={15} />
               Add emergency fund
-            </button>
+            </SubmitButton>
           </div>
         </form>
       )}
@@ -126,13 +128,13 @@ export default async function GoalsStepPage() {
             />
           </label>
 
-          <Button
-            type="submit"
+          <SubmitButton
             className="px-5 py-3 text-[13px]"
+            pendingLabel="Adding…"
           >
             <IconPlus size={15} />
             Add goal
-          </Button>
+          </SubmitButton>
         </div>
         <p className="text-[12px] text-ink-faint">
           A date makes it a commitment the app funds at the rate it needs. No
@@ -158,12 +160,7 @@ export default async function GoalsStepPage() {
                 </span>
                 <form action={deleteGoal}>
                   <input type="hidden" name="id" value={goal.id} />
-                  <button
-                    type="submit"
-                    className="cursor-pointer text-[12px] text-ink-faint transition-colors duration-[140ms] hover:text-bad"
-                  >
-                    Remove
-                  </button>
+                  <SubmitText pendingLabel="Removing…">Remove</SubmitText>
                 </form>
               </span>
             </li>

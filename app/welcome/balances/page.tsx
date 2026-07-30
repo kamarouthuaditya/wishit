@@ -5,7 +5,8 @@ import { onboardingGuard } from '@/lib/onboarding';
 import { inr } from '@/lib/format';
 import { StepBack, StepError, StepHeading } from '@/components/onboarding';
 import { AmountSuggest } from '@/components/amount-suggest';
-import { Button, Field, Input } from '@/components/ui';
+import { Field, Input } from '@/components/ui';
+import { SubmitButton } from '@/components/submit-button';
 import { IconArrowRight } from '@/components/icons';
 
 export const dynamic = 'force-dynamic';
@@ -105,10 +106,10 @@ export default async function BalancesStepPage({
         </p>
 
         <div className="flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-line pt-5">
-          <Button type="submit">
+          <SubmitButton pendingLabel="Saving…">
             Continue
             <IconArrowRight size={15} />
-          </Button>
+          </SubmitButton>
           <span className="text-[13px] text-ink-faint">
             That is everything the app cannot work without.
           </span>

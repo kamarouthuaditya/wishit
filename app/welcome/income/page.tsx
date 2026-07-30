@@ -4,7 +4,8 @@ import { currentUser } from '@/lib/supabase/server';
 import { saveOnboardingIncome } from '@/lib/actions';
 import { onboardingGuard } from '@/lib/onboarding';
 import { StepError, StepHeading, StepNotice } from '@/components/onboarding';
-import { Button, Field, Input, Select } from '@/components/ui';
+import { Field, Input, Select } from '@/components/ui';
+import { SubmitButton } from '@/components/submit-button';
 import { IconArrowRight } from '@/components/icons';
 
 export const dynamic = 'force-dynamic';
@@ -135,10 +136,10 @@ export default async function IncomeStepPage({
         </section>
 
         <div className="flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-line pt-5">
-          <Button type="submit">
+          <SubmitButton pendingLabel="Saving…">
             Continue
             <IconArrowRight size={15} />
-          </Button>
+          </SubmitButton>
           <span className="text-[13px] text-ink-faint">
             Next: what you have saved.
           </span>

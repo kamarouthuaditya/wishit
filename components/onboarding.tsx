@@ -2,7 +2,7 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { advanceOnboarding } from '@/lib/actions';
 import { ONBOARDING_ROOT, previousStep, stepIndex } from '@/lib/onboarding';
-import { Button } from '@/components/ui';
+import { SubmitButton } from '@/components/submit-button';
 import { IconArrowRight } from '@/components/icons';
 import { inr } from '@/lib/format';
 
@@ -58,10 +58,10 @@ export function StepFooter({
     <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-line pt-5">
       <form action={advanceOnboarding}>
         <input type="hidden" name="from" value={from} />
-        <Button type="submit">
+        <SubmitButton pendingLabel="Saving…">
           {label}
           <IconArrowRight size={15} />
-        </Button>
+        </SubmitButton>
       </form>
 
       {note && <span className="text-[13px] text-ink-faint">{note}</span>}
