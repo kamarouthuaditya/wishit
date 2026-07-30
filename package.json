@@ -10,7 +10,10 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "db:push": "node scripts/push-local-to-supabase.mjs",
-    "db:reset": "node scripts/reset.mjs"
+    "db:reset": "node scripts/reset.mjs",
+    "db:export": "node scripts/export-project.mjs",
+    "db:import": "node scripts/import-project.mjs",
+    "db:wipe": "node scripts/wipe-project.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.3",
