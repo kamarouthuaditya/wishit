@@ -28,33 +28,50 @@ test and not a production mail system.
 
 ## 2b. Google sign-in
 
-Optional. Without it the buttons still render and fail with "Google sign-in did
-not go through" — Supabase rejects the provider — so either finish this or drop
-`<GoogleButton />` from `app/login/page.tsx` and `app/signup/page.tsx`.
+Optional. Leave `GOOGLE_OAUTH_CLIENT_ID` and `GOOGLE_OAUTH_CLIENT_SECRET` unset
+and the button does not render at all — email and password is then the only way
+in, and nothing is broken.
 
-**Google Cloud console** → APIs & Services → Credentials → Create OAuth client ID
-→ Web application. The only field that matters is the authorised redirect URI,
-and it points at Supabase rather than at this app:
+The handshake runs on this app's own domain rather than through Supabase's
+relay. It is more code (`lib/google-oauth.ts`) and it buys one thing: Google
+names the host it is about to return to on the consent screen, and
+"ykzgptsgxhezjhytuzhy.supabase.co" is precisely the kind of string people are
+taught not to trust. This way it reads as your own domain.
+
+**Google Cloud console** → APIs & Services → Credentials → Create OAuth client
+ID → Web application. Authorised redirect URIs — one line per host this build
+answers on, all pointing at this app:
 
 ```
-https://<project-ref>.supabase.co/auth/v1/callback
+http://localhost:3000/auth/callback
+https://<your-domain>/auth/callback
 ```
+
+Google matches these byte for byte and does not accept wildcards, so every
+preview domain you actually intend to sign in on needs its own line. The easier
+route for previews is `NEXT_PUBLIC_SITE_URL` set to the production domain, which
+pins the origin regardless of which host served the request.
+
+Under **Authorized JavaScript origins**, add the same hosts without the path.
 
 Configure the consent screen while you are there (External, your email as
 support contact). A closed test does not need Google's verification review, but
-it does need every tester's address added under Test users.
+it does need every tester's address added under Test users. Filling in the app
+name and logo is what puts "Wishit" at the top of the screen.
 
-**Supabase dashboard** → Authentication → Providers → Google: paste the client
-ID and secret, enable it. Then Authentication → URL Configuration:
+**Supabase dashboard** → Authentication → Providers → Google: enable it, and
+paste the client ID into **Authorized Client IDs**. Supabase never sees the
+consent screen in this flow — it only verifies the ID token this app hands it,
+and it will reject a token whose audience is not on that list. The client secret
+belongs in the environment, not in the dashboard field.
 
-- **Site URL** — the production domain.
-- **Redirect URLs** — add `https://<domain>/auth/callback` and, for preview
-  deployments, `https://*.vercel.app/auth/callback`. Supabase refuses to return
-  to an address that is not on this list, which is the whole point of it.
+Authentication → URL Configuration still wants a **Site URL** (the production
+domain) for password-reset links. The **Redirect URLs** list no longer matters
+for Google, because Google returns here and not to Supabase.
 
-The app sends Google to `/auth/callback` on whichever host served the request,
-so previews work without extra configuration. Set `NEXT_PUBLIC_SITE_URL` only if
-one domain has to be canonical regardless of where the request came from.
+Copy the client ID and secret into the environment as `GOOGLE_OAUTH_CLIENT_ID`
+and `GOOGLE_OAUTH_CLIENT_SECRET`. Neither is `GOOGLE_APP_PASSWORD`, which is
+SMTP and unrelated.
 
 ## 3. Environment variables
 
@@ -70,6 +87,8 @@ Set these in the Vercel project, for Production **and** Preview:
 | `FEEDBACK_EMAIL` | no | Where reports land. Defaults to `MAIL_USER` |
 | `NEXT_PUBLIC_APP_TIMEZONE` | no | Defaults to `Asia/Kolkata` |
 | `NEXT_PUBLIC_SITE_URL` | no | Forces the origin Google returns to. Leave unset and each deployment uses its own host |
+| `GOOGLE_OAUTH_CLIENT_ID` | no | Web OAuth client. Unset, the Google button does not render |
+| `GOOGLE_OAUTH_CLIENT_SECRET` | no | Its secret. Server only — never `NEXT_PUBLIC_` |
 | `MAIL_HOST` / `MAIL_PORT` / `MAIL_FROM` | no | Defaults to Gmail on 465 |
 
 If any of the five required ones is missing, a production deployment answers

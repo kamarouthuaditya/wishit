@@ -24,15 +24,6 @@ export default async function SignupPage() {
               asking somebody to pick the right one of two identical doors is a
               question the app can answer itself. */}
           <GoogleButton />
-
-          <div className="my-5 flex items-center gap-3">
-            <span className="h-px flex-1 bg-line" />
-            <span className="text-[11px] uppercase tracking-[0.08em] text-ink-faint">
-              or
-            </span>
-            <span className="h-px flex-1 bg-line" />
-          </div>
-
           <AuthForm mode="sign-up" />
         </Card>
       </div>

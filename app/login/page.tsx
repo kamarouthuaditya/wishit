@@ -54,17 +54,6 @@ export default async function LoginPage({
       <div className="mt-6">
         <Card>
           <GoogleButton next={next} />
-
-          {/* A rule with a word in it: the two ways in are alternatives, not a
-              sequence, and a bare gap makes the second look like a footnote. */}
-          <div className="my-5 flex items-center gap-3">
-            <span className="h-px flex-1 bg-line" />
-            <span className="text-[11px] uppercase tracking-[0.08em] text-ink-faint">
-              or
-            </span>
-            <span className="h-px flex-1 bg-line" />
-          </div>
-
           <AuthForm mode="sign-in" />
         </Card>
       </div>

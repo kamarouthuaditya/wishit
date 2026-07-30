@@ -1,25 +1,43 @@
 import { signInWithGoogle } from '@/lib/auth-actions';
+import { isGoogleConfigured } from '@/lib/google-oauth';
 
 /**
- * Continue with Google.
+ * Continue with Google, and the rule that separates it from the email form.
  *
  * A plain form posting to a Server Action, so it works before hydration and
  * needs no client bundle of its own. The mark is Google's four-colour G, which
  * their branding terms require to be shown unaltered — it is the one place in
  * the product where a colour arrives from outside the palette.
+ *
+ * Nothing renders at all on a deployment without Google credentials, the rule
+ * included: a button that can only fail is worse than one screen fewer.
  */
 export function GoogleButton({ next }: { next?: string }) {
+  if (!isGoogleConfigured) return null;
+
   return (
-    <form action={signInWithGoogle}>
-      {next && <input type="hidden" name="next" value={next} />}
-      <button
-        type="submit"
-        className="inline-flex w-full cursor-pointer items-center justify-center gap-3 border border-line-strong px-4 py-2.5 text-[13px] font-medium uppercase tracking-[0.06em] text-ink transition-all duration-[140ms] hover:border-accent hover:text-accent active:scale-[0.985]"
-      >
-        <GoogleMark />
-        Continue with Google
-      </button>
-    </form>
+    <>
+      <form action={signInWithGoogle}>
+        {next && <input type="hidden" name="next" value={next} />}
+        <button
+          type="submit"
+          className="inline-flex w-full cursor-pointer items-center justify-center gap-3 border border-line-strong px-4 py-2.5 text-[13px] font-medium uppercase tracking-[0.06em] text-ink transition-all duration-[140ms] hover:border-accent hover:text-accent active:scale-[0.985]"
+        >
+          <GoogleMark />
+          Continue with Google
+        </button>
+      </form>
+
+      {/* A rule with a word in it: the two ways in are alternatives, not a
+          sequence, and a bare gap makes the second look like a footnote. */}
+      <div className="my-5 flex items-center gap-3">
+        <span className="h-px flex-1 bg-line" />
+        <span className="text-[11px] uppercase tracking-[0.08em] text-ink-faint">
+          or
+        </span>
+        <span className="h-px flex-1 bg-line" />
+      </div>
+    </>
   );
 }
 
