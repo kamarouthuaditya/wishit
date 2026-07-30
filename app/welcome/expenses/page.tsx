@@ -3,13 +3,21 @@ import { loadSnapshot } from '@/lib/db/repository';
 import { deleteExpense, saveExpense, seedDefaultExpenses } from '@/lib/actions';
 import { onboardingGuard } from '@/lib/onboarding';
 import { monthlyBalance } from '@/lib/model/balance';
-import { inr } from '@/lib/format';
+import { inr, isoDate } from '@/lib/format';
 import { RunningBalance, StepFooter, StepHeading } from '@/components/onboarding';
 import { Money } from '@/components/ui';
 import { SubmitButton, SubmitText } from '@/components/submit-button';
 import { IconPlus } from '@/components/icons';
 
 export const dynamic = 'force-dynamic';
+
+/** `2026-09-01` → `Sep 2026`. The day is noise on a recurring line. */
+function monthOf(date: string): string {
+  return new Date(`${date.slice(0, 10)}T00:00:00`).toLocaleDateString('en-IN', {
+    month: 'short',
+    year: 'numeric',
+  });
+}
 
 const FREQUENCY: Record<number, string> = {
   1: 'monthly',
@@ -36,6 +44,7 @@ export default async function ExpensesStepPage() {
 
   const balance = monthlyBalance(snapshot);
   const expenses = snapshot.expenses;
+  const today = isoDate();
 
   return (
     <div className="space-y-7">
@@ -123,6 +132,35 @@ export default async function ExpensesStepPage() {
             <option value="investment">investment</option>
           </select>
 
+          {/*
+            Both dates are here rather than only on the expenses page. The row
+            used to be stamped with today whether or not that was true, which is
+            wrong for the rent that starts next month and for the loan-adjacent
+            bill that stops in March — and it was stamped invisibly, so there
+            was nothing to correct. Blank `from` still means today, and blank
+            `until` still means forever; the fields say so instead of assuming.
+          */}
+          <label className="flex min-w-[10rem] flex-1 items-center gap-2 bg-paper px-3 text-[13px] text-ink-faint">
+            from
+            <input
+              name="effective_from"
+              type="date"
+              defaultValue={today}
+              aria-label="First month it is charged"
+              className="tnum w-full bg-transparent py-3 text-[14px] text-ink outline-none"
+            />
+          </label>
+
+          <label className="flex min-w-[10rem] flex-1 items-center gap-2 bg-paper px-3 text-[13px] text-ink-faint">
+            until
+            <input
+              name="effective_to"
+              type="date"
+              aria-label="Last month it is charged — blank means it keeps running"
+              className="tnum w-full bg-transparent py-3 text-[14px] text-ink outline-none"
+            />
+          </label>
+
           <SubmitButton
             className="px-5 py-3 text-[13px]"
             pendingLabel="Adding…"
@@ -133,7 +171,9 @@ export default async function ExpensesStepPage() {
         </div>
         <p className="text-[12px] text-ink-faint">
           Fixed is the same every month; varies is a budget you spend against.
-          Categories, cards and start dates wait on the expenses page.
+          Leave <em className="not-italic text-ink-soft">until</em> blank for
+          anything that keeps running. Categories and cards wait on the expenses
+          page.
         </p>
       </form>
 
@@ -150,6 +190,14 @@ export default async function ExpensesStepPage() {
                   {expense.type === 'variable' ? 'varies' : expense.type}
                   {expense.frequency_months !== 1 &&
                     ` · ${FREQUENCY[expense.frequency_months] ?? 'monthly'}`}
+                  {/*
+                    Dates only when they say something. A line that starts today
+                    and never ends is the ordinary case, and printing "from Jul
+                    2026" on every row would bury the two that are different.
+                  */}
+                  {expense.effective_from > today &&
+                    ` · from ${monthOf(expense.effective_from)}`}
+                  {expense.effective_to && ` · until ${monthOf(expense.effective_to)}`}
                 </span>
               </span>
               <span className="flex shrink-0 items-baseline gap-4">
