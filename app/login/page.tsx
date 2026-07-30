@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { currentUser } from '@/lib/supabase/server';
 import { AuthForm } from '@/components/auth-form';
 import { GoogleButton } from '@/components/google-button';
+import { SignInArt } from '@/components/illustrations/signin';
 import { Card } from '@/components/ui';
 
 export const dynamic = 'force-dynamic';
@@ -25,6 +26,11 @@ export default async function LoginPage({
 
   return (
     <div className="mx-auto max-w-md py-10">
+      {/* Above the heading rather than beside it: this column is half the
+          width of the onboarding one, and anything set alongside a title here
+          leaves both of them squeezed. */}
+      <SignInArt className="mx-auto mb-7 hidden h-36 w-auto sm:block" />
+
       <h1 className="text-2xl font-semibold tracking-tight">Sign in</h1>
       <p className="mt-1 text-[15px] text-ink-soft">
         Your figures, and nobody else’s.

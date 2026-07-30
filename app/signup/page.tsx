@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { currentUser } from '@/lib/supabase/server';
 import { AuthForm } from '@/components/auth-form';
 import { GoogleButton } from '@/components/google-button';
+import { WelcomeCatsArt } from '@/components/illustrations/welcomecats';
 import { Card } from '@/components/ui';
 
 export const dynamic = 'force-dynamic';
@@ -11,6 +12,8 @@ export default async function SignupPage() {
 
   return (
     <div className="mx-auto max-w-md py-10">
+      <WelcomeCatsArt className="mx-auto mb-7 hidden h-32 w-auto sm:block" />
+
       <h1 className="text-2xl font-semibold tracking-tight">Create an account</h1>
       <p className="mt-1 max-w-prose text-[15px] text-ink-soft">
         Wishit answers one question: <em>if I buy this, how much longer do I wait

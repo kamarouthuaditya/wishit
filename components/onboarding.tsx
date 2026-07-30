@@ -4,6 +4,11 @@ import { advanceOnboarding } from '@/lib/actions';
 import { ONBOARDING_ROOT, previousStep, stepIndex } from '@/lib/onboarding';
 import { SubmitButton } from '@/components/submit-button';
 import { IconArrowRight } from '@/components/icons';
+import { BalancesArt } from '@/components/illustrations/balances';
+import { ExpensesArt } from '@/components/illustrations/expenses';
+import { IncomeArt } from '@/components/illustrations/income';
+import { OweArt } from '@/components/illustrations/owe';
+import { SavingsArt } from '@/components/illustrations/savings';
 import { inr } from '@/lib/format';
 
 /**
@@ -12,6 +17,24 @@ import { inr } from '@/lib/format';
  * numbers being typed visibly do something before the dashboard is ever
  * reached.
  */
+
+/**
+ * One picture per question, and none for the last step.
+ *
+ * `appearance` is the theme picker: it is already three coloured swatches
+ * arguing for themselves, and a drawing beside them would be a fourth thing to
+ * look at on the one screen that is about looking.
+ *
+ * The colours come from `var(--...)`, so the art follows the ground it is on
+ * and a custom accent moves it too — see `scripts/build-illustrations.mjs`.
+ */
+const STEP_ART: Record<string, (props: { className?: string }) => ReactNode> = {
+  income: IncomeArt,
+  balances: BalancesArt,
+  expenses: ExpensesArt,
+  commitments: OweArt,
+  goals: SavingsArt,
+};
 
 export function StepHeading({
   slug,
@@ -23,15 +46,28 @@ export function StepHeading({
   blurb: ReactNode;
 }) {
   const index = stepIndex(slug);
+  const Art = STEP_ART[slug];
+
   return (
-    <header>
-      <p className="eyebrow text-accent">Step {index + 1}</p>
-      <h1 className="mt-2 font-display text-[30px] leading-none sm:text-[34px]">
-        {title}
-      </h1>
-      <p className="mt-3 max-w-prose text-[14px] leading-relaxed text-ink-soft">
-        {blurb}
-      </p>
+    <header className="flex items-start gap-8">
+      <div className="min-w-0 flex-1">
+        <p className="eyebrow text-accent">Step {index + 1}</p>
+        <h1 className="mt-2 font-display text-[30px] leading-none sm:text-[34px]">
+          {title}
+        </h1>
+        <p className="mt-3 max-w-prose text-[14px] leading-relaxed text-ink-soft">
+          {blurb}
+        </p>
+      </div>
+
+      {/* Height is fixed and width follows, because the set was not drawn to
+          one aspect ratio: matched on width, the near-square ones would stand
+          twice as tall as the wide ones and the heading would move down the
+          page from step to step. Gone below `sm`, where the choice is between
+          a picture and the first field being visible. */}
+      {Art && (
+        <Art className="hidden h-28 w-auto max-w-[42%] shrink-0 sm:block" />
+      )}
     </header>
   );
 }
