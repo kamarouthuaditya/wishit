@@ -15,7 +15,7 @@ function Message({ state }: { state: AuthState }) {
     return (
       <p
         role="alert"
-        className="rounded-lg border border-bad/30 bg-bad-soft px-4 py-3 text-[14px] text-bad"
+        className="rounded-lg border border-bad/30 bg-bad-soft px-4 py-3 text-[15px] text-bad"
       >
         {state.error}
       </p>
@@ -25,7 +25,7 @@ function Message({ state }: { state: AuthState }) {
     return (
       <p
         role="status"
-        className="rounded-lg border border-good/30 bg-good-soft px-4 py-3 text-[14px] text-good"
+        className="rounded-lg border border-good/30 bg-good-soft px-4 py-3 text-[15px] text-good"
       >
         {state.notice}
       </p>
@@ -60,7 +60,7 @@ export function ForgotPasswordForm() {
         {pending ? 'Sending…' : 'Send reset link'}
       </Button>
 
-      <p className="text-center text-[14px] text-ink-soft">
+      <p className="text-center text-[15px] text-ink-soft">
         <Link href="/login" className="text-accent">
           Back to sign in
         </Link>

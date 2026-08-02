@@ -55,7 +55,7 @@ export function StepHeading({
         <h1 className="mt-2 font-display text-[30px] leading-none sm:text-[34px]">
           {title}
         </h1>
-        <p className="mt-3 max-w-prose text-[14px] leading-relaxed text-ink-soft">
+        <p className="mt-3 max-w-prose text-[15px] leading-relaxed text-ink-soft">
           {blurb}
         </p>
       </div>
@@ -100,12 +100,12 @@ export function StepFooter({
         </SubmitButton>
       </form>
 
-      {note && <span className="text-[13px] text-ink-faint">{note}</span>}
+      {note && <span className="text-[14px] text-ink-faint">{note}</span>}
 
       {back && (
         <Link
           href={`${ONBOARDING_ROOT}/${back.slug}`}
-          className="ml-auto text-[13px] text-ink-faint transition-colors duration-[140ms] hover:text-accent"
+          className="ml-auto text-[14px] text-ink-faint transition-colors duration-[140ms] hover:text-accent"
         >
           ← {back.title}
         </Link>
@@ -121,7 +121,7 @@ export function StepBack({ from }: { from: string }) {
   return (
     <Link
       href={`${ONBOARDING_ROOT}/${back.slug}`}
-      className="ml-auto text-[13px] text-ink-faint transition-colors duration-[140ms] hover:text-accent"
+      className="ml-auto text-[14px] text-ink-faint transition-colors duration-[140ms] hover:text-accent"
     >
       ← {back.title}
     </Link>
@@ -155,13 +155,13 @@ export function RunningBalance({
   const tone = balance < 0 ? 'text-bad' : 'text-good';
   return (
     <aside className="border border-line bg-surface px-5 py-5">
-      <p className="eyebrow text-[10px]">Balance left each month, so far</p>
+      <p className="eyebrow text-[11px]">Balance left each month, so far</p>
       <p
         className={`tnum font-display mt-3 text-[40px] leading-none sm:text-[48px] ${tone}`}
       >
         {inr(balance)}
       </p>
-      <p className="mt-3 max-w-prose text-[13px] leading-snug text-ink-faint">
+      <p className="mt-3 max-w-prose text-[14px] leading-snug text-ink-faint">
         {caveat}
       </p>
     </aside>
@@ -179,7 +179,7 @@ export function RunningBalance({
  */
 export function StepNotice({ children }: { children: ReactNode }) {
   return (
-    <p className="border border-good/50 bg-good-soft px-4 py-3 text-[13px] text-good">
+    <p className="border border-good/50 bg-good-soft px-4 py-3 text-[14px] text-good">
       {children}
     </p>
   );
@@ -189,7 +189,7 @@ export function StepError({ children }: { children: ReactNode }) {
   return (
     <p
       role="alert"
-      className="border border-bad/50 bg-bad-soft px-4 py-3 text-[13px] text-bad"
+      className="border border-bad/50 bg-bad-soft px-4 py-3 text-[14px] text-bad"
     >
       {children}
     </p>

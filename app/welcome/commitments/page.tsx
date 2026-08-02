@@ -45,17 +45,17 @@ export default async function CommitmentsStepPage() {
       />
 
       <form action={saveOnboardingLoan} className="space-y-2">
-        <div className="flex flex-wrap items-stretch gap-px border border-line bg-line">
+        <div className="flex flex-wrap items-stretch gap-px overflow-hidden rounded-xl border border-line bg-line">
           <input
             name="name"
             required
             placeholder="Car loan, phone EMI…"
             aria-label="What it is"
-            className="min-w-[9rem] flex-[1.4] bg-paper px-3 py-3 text-[15px] outline-none placeholder:text-ink-faint"
+            className="min-w-[9rem] flex-[1.4] bg-paper px-3 py-3 text-[16px] outline-none placeholder:text-ink-faint"
           />
 
           <div className="flex min-w-[7rem] flex-1 items-center gap-2 bg-paper px-3">
-            <span aria-hidden className="text-[15px] text-ink-faint">
+            <span aria-hidden className="text-[16px] text-ink-faint">
               ₹
             </span>
             <input
@@ -66,11 +66,11 @@ export default async function CommitmentsStepPage() {
               required
               placeholder="EMI"
               aria-label="Monthly EMI"
-              className="tnum w-full bg-transparent py-3 text-[16px] font-medium outline-none placeholder:text-ink-faint"
+              className="tnum w-full bg-transparent py-3 text-[17px] font-medium outline-none placeholder:text-ink-faint"
             />
           </div>
 
-          <label className="flex min-w-[8rem] items-center gap-2 bg-paper px-3 text-[13px] text-ink-faint">
+          <label className="flex min-w-[8rem] items-center gap-2 bg-paper px-3 text-[14px] text-ink-faint">
             <input
               name="tenure_months"
               type="number"
@@ -79,12 +79,12 @@ export default async function CommitmentsStepPage() {
               required
               placeholder="24"
               aria-label="EMIs remaining"
-              className="tnum w-12 bg-transparent py-3 text-[15px] text-ink outline-none placeholder:text-ink-faint"
+              className="tnum w-12 bg-transparent py-3 text-[16px] text-ink outline-none placeholder:text-ink-faint"
             />
             left
           </label>
 
-          <label className="flex min-w-[8rem] items-center gap-2 bg-paper px-3 text-[13px] text-ink-faint">
+          <label className="flex min-w-[8rem] items-center gap-2 bg-paper px-3 text-[14px] text-ink-faint">
             due
             <input
               name="due_day"
@@ -93,19 +93,19 @@ export default async function CommitmentsStepPage() {
               max={31}
               defaultValue={5}
               aria-label="Day of the month it is due"
-              className="tnum w-12 bg-transparent py-3 text-[15px] text-ink outline-none"
+              className="tnum w-12 bg-transparent py-3 text-[16px] text-ink outline-none"
             />
           </label>
 
           <SubmitButton
-            className="px-5 py-3 text-[13px]"
+            className="px-5 py-3 text-[14px]"
             pendingLabel="Adding…"
           >
             <IconPlus size={15} />
             Add
           </SubmitButton>
         </div>
-        <p className="text-[12px] text-ink-faint">
+        <p className="text-[13px] text-ink-faint">
           Outstanding is estimated as EMI × months left until you set the real
           figure on the loans page. Credit cards are not loans and live on their
           own page — a bill is money already spent, not a commitment.
@@ -117,11 +117,11 @@ export default async function CommitmentsStepPage() {
           {loans.map((loan) => (
             <li
               key={loan.id}
-              className="flex items-baseline justify-between gap-4 py-2.5"
+              className="flex items-baseline justify-between gap-4 px-4 py-2.5"
             >
-              <span className="min-w-0 text-[14px]">
+              <span className="min-w-0 text-[15px]">
                 <span className="truncate">{loan.name}</span>
-                <span className="ml-2 text-[11px] uppercase tracking-[0.06em] text-ink-faint">
+                <span className="ml-2 text-[12px] uppercase tracking-[0.06em] text-ink-faint">
                   {loan.tenure_months} left · due the {loan.due_day}
                 </span>
               </span>

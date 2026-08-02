@@ -74,12 +74,12 @@ export function GoalTransfer({
       </form>
 
       {plan.blocked ? (
-        <p className="mt-2 text-[12px] text-ink-faint">
+        <p className="mt-2 text-[13px] text-ink-faint">
           {plan.warnings[0] ??
             'Moves money already saved. Your total savings do not change — only what they are earmarked for.'}
         </p>
       ) : (
-        <div className="mt-3 space-y-1 text-[13px]">
+        <div className="mt-3 space-y-1 text-[14px]">
           <p className="text-ink-soft">
             {inr(plan.amount)} moves across:{' '}
             <strong>{destination.name}</strong> becomes {inr(plan.toAfter)} of{' '}

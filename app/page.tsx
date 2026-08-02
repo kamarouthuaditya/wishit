@@ -11,7 +11,7 @@ import { balanceRows, monthlyBalance } from '@/lib/model/balance';
 import { buildActuals, budgetsByCategory } from '@/lib/model/actuals';
 import { monthKey, monthTitle } from '@/lib/model/spending';
 import { cardDues, type CardDue } from '@/lib/model/cards';
-import { Bar, Card, Empty, Money, Pill, TrafficLight } from '@/components/ui';
+import { Bar, Card, Empty, Money, Pill } from '@/components/ui';
 import { balanceTone } from '@/components/balance-strip';
 import { NetWorthTrend } from '@/components/trend';
 import {
@@ -73,8 +73,12 @@ export default async function DashboardPage() {
   const behind = result.goals.filter((goal) => goal.missedDeadline);
 
   return (
-    <div className="space-y-10">
-      {!isSupabaseConfigured && <LocalModeBanner />}
+    <div>
+      {!isSupabaseConfigured && (
+        <div className="mb-8">
+          <LocalModeBanner />
+        </div>
+      )}
 
       <NextSteps
         hasExpenses={snapshot.expenses.length > 0}
@@ -82,7 +86,9 @@ export default async function DashboardPage() {
         hasWishlist={snapshot.wishlist.length > 0}
       />
 
-      {/* 1. The figure everything else is measured against. */}
+      {/* 1. The figure everything else is measured against. Full-bleed hero
+          band: hairline-divided grid rather than a card, so the eye lands on
+          the number instead of on a box drawn around it. */}
       <Hero balance={balance} health={health} />
 
       {/* 2. Only what needs a decision. Silent when there is nothing. */}
@@ -93,182 +99,195 @@ export default async function DashboardPage() {
         floorHeadroom={health.floorHeadroom}
       />
 
-      {/* 3a. How the month in progress is actually going. Logging itself lives
-          in the header, reachable from every page rather than this one. */}
-      <section className="border border-line bg-surface">
-        <div className="flex flex-wrap items-baseline justify-between gap-4 border-b border-line px-5 py-3.5">
-          <h2 className="eyebrow flex items-center gap-2">
+      {/* 3. Three columns, hairline-divided, no boxes: this month so far,
+          what is being built, what falls due. */}
+      <div className="grid border-t border-line lg:grid-cols-[minmax(0,1.15fr)_1px_minmax(0,1fr)_1px_minmax(0,1fr)]">
+        <section className="py-7 lg:pr-9">
+          <h2 className="section-title flex items-center gap-2 text-[14px]">
             <IconSpending size={14} />
             {monthTitle(month)} so far
           </h2>
-          <Link
-            href="/spending"
-            className="inline-flex items-center gap-1 text-[12px] text-ink-faint transition-colors hover:text-accent"
-          >
-            Open the log
-            <IconArrowRight size={13} />
-          </Link>
-        </div>
 
-        <div className="grid gap-px bg-line sm:grid-cols-2 lg:grid-cols-4">
-          <Cell label="Logged" value={inr(actuals.logged)} sub={`${transactions.length} ${transactions.length === 1 ? 'entry' : 'entries'}`} />
-          <Cell label="Budgeted" value={inr(actuals.budgeted)} sub="what the month should cost" />
-          <Cell
-            label="Heading for"
-            value={inr(actuals.projected)}
-            sub={
-              actuals.delta > 0
-                ? `${inr(actuals.delta)} over budget`
-                : `${inr(Math.abs(actuals.delta))} under budget`
-            }
-            tone={actuals.delta > 0 ? 'bad' : undefined}
-          />
-          <Cell
-            label="Balance if this holds"
-            value={inr(projectedBalance)}
-            sub={
-              actuals.coverage.total === 0 && !actuals.hasLogs
-                ? 'no budget line active yet'
-                : !actuals.hasLogs
-                  ? 'nothing logged, so this is your budget'
-                  : `${actuals.coverage.logged}/${actuals.coverage.total} categories logged; rest at budget`
-            }
-            tone={projectedBalance < 0 ? 'bad' : actuals.delta > 0 ? 'warn' : 'good'}
-            lead
-          />
-        </div>
-      </section>
-
-      {/* 3b. Where the money goes, and what it is building. */}
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
-        <Card
-          title="Monthly cashflow"
-          hint="This month as it is actually paid: a renewal lands whole in the month it renews, a bonus in the month it arrives"
-          lead
-        >
-          <dl>
-            {balanceRows(balance).map((row) => {
-              const subtotal = row.kind === 'subtotal';
-              const final = row.label === 'Balance left';
-              return (
-                <div
-                  key={row.label}
-                  className={`flex items-baseline justify-between gap-4 py-2 ${
-                    subtotal ? 'border-t border-line font-semibold' : ''
-                  } ${final ? 'mt-1 border-t-line-strong text-[15px]' : ''}`}
-                >
-                  <dt className={subtotal ? '' : 'text-[14px] text-ink-soft'}>
-                    {row.label}
-                  </dt>
-                  <dd>
-                    <Money
-                      amount={row.amount}
-                      tone={
-                        final
-                          ? row.amount >= 0
-                            ? 'good'
-                            : 'bad'
-                          : subtotal
-                            ? 'neutral'
-                            : 'neutral'
-                      }
-                    />
-                  </dd>
-                </div>
-              );
-            })}
-          </dl>
-        </Card>
-
-        <div className="space-y-6">
-          <Card
-            title="Goals"
-            icon={<IconGoal size={14} />}
-            hint="Funded in priority order"
-            action={
-              <Link
-                href="/goals"
-                className="inline-flex items-center gap-1 text-[12px] text-ink-faint transition-colors hover:text-accent"
+          <dl className="mt-4 divide-y divide-line">
+            <MonthRow label="Logged" value={inr(actuals.logged)} />
+            <MonthRow label="Budgeted" value={inr(actuals.budgeted)} />
+            <MonthRow
+              label="Heading for"
+              value={inr(actuals.projected)}
+              tone={actuals.delta > 0 ? 'warn' : undefined}
+            />
+            <div className="flex items-baseline justify-between gap-4 pt-3">
+              <dt className="text-[16px] font-semibold">Balance if this holds</dt>
+              <dd
+                className={`tnum font-display text-[22px] leading-none ${
+                  projectedBalance < 0
+                    ? 'text-bad'
+                    : actuals.delta > 0
+                      ? 'text-warn'
+                      : 'text-good'
+                }`}
               >
-                Manage
-                <IconArrowRight size={13} />
-              </Link>
-            }
-          >
-            {result.goals.length === 0 ? (
-              <Empty>
-                No goals yet.{' '}
-                <Link href="/goals" className="text-accent">
-                  Add one
-                </Link>{' '}
-                — purchases are measured against them.
-              </Empty>
-            ) : (
-              <ul className="space-y-4">
-                {result.goals.map((goal) => {
-                  const config = input.goals!.find((g) => g.id === goal.goalId)!;
-                  return (
-                    <li key={goal.goalId}>
-                      <div className="flex items-baseline justify-between gap-3">
-                        <span className="flex items-center gap-2 text-[14px]">
-                          {goal.name}
-                          {config.isProtected && <Pill tone="accent">protected</Pill>}
-                        </span>
-                        <span className="tnum text-[13px] text-ink-soft">
-                          {inr(config.current, { compact: true })} /{' '}
-                          {inr(goal.target, { compact: true })}
-                        </span>
-                      </div>
-                      <div className="mt-2">
-                        <Bar
-                          value={config.current}
-                          max={goal.target}
-                          tone={goal.missedDeadline ? 'warn' : 'accent'}
-                        />
-                      </div>
-                      <p className="mt-1.5 text-[12px] text-ink-faint">
-                        {goal.completionMonth == null
-                          ? `Not funded within ${result.horizonMonths} months`
-                          : `Ready by ${monthLabel(goal.completionMonth, anchor)}`}
-                        {goal.deadlineMonth != null &&
-                          ` · target ${monthLabel(goal.deadlineMonth, anchor)}`}
-                      </p>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </Card>
+                {inr(projectedBalance)}
+              </dd>
+            </div>
+          </dl>
 
-          <Card
-            title="Due in 30 days"
-            icon={<IconClock size={14} />}
-          >
+          <p className="mt-3 max-w-prose text-justify text-[13px] leading-snug text-ink-faint">
+            {actuals.coverage.total === 0 && !actuals.hasLogs
+              ? 'No budget line active yet.'
+              : !actuals.hasLogs
+                ? 'Nothing logged, so this is your budget.'
+                : `${actuals.coverage.logged} of ${actuals.coverage.total} categories logged; the rest are counted at budget.`}{' '}
+            {transactions.length} {transactions.length === 1 ? 'entry' : 'entries'}.{' '}
+            <Link href="/spending" className="text-accent">
+              Open the log
+            </Link>
+          </p>
+        </section>
+
+        <div aria-hidden className="hidden bg-line lg:block" />
+
+        <section className="border-t border-line py-7 lg:border-t-0 lg:px-9">
+          <div className="flex items-baseline justify-between gap-4">
+            <h2 className="section-title flex items-center gap-2 text-[14px]">
+              <IconGoal size={14} />
+              Goals
+            </h2>
+            <Link
+              href="/goals"
+              className="inline-flex items-center gap-1 text-[13px] text-ink-faint transition-colors hover:text-accent"
+            >
+              Manage
+              <IconArrowRight size={13} />
+            </Link>
+          </div>
+          <p className="mt-1 text-[13px] text-ink-faint">Funded in priority order.</p>
+
+          {result.goals.length === 0 ? (
+            <Empty>
+              No goals yet.{' '}
+              <Link href="/goals" className="text-accent">
+                Add one
+              </Link>{' '}
+              — purchases are measured against them.
+            </Empty>
+          ) : (
+            <ul className="mt-4 space-y-4">
+              {result.goals.map((goal) => {
+                const config = input.goals!.find((g) => g.id === goal.goalId)!;
+                return (
+                  <li key={goal.goalId}>
+                    <div className="flex items-baseline justify-between gap-3">
+                      <span className="flex items-center gap-2 text-[15px]">
+                        {goal.name}
+                        {config.isProtected && <Pill tone="accent">protected</Pill>}
+                      </span>
+                      <span className="tnum text-[14px] text-ink-soft">
+                        {inr(config.current, { compact: true })} /{' '}
+                        {inr(goal.target, { compact: true })}
+                      </span>
+                    </div>
+                    <div className="mt-2">
+                      <Bar
+                        value={config.current}
+                        max={goal.target}
+                        tone={goal.missedDeadline ? 'warn' : 'accent'}
+                      />
+                    </div>
+                    <p
+                      className={`mt-1.5 text-[13px] ${goal.missedDeadline ? 'text-warn' : 'text-ink-faint'}`}
+                    >
+                      {goal.completionMonth == null
+                        ? `Not funded within ${result.horizonMonths} months`
+                        : `Ready by ${monthLabel(goal.completionMonth, anchor)}`}
+                      {goal.deadlineMonth != null &&
+                        ` · target ${monthLabel(goal.deadlineMonth, anchor)}`}
+                    </p>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </section>
+
+        <div aria-hidden className="hidden bg-line lg:block" />
+
+        <section className="border-t border-line py-7 lg:border-t-0 lg:pl-9">
+          <h2 className="section-title flex items-center gap-2 text-[14px]">
+            <IconClock size={14} />
+            Due in 30 days
+          </h2>
+          <p className="mt-1 text-[13px] text-ink-faint">
+            Statemented bills, not last month&rsquo;s number.
+          </p>
+          <div className="mt-4">
             <Commitments snapshot={snapshot} dues={dues} />
-          </Card>
-        </div>
+          </div>
+        </section>
       </div>
 
-      <Card
-        title="The year ahead"
-        hint="Committed items only. The first bar is the month the balance above describes."
-      >
+      {/* 4. The year ahead. */}
+      <section className="border-t border-line pb-8 pt-[26px]">
+        <div className="flex items-baseline justify-between gap-4">
+          <h2 className="text-[13px] font-semibold uppercase tracking-[0.06em] text-ink">
+            The year ahead
+          </h2>
+          <p className="max-w-sm text-right text-[12px] text-ink-faint">
+            Committed items only. The first bar is the month the balance above
+            describes.
+          </p>
+        </div>
         <Projection
           result={result}
           anchor={anchor}
           floor={input.emergencyFloor}
           start={input.startCorpus}
         />
-      </Card>
+      </section>
 
-      <NetWorthTrend snapshots={snapshot.snapshots} />
+      <section className="border-t border-line py-8">
+        <NetWorthTrend snapshots={snapshot.snapshots} />
+      </section>
+
+      {/* The phone's tab bar has room for four destinations and the log
+          button, not eight — Expenses, Loans, Cards and Settings live here
+          instead, one tap further than a tab but no longer nowhere. Hidden at
+          `md` and up, where the desktop `Plan` menu already reaches them. */}
+      <nav
+        aria-label="More pages"
+        className="flex flex-wrap gap-x-5 gap-y-2 border-t border-line py-6 text-[14px] text-ink-faint md:hidden"
+      >
+        <Link href="/expenses" className="hover:text-accent">Expenses</Link>
+        <Link href="/loans" className="hover:text-accent">Loans</Link>
+        <Link href="/cards" className="hover:text-accent">Cards</Link>
+        <Link href="/setup" className="hover:text-accent">Settings</Link>
+      </nav>
+    </div>
+  );
+}
+
+function MonthRow({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: string;
+  tone?: 'warn';
+}) {
+  return (
+    <div className="flex items-baseline justify-between gap-4 py-2">
+      <dt className="text-[15px] text-ink-soft">{label}</dt>
+      <dd className={`tnum text-[16px] ${tone === 'warn' ? 'text-warn' : 'text-ink'}`}>
+        {value}
+      </dd>
     </div>
   );
 }
 
 /**
  * The hero. One figure at display size, its arithmetic spelled out beneath it,
- * and the three vitals as hairline-separated columns rather than four more
+ * and the three vitals as a hairline-separated stack rather than three more
  * boxes — a card around a single number is a box for the sake of a box.
  */
 function Hero({
@@ -283,87 +302,87 @@ function Hero({
     tone === 'bad' ? 'text-bad' : tone === 'warn' ? 'text-warn' : 'text-good';
 
   return (
-    <section className="border-t-2 border-t-accent bg-surface">
-      <div className="grid gap-px bg-line lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-        <div className="bg-surface p-6 sm:p-8">
-          <div className="flex items-center gap-2.5">
-            <h1 className="eyebrow">Balance left each month</h1>
-            <PageGuide guide="dashboard" compact />
-          </div>
-          <p
-            className={`tnum font-display mt-3 text-[44px] leading-none sm:text-[56px] ${toneClass}`}
-          >
-            {inr(balance.balance)}
+    <section className="grid border border-line bg-surface md:grid-cols-[minmax(0,1.5fr)_1px_minmax(0,1fr)]">
+      <div className="px-9 py-10">
+        <div className="flex items-center gap-2.5">
+          <h1 className="eyebrow">Balance left this month</h1>
+          <PageGuide guide="dashboard" compact />
+        </div>
+        <p
+          className={`tnum font-display mt-3 text-[56px] leading-none sm:text-[82px] ${toneClass}`}
+        >
+          {inr(balance.balance)}
+        </p>
+
+        <dl className="mt-6 flex flex-wrap items-baseline gap-x-5 gap-y-2 text-[15px] text-ink-faint">
+          <Term label="Income" value={balance.income} />
+          <Op />
+          <Term label="Expenses" value={balance.expenses} />
+          {balance.loanEmis > 0 && (
+            <>
+              <Op />
+              <Term label="EMIs" value={balance.loanEmis} />
+            </>
+          )}
+          <Op />
+          <Term label="Savings & goals" value={balance.savings} />
+          {balance.wishlist > 0 && (
+            <>
+              <Op />
+              <Term label="Wishlist" value={balance.wishlist} />
+            </>
+          )}
+        </dl>
+
+        {balance.notYetStarted > 0 && (
+          <p className="mt-4 max-w-prose text-justify text-[14px] text-ink-faint">
+            {inr(balance.notYetStarted)} of budget lines start later and are not
+            counted yet.
           </p>
+        )}
 
-          <dl className="mt-6 flex flex-wrap items-baseline gap-x-5 gap-y-2 text-[13px] text-ink-faint">
-            <Term label="Income" value={balance.income} />
-            <Op />
-            <Term label="Expenses" value={balance.expenses} />
-            {balance.loanEmis > 0 && (
-              <>
-                <Op />
-                <Term label="EMIs" value={balance.loanEmis} />
-              </>
-            )}
-            <Op />
-            <Term label="Savings & goals" value={balance.savings} />
-            {balance.wishlist > 0 && (
-              <>
-                <Op />
-                <Term label="Wishlist" value={balance.wishlist} />
-              </>
-            )}
-          </dl>
+        {balance.notDueThisMonth > 0 && (
+          <p className="mt-2 max-w-prose text-justify text-[14px] text-ink-faint">
+            {inr(balance.notDueThisMonth)} of periodic bills are not due this
+            month. A quiet month is roomier than the year is.
+          </p>
+        )}
+      </div>
 
-          {balance.notYetStarted > 0 && (
-            <p className="mt-3 text-[12px] text-ink-faint">
-              {inr(balance.notYetStarted)} of budget lines start later and are not
-              counted yet.
-            </p>
-          )}
+      <div aria-hidden className="hidden bg-line md:block" />
 
-          {balance.notDueThisMonth > 0 && (
-            <p className="mt-2 text-[12px] text-ink-faint">
-              {inr(balance.notDueThisMonth)} of periodic bills are not due this
-              month. A quiet month is roomier than the year is.
-            </p>
-          )}
-        </div>
-
-        <div className="grid grid-cols-3 gap-px bg-line lg:grid-cols-1">
-          <Vital
-            label="Savings"
-            value={inr(health.liquidCorpus, { compact: true })}
-            sub={
-              health.floorHeadroom < 0
-                ? `${inr(Math.abs(health.floorHeadroom), { compact: true })} under floor`
-                : `${inr(health.floorHeadroom, { compact: true })} over floor`
-            }
-            tone={health.floorHeadroom < 0 ? 'bad' : undefined}
-          />
-          <Vital
-            label="Runway"
-            value={
-              Number.isFinite(health.runwayMonths)
-                ? `${health.runwayMonths.toFixed(1)}mo`
-                : '∞'
-            }
-            sub={`at ${inr(health.monthlyBurn, { compact: true })} a month`}
-          />
-          <Vital
-            label="Goals"
-            value={
-              health.goalHealth === 'good'
-                ? 'On track'
-                : health.goalHealth === 'warn'
-                  ? 'At risk'
-                  : 'Off track'
-            }
-            sub={health.goalHealthReason}
-            tone={health.goalHealth === 'good' ? undefined : health.goalHealth}
-          />
-        </div>
+      <div className="grid grid-cols-3 divide-x divide-line border-t border-line md:block md:divide-x-0 md:divide-y md:border-t-0">
+        <Vital
+          label="Savings"
+          value={inr(health.liquidCorpus, { compact: true })}
+          sub={
+            health.floorHeadroom < 0
+              ? `${inr(Math.abs(health.floorHeadroom), { compact: true })} under floor`
+              : `${inr(health.floorHeadroom, { compact: true })} over floor`
+          }
+          tone={health.floorHeadroom < 0 ? 'bad' : undefined}
+        />
+        <Vital
+          label="Runway"
+          value={
+            Number.isFinite(health.runwayMonths)
+              ? `${health.runwayMonths.toFixed(1)}mo`
+              : '∞'
+          }
+          sub={`at ${inr(health.monthlyBurn, { compact: true })} a month`}
+        />
+        <Vital
+          label="Goals"
+          value={
+            health.goalHealth === 'good'
+              ? 'On track'
+              : health.goalHealth === 'warn'
+                ? 'At risk'
+                : 'Off track'
+          }
+          sub={health.goalHealthReason}
+          tone={health.goalHealth === 'good' ? undefined : health.goalHealth}
+        />
       </div>
     </section>
   );
@@ -381,16 +400,16 @@ function Vital({
   tone?: 'warn' | 'bad';
 }) {
   return (
-    <div className="bg-surface p-5">
+    <div className="px-6 py-[22px] md:px-9">
       <div className="eyebrow">{label}</div>
       <div
-        className={`tnum mt-1.5 text-[19px] font-medium ${
+        className={`tnum font-display mt-1.5 text-[28px] leading-none ${
           tone === 'bad' ? 'text-bad' : tone === 'warn' ? 'text-warn' : 'text-ink'
         }`}
       >
         {value}
       </div>
-      <p className="mt-1 line-clamp-2 text-[12px] leading-snug text-ink-faint">{sub}</p>
+      <p className="mt-1.5 line-clamp-2 text-[13px] leading-snug text-ink-faint">{sub}</p>
     </div>
   );
 }
@@ -416,13 +435,11 @@ function Cell({
   value,
   sub,
   tone,
-  lead,
 }: {
   label: string;
   value: string;
   sub: string;
   tone?: 'warn' | 'bad' | 'good';
-  lead?: boolean;
 }) {
   const colour =
     tone === 'bad'
@@ -434,9 +451,13 @@ function Cell({
           : 'text-ink';
 
   return (
-    <div className={`bg-surface p-5 ${lead ? 'border-t-2 border-t-accent' : ''}`}>
-      <div className="eyebrow text-[10px]">{label}</div>
-      <div className={`tnum mt-2 text-[20px] font-medium ${colour}`}>{value}</div>
+    <div className="px-5 py-4">
+      <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-faint">
+        {label}
+      </div>
+      <div className={`tnum font-display mt-1 text-[26px] leading-none ${colour}`}>
+        {value}
+      </div>
       <p className="mt-1.5 text-[12px] leading-snug text-ink-faint">{sub}</p>
     </div>
   );
@@ -445,6 +466,7 @@ function Cell({
 /**
  * Exceptions only. A dashboard that always shows a "warnings" panel teaches you
  * to stop reading it, so this renders nothing at all when nothing is wrong.
+ * Full-bleed hairline band, not a card — the one accent-edge slot on the page.
  */
 function Attention({
   breaches,
@@ -457,13 +479,14 @@ function Attention({
   anchor: Date;
   floorHeadroom: number;
 }) {
-  const items: { tone: 'warn' | 'bad'; text: string; href: string }[] = [];
+  const items: { tone: 'warn' | 'bad'; text: string; href: string; cta: string }[] = [];
 
   if (floorHeadroom < 0) {
     items.push({
       tone: 'bad',
       text: `Savings are ${inr(Math.abs(floorHeadroom))} below your emergency floor.`,
       href: '/setup',
+      cta: 'Review floor',
     });
   }
   if (behindCount > 0) {
@@ -474,6 +497,7 @@ function Attention({
           ? 'One goal will not land by its target date.'
           : `${behindCount} goals will not land by their target dates.`,
       href: '/goals',
+      cta: 'Open goals',
     });
   }
   for (const breach of breaches) {
@@ -481,32 +505,40 @@ function Attention({
       tone: breach.severity === 'red' ? 'bad' : 'warn',
       text: `${breach.message} (${monthLabel(breach.month, anchor)})`,
       href: '/wishlist',
+      cta: 'Open the impact',
     });
   }
 
   if (items.length === 0) return null;
 
   return (
-    <section className="border border-line bg-surface">
-      <h2 className="eyebrow flex items-center gap-2 border-b border-line px-5 py-3">
-        <IconAlert size={14} />
-        Needs a decision
+    <section className="border-t border-ink bg-surface">
+      <h2 className="flex items-baseline justify-between gap-4 border-b border-line px-6 py-[14px] text-[13px] font-semibold uppercase tracking-[0.06em] text-ink lg:px-9">
+        <span className="flex items-center gap-[9px]">
+          <IconAlert size={15} />
+          Needs a decision
+        </span>
+        <span className="text-[12px] font-normal normal-case tracking-normal text-ink-faint">
+          {items.length} {items.length === 1 ? 'item' : 'items'} · silent when there
+          are none
+        </span>
       </h2>
       <ul className="stagger divide-y divide-line">
         {items.slice(0, 4).map((item) => (
           <li key={item.text}>
             <Link
               href={item.href}
-              className="flex items-start gap-3 px-5 py-3 transition-colors duration-[140ms] hover:bg-surface-lift"
+              className="flex items-baseline gap-4 px-6 py-[14px] transition-colors duration-[140ms] hover:bg-surface-lift lg:px-9"
             >
-              <span className="mt-1.5">
-                <TrafficLight tone={item.tone} />
-              </span>
-              <span className="text-[14px] text-ink-soft">{item.text}</span>
-              <IconArrowRight
-                size={15}
-                className="ml-auto mt-0.5 shrink-0 text-ink-faint"
+              <span
+                aria-hidden
+                className={`inline-block shrink-0 ${item.tone === 'bad' ? 'bg-bad' : 'bg-accent-600'}`}
+                style={{ width: 6, height: 6, borderRadius: '9999px', transform: 'translateY(-2px)' }}
               />
+              <span className="text-[15px] text-ink">{item.text}</span>
+              <span className="ml-auto shrink-0 text-[12px] text-accent">
+                {item.cta} →
+              </span>
             </Link>
           </li>
         ))}
@@ -557,7 +589,7 @@ function NextSteps({
           <li key={step.href} className="flex items-start gap-3">
             <span
               aria-hidden
-              className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border text-[11px] ${
+              className={`mt-0.5 flex size-5 shrink-0 items-center justify-center border text-[12px] ${
                 step.done
                   ? 'border-good bg-good-soft text-good'
                   : 'border-line text-ink-faint'
@@ -567,16 +599,16 @@ function NextSteps({
             </span>
             <span>
               {step.done ? (
-                <span className="text-[14px] text-ink-faint line-through">
+                <span className="text-[15px] text-ink-faint line-through">
                   {step.label}
                 </span>
               ) : (
-                <Link href={step.href} className="text-[14px] font-medium text-accent">
+                <Link href={step.href} className="text-[15px] font-medium text-accent">
                   {step.label} →
                 </Link>
               )}
               {!step.done && (
-                <span className="mt-0.5 block text-[13px] text-ink-faint">
+                <span className="mt-0.5 block text-[14px] text-ink-faint">
                   {step.why}
                 </span>
               )}
@@ -685,7 +717,7 @@ function Projection({
 
   return (
     <div>
-      <div className="grid gap-px border border-line bg-line sm:grid-cols-3">
+      <div className="mt-[18px] grid grid-cols-1 divide-y divide-line border border-line sm:grid-cols-3 sm:divide-x sm:divide-y-0">
         <Cell
           label={`Savings by ${last.label}`}
           value={inr(last.corpus, { compact: true })}
@@ -722,7 +754,7 @@ function Projection({
       <YearStrip rows={rows} floor={floor} />
 
       {notes.length === 0 ? (
-        <p className="mt-5 max-w-prose text-[13px] text-ink-soft">
+        <p className="mt-5 max-w-prose text-[14px] text-ink-soft">
           Every month looks like the one before it: {inr(rows[0].buffer)} left
           after everything, nothing lumpy, nothing short.
         </p>
@@ -731,9 +763,9 @@ function Projection({
           {notes.map((n) => (
             <li
               key={n.row.month}
-              className="flex flex-wrap items-baseline gap-x-3 gap-y-1 py-2.5 text-[14px]"
+              className="flex flex-wrap items-baseline gap-x-5 gap-y-1 py-[9px] text-[14px]"
             >
-              <span className="w-[76px] shrink-0 text-ink-soft">{n.row.label}</span>
+              <span className="tnum w-[84px] shrink-0 text-ink-faint">{n.row.label}</span>
               <span className={n.tone === 'bad' ? 'text-bad' : n.tone === 'warn' ? 'text-warn' : 'text-ink-soft'}>
                 {n.text}
               </span>
@@ -743,7 +775,7 @@ function Projection({
       )}
 
       <details className="group mt-5 border-t border-line pt-3">
-        <summary className="cursor-pointer list-none text-[12px] uppercase tracking-[0.06em] text-ink-faint transition-colors hover:text-accent">
+        <summary className="cursor-pointer list-none text-[13px] uppercase tracking-[0.06em] text-ink-faint transition-colors hover:text-accent">
           Month by month
           <span className="ml-1.5 inline-block transition-transform group-open:rotate-90" aria-hidden>
             ›
@@ -751,9 +783,9 @@ function Projection({
         </summary>
 
         <div className="mt-3 overflow-x-auto">
-          <table className="w-full min-w-[620px] text-[14px]">
+          <table className="w-full min-w-[620px] text-[15px]">
             <thead>
-              <tr className="border-b border-line text-left text-[12px] uppercase tracking-wide text-ink-faint">
+              <tr className="border-b border-line text-left text-[13px] uppercase tracking-wide text-ink-faint">
                 <th className="py-2 pr-4 font-medium">Month</th>
                 <th className="py-2 pr-4 text-right font-medium">Income</th>
                 <th className="py-2 pr-4 text-right font-medium">Out</th>
@@ -794,7 +826,7 @@ function Projection({
             </tbody>
           </table>
 
-          <p className="mt-3 max-w-prose text-[13px] text-ink-faint">
+          <p className="mt-3 max-w-prose text-[14px] text-ink-faint">
             Savings balance grows by more than the balance left, because goal
             money is still your money — it sits inside the same pot, earmarked. A
             month where a half-yearly or annual bill lands shows the whole bill in{' '}
@@ -823,37 +855,37 @@ function YearStrip({ rows, floor }: { rows: YearMonth[]; floor: number }) {
   const floorAt = floor > base && floor < hi ? ((floor - base) / span) * 100 : null;
 
   return (
-    <figure className="m-0 mt-5">
-      <div className="relative flex h-24 items-end gap-[3px]" role="presentation">
+    <figure className="m-0 mt-[22px]">
+      <div className="relative flex h-[110px] items-end gap-[6px]" role="presentation">
         {floorAt != null && (
           <div
-            className="pointer-events-none absolute inset-x-0 border-t border-dashed border-line-strong"
+            className="pointer-events-none absolute inset-x-0 border-t border-dashed border-neutral-500"
             style={{ bottom: `${floorAt}%` }}
           />
         )}
         {rows.map((r) => (
           <div
             key={r.month}
-            className="group relative flex-1"
-            style={{ height: `${height(r.corpus)}%` }}
+            className="group relative flex h-full flex-1 items-end"
             title={`${r.label} · savings ${inr(r.corpus)} · ${inr(r.buffer)} left that month`}
           >
             <div
-              className={`h-full w-full transition-colors duration-[140ms] ${
+              className={`w-full transition-colors duration-[140ms] ${
                 r.corpus < floor || r.buffer < 0
                   ? 'bg-bad'
-                  : 'bg-accent/35 group-hover:bg-accent'
+                  : 'bg-accent-600 group-hover:bg-accent'
               }`}
+              style={{ height: `${height(r.corpus)}%` }}
             />
           </div>
         ))}
       </div>
 
-      <div className="mt-1.5 flex gap-[3px]">
+      <div className="mt-1.5 flex gap-[6px]">
         {rows.map((r) => (
           <span
             key={r.month}
-            className="flex-1 text-center text-[10px] tracking-tight text-ink-faint"
+            className="flex-1 text-center text-[10px] tracking-tight text-neutral-600"
           >
             {r.label.slice(0, 3)}
           </span>
@@ -917,9 +949,9 @@ function Commitments({
             href={item.href}
             className="flex items-baseline justify-between gap-4 py-2.5 transition-colors duration-[140ms] hover:bg-surface-lift"
           >
-            <span className="text-[14px]">
+            <span className="text-[15px]">
               {item.name}
-              <span className="ml-2 text-[11px] uppercase tracking-[0.06em] text-ink-faint">
+              <span className="ml-2 text-[12px] uppercase tracking-[0.06em] text-ink-faint">
                 {item.kind}
               </span>
             </span>
@@ -927,10 +959,10 @@ function Commitments({
               <span
                 className={
                   item.days < 0
-                    ? 'text-[12px] text-bad'
+                    ? 'text-[13px] text-bad'
                     : item.days <= 5
-                      ? 'text-[12px] text-warn'
-                      : 'text-[12px] text-ink-faint'
+                      ? 'text-[13px] text-warn'
+                      : 'text-[13px] text-ink-faint'
                 }
               >
                 {item.days < 0
@@ -955,7 +987,7 @@ function daysAway(day: number, today: Date): number {
 
 function LocalModeBanner() {
   return (
-    <div className="rounded-xl border border-line bg-warn-soft px-4 py-3 text-[13px] text-warn">
+    <div className="rounded-xl bg-warn-soft px-4 py-3 text-[14px] text-warn">
       Running on the local JSON store (<code>.wishit/data.json</code>). Set{' '}
       <code>NEXT_PUBLIC_SUPABASE_URL</code> and{' '}
       <code>SUPABASE_SERVICE_ROLE_KEY</code> to switch to Supabase — see{' '}

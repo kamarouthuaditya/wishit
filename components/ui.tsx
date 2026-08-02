@@ -31,7 +31,9 @@ export function toneText(tone: Tone): string {
 }
 
 /**
- * A panel. Deliberately plain: a hairline, a label row, and room to breathe.
+ * A panel. Depth from layered ground and a hairline, not a shadow — the
+ * handoff brief reserves shadow for exactly one element in the whole product
+ * (the mobile FAB), so every other panel is a flat border.
  *
  * `lead` puts a 2px `--accent` rule along the top edge — the one element on a
  * screen that matters most, and at most once per view.
@@ -68,7 +70,7 @@ export function Card({
               {title}
             </h2>
             {hint && (
-              <p className="mt-1.5 max-w-prose text-[13px] text-ink-faint">{hint}</p>
+              <p className="mt-1.5 max-w-prose text-[14px] text-ink-faint">{hint}</p>
             )}
           </div>
           {action}
@@ -124,14 +126,14 @@ export function Section({
             Bigger than a row's name and in caps, so it cannot be mistaken for
             one even at a glance down the page.
           */}
-          <h2 className="section-title text-[15px]">{title}</h2>
+          <h2 className="section-title text-[16px]">{title}</h2>
           {hint && (
             <p className="mt-1 max-w-prose text-[12.5px] leading-snug text-ink-faint">
               {hint}
             </p>
           )}
         </div>
-        {aside && <div className="tnum shrink-0 text-[17px] font-semibold">{aside}</div>}
+        {aside && <div className="tnum shrink-0 text-[18px] font-semibold">{aside}</div>}
       </header>
 
       <div className="border border-line bg-surface">
@@ -172,7 +174,7 @@ export function Stat({
         {value}
       </div>
       {sub && (
-        <div className="mt-2 max-w-prose text-[13px] leading-snug text-ink-soft">
+        <div className="mt-2 max-w-prose text-[14px] leading-snug text-ink-soft">
           {sub}
         </div>
       )}
@@ -196,7 +198,7 @@ export function Pill({
   };
   return (
     <span
-      className={`inline-flex items-center border px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] ${map[tone]}`}
+      className={`inline-flex items-center border px-2 py-0.5 text-[12px] font-semibold uppercase tracking-[0.08em] ${map[tone]}`}
     >
       {children}
     </span>
@@ -242,7 +244,7 @@ export function Field({
   return (
     <label className="block">
       <span
-        className={`flex items-baseline justify-between gap-3 text-[11px] font-semibold uppercase tracking-[0.08em] ${
+        className={`flex items-baseline justify-between gap-3 text-[12px] font-semibold uppercase tracking-[0.08em] ${
           muted ? 'text-ink-faint/60' : 'text-ink-faint'
         }`}
       >
@@ -251,7 +253,7 @@ export function Field({
       </span>
       {children}
       {hint && (
-        <span className="mt-1.5 block text-[12px] leading-snug text-ink-faint">
+        <span className="mt-1.5 block text-[13px] leading-snug text-ink-faint">
           {hint}
         </span>
       )}
@@ -265,7 +267,7 @@ export function Field({
  * the same signal as the focus ring elsewhere.
  */
 const inputBase =
-  'mt-1.5 w-full border border-line bg-paper px-3 py-2 text-[14px] text-ink outline-none ' +
+  'mt-1.5 w-full border border-line bg-paper px-3 py-2 text-[15px] text-ink outline-none ' +
   'transition-colors duration-[140ms] ' +
   'hover:border-line-strong focus:border-accent ' +
   'disabled:cursor-not-allowed disabled:border-dashed disabled:text-ink-faint ' +
@@ -291,7 +293,7 @@ export function Textarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement
 }
 
 
-/** A square progress rule. 4px of ground, filled from the left. */
+/** A pill-shaped progress rule. 6px of ground, filled from the left. */
 export function Bar({
   value,
   max,
@@ -310,7 +312,7 @@ export function Bar({
     accent: 'bg-accent',
   };
   return (
-    <div className="h-1 w-full bg-line" role="presentation">
+    <div className="h-1.5 w-full bg-line" role="presentation">
       <div
         className={`h-full transition-[width] duration-[320ms] ${bg[tone]}`}
         style={{ width: `${filled * 100}%` }}
@@ -321,7 +323,7 @@ export function Bar({
 
 export function Empty({ children }: { children: ReactNode }) {
   return (
-    <p className="border border-dashed border-line px-4 py-8 text-center text-[14px] text-ink-faint">
+    <p className="rounded-2xl border border-dashed border-line-strong bg-surface-lift/40 px-4 py-8 text-center text-[15px] text-ink-faint">
       {children}
     </p>
   );

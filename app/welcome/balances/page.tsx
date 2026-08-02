@@ -98,7 +98,7 @@ export default async function BalancesStepPage({
           </Field>
         </div>
 
-        <p className="max-w-prose border-l-2 border-l-line pl-4 text-[13px] leading-relaxed text-ink-faint">
+        <p className="max-w-prose border-l-2 border-l-line pl-4 text-[14px] leading-relaxed text-ink-faint">
           Three to six months of costs is the usual advice; the figures offered
           are months of salary, which is close enough until the next step tells
           the app what your month actually costs. Nothing here is locked in — it
@@ -110,7 +110,7 @@ export default async function BalancesStepPage({
             Continue
             <IconArrowRight size={15} />
           </SubmitButton>
-          <span className="text-[13px] text-ink-faint">
+          <span className="text-[14px] text-ink-faint">
             That is everything the app cannot work without.
           </span>
           <StepBack from="balances" />

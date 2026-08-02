@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from 'next';
-import { Montserrat, Playfair_Display } from 'next/font/google';
+import { Cormorant_Garamond, Lora } from 'next/font/google';
 import Link from 'next/link';
-import { BalanceStrip } from '@/components/balance-strip';
 import { MobileNav, Nav } from '@/components/nav';
 import { Avatar } from '@/components/avatar';
 import { Notifications } from '@/components/notifications';
@@ -12,8 +11,10 @@ import { Analytics } from '@vercel/analytics/next';
 import { loadSnapshot, loadTransactionsForMonth } from '@/lib/db/repository';
 import { buildNotices } from '@/lib/model/notifications';
 import { monthKeyOf } from '@/lib/snapshot';
+import { budgetsByCategory } from '@/lib/model/actuals';
 import { isoDate } from '@/lib/format';
 import { currentUser, isAuthConfigured } from '@/lib/supabase/server';
+import { now } from '@/lib/clock';
 import './globals.css';
 
 // The header reads live figures, so nothing here can be prerendered.
@@ -33,22 +34,24 @@ export const metadata: Metadata = {
  */
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#F9FDF5' },
-    { media: '(prefers-color-scheme: dark)', color: '#0B0B0B' },
+    { media: '(prefers-color-scheme: light)', color: '#F3F2F2' },
+    { media: '(prefers-color-scheme: dark)', color: '#161513' },
   ],
 };
 
-// Montserrat carries every number and control; Playfair is the one piece of
-// warmth, and only ever at heading size.
-const montserrat = Montserrat({
+// The Classical pair, adopted whole rather than mapped onto the old brand:
+// Lora carries every number and control; Cormorant Garamond is the one piece
+// of warmth, and only ever at heading size.
+const lora = Lora({
   subsets: ['latin'],
-  variable: '--font-montserrat',
+  variable: '--font-lora',
   display: 'swap',
 });
 
-const playfair = Playfair_Display({
+const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
-  variable: '--font-playfair',
+  weight: ['400', '500', '600'],
+  variable: '--font-cormorant',
   display: 'swap',
 });
 
@@ -100,10 +103,39 @@ export default async function RootLayout({
   // Notices are for the app proper. Mid-onboarding there is nothing to notice.
   const notices = inApp && snapshot ? buildNotices(snapshot, transactions) : [];
 
+  const headerDate = now().toLocaleDateString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: '2-digit',
+  });
+
+  /*
+   * The keypad sheet's category chips and its "puts you further over budget"
+   * line, both computed once here rather than inside the client component —
+   * the transactions and the budget are already in this request, and the
+   * sheet has no business reading the database itself.
+   */
+  const month = monthKeyOf();
+  const monthName = new Date(`${month}-01T00:00:00`).toLocaleDateString('en-IN', {
+    month: 'long',
+  });
+  const recentCategories = [...new Set(transactions.map((t) => t.category))].slice(0, 4);
+  const categoryBudgets: Record<string, { budget: number; logged: number }> = {};
+  if (snapshot) {
+    const budgets = budgetsByCategory(snapshot.expenses, month);
+    const logged = new Map<string, number>();
+    for (const t of transactions) {
+      logged.set(t.category, (logged.get(t.category) ?? 0) + Number(t.amount));
+    }
+    for (const [category, line] of budgets) {
+      categoryBudgets[category] = { budget: line.amount, logged: logged.get(category) ?? 0 };
+    }
+  }
+
   return (
     <html
       lang="en"
-      className={`h-full ${montserrat.variable} ${playfair.variable}`}
+      className={`h-full ${lora.variable} ${cormorant.variable}`}
       // The theme script writes to this element before React hydrates.
       suppressHydrationWarning
     >
@@ -122,28 +154,50 @@ export default async function RootLayout({
         />
       </head>
       <body className="flex min-h-full flex-col">
+        {/*
+          64px, hairline bottom — the build spec's exact header. Left: the
+          wordmark and the section nav, 36px apart. Right: today's date, a
+          1px×20px divider, the primary log action, and the avatar. `Want`
+          and the bell are not in the spec's header at all, but cutting them
+          was a feature loss the brief never asked for, so they ride along
+          beside the log button instead of replacing anything it names.
+        */}
         <header className="sticky top-0 z-20 border-b border-line bg-paper">
-          <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-8 gap-y-3 px-5 py-3">
+          <div className="mx-auto flex h-16 max-w-[1440px] items-center gap-9 px-6 lg:px-9">
             <Link
               href={signedIn ? '/' : '/login'}
-              className="font-display text-[22px] font-semibold leading-none tracking-tight"
+              className="font-display shrink-0 text-[23px] leading-none tracking-tight"
             >
               Wish<span className="text-accent">it</span>
             </Link>
 
             {inApp && <Nav />}
 
-            <div className="ml-auto flex items-center gap-3 text-[12px]">
+            <div className="ml-auto flex items-center gap-4">
               {inApp && (
                 <>
-                  <QuickWish />
-                  <QuickLog
-                    categories={categories}
-                    cards={snapshot.cards}
-                    today={isoDate()}
-                  />
-                  <Notifications notices={notices} />
+                  <span className="tnum hidden whitespace-nowrap text-[13px] font-medium text-ink-soft md:flex lg:text-[14px] lg:font-semibold xl:text-[15px]">
+                    {headerDate}
+                  </span>
+                  <span aria-hidden className="hidden h-5 w-px bg-line md:block" />
                 </>
+              )}
+
+              {inApp && (
+                <div className="flex items-center gap-3">
+                  <QuickWish />
+                  {/* The header's own trigger is a desktop control now — the
+                      phone has the same action in the tab bar, and offering it
+                      twice on a 390px screen is a button competing with itself. */}
+                  <div className="hidden md:block">
+                    <QuickLog
+                      categories={categories}
+                      cards={snapshot.cards}
+                      today={isoDate()}
+                    />
+                  </div>
+                  <Notifications notices={notices} />
+                </div>
               )}
               {signedIn && (
                 <Avatar
@@ -153,11 +207,10 @@ export default async function RootLayout({
               )}
             </div>
           </div>
-          {inApp && <BalanceStrip snapshot={snapshot} />}
         </header>
 
         {/* The footer below now carries the clearance for the phone bottom bar. */}
-        <main className="mx-auto w-full max-w-6xl grow px-5 py-8 md:py-10">
+        <main className="mx-auto w-full max-w-[1440px] grow px-6 py-8 md:py-10 lg:px-9">
           {children}
         </main>
 
@@ -167,14 +220,21 @@ export default async function RootLayout({
           end of a page, not the top of one — and because the header on a phone
           has no room left.
         */}
-        <footer className="mx-auto w-full max-w-6xl px-5 pb-24 pt-2 md:pb-8">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4 text-[12px] text-ink-faint">
+        <footer className="mx-auto w-full max-w-[1440px] px-6 pb-24 pt-2 md:pb-8 lg:px-9">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4 text-[13px] text-ink-faint">
             <span>Wishit — early access. Numbers may still be wrong; tell us when they are.</span>
             <FeedbackLink signedIn={signedIn} />
           </div>
         </footer>
 
-        {inApp && <MobileNav />}
+        {inApp && (
+          <MobileNav
+            recentCategories={recentCategories}
+            categoryBudgets={categoryBudgets}
+            today={isoDate()}
+            monthTitle={monthName}
+          />
+        )}
 
         {/*
           Page views only, no cookie and no identifier — which is the reason it

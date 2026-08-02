@@ -75,13 +75,13 @@ export default async function AppearanceStepPage() {
               key={label}
               className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-2.5"
             >
-              <dt className="text-[13px] text-ink-faint">{label}</dt>
-              <dd className="text-[14px] text-ink-soft">{value}</dd>
+              <dt className="text-[14px] text-ink-faint">{label}</dt>
+              <dd className="text-[15px] text-ink-soft">{value}</dd>
             </div>
           ))}
         </dl>
         <div className="border-t border-line-strong px-5 py-4">
-          <p className="eyebrow text-[10px]">Balance left each month</p>
+          <p className="eyebrow text-[11px]">Balance left each month</p>
           <p
             className={`tnum font-display mt-1.5 text-[32px] leading-none ${
               balance.balance < 0 ? 'text-bad' : 'text-good'
@@ -89,7 +89,7 @@ export default async function AppearanceStepPage() {
           >
             {inr(balance.balance)}
           </p>
-          <p className="mt-2 max-w-prose text-[12px] text-ink-faint">
+          <p className="mt-2 max-w-prose text-[13px] text-ink-faint">
             Everything above is editable in Settings, and anything skipped has a
             page of its own. Nothing here is a decision you are stuck with.
           </p>
@@ -103,7 +103,7 @@ export default async function AppearanceStepPage() {
             <IconArrowRight size={15} />
           </SubmitButton>
         </form>
-        <span className="text-[13px] text-ink-faint">
+        <span className="text-[14px] text-ink-faint">
           Setup does not come back.
         </span>
         <StepBack from="appearance" />

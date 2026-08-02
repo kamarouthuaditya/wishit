@@ -17,7 +17,7 @@ export default async function SetupPage() {
         <h1 className="mt-2 font-display text-[32px] leading-none">
           The numbers everything else is built on
         </h1>
-        <p className="mt-3 max-w-prose text-[14px] text-ink-soft">
+        <p className="mt-3 max-w-prose text-[15px] text-ink-soft">
           Set this up once; everything is editable later. Expenses, loans and goals
           each have their own page.
         </p>

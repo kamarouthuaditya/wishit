@@ -3,6 +3,7 @@ import { currentUser } from '@/lib/supabase/server';
 import { AuthForm } from '@/components/auth-form';
 import { GoogleButton } from '@/components/google-button';
 import { SignInArt } from '@/components/illustrations/signin';
+import { AuthShell } from '@/components/auth-shell';
 import { Card } from '@/components/ui';
 
 export const dynamic = 'force-dynamic';
@@ -25,32 +26,30 @@ export default async function LoginPage({
   const { expired, deleted, error, next } = await searchParams;
 
   return (
-    <div className="mx-auto max-w-md py-10">
-      {/* Above the heading rather than beside it: this column is half the
-          width of the onboarding one, and anything set alongside a title here
-          leaves both of them squeezed. */}
-      <SignInArt className="mx-auto mb-7 hidden h-36 w-auto sm:block" />
-
+    <AuthShell
+      art={<SignInArt className="h-40 w-auto" />}
+      tagline="Your figures, and nobody else’s."
+    >
       <h1 className="text-2xl font-semibold tracking-tight">Sign in</h1>
-      <p className="mt-1 text-[15px] text-ink-soft">
+      <p className="mt-1 text-[16px] text-ink-soft">
         Your figures, and nobody else’s.
       </p>
 
       {expired && (
-        <p className="mt-4 border border-warn/40 bg-warn-soft px-4 py-3 text-[13px] text-warn">
+        <p className="mt-4 rounded-xl bg-warn-soft px-4 py-3 text-[14px] text-warn">
           You were signed out because the session expired. Nothing was lost —
           sign in and carry on.
         </p>
       )}
 
       {deleted && (
-        <p className="mt-4 border border-line bg-surface px-4 py-3 text-[13px] text-ink-soft">
+        <p className="mt-4 text-[14px] text-ink-soft">
           Your account and everything in it have been deleted. Nothing is kept.
         </p>
       )}
 
       {error && (
-        <p className="mt-4 border border-bad/40 px-4 py-3 text-[13px] text-bad">
+        <p className="mt-4 rounded-xl bg-bad-soft px-4 py-3 text-[14px] text-bad">
           {error === 'cancelled'
             ? 'The Google sign-in was cancelled. Nothing happened.'
             : 'Google sign-in did not go through. Try again, or use your email and password.'}
@@ -63,6 +62,6 @@ export default async function LoginPage({
           <AuthForm mode="sign-in" />
         </Card>
       </div>
-    </div>
+    </AuthShell>
   );
 }

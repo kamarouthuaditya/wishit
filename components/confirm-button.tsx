@@ -56,7 +56,7 @@ export function ConfirmButton({
 
   return (
     <span className="flex flex-wrap items-center gap-2">
-      <span className="text-[12px] text-warn" role="alert">
+      <span className="text-[13px] text-warn" role="alert">
         {confirm}
       </span>
       {/*

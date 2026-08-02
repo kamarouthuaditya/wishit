@@ -82,7 +82,7 @@ export function SubmitText({
       disabled={pending}
       aria-busy={pending || undefined}
       className={
-        'cursor-pointer text-[12px] text-ink-faint transition-colors duration-[140ms] ' +
+        'cursor-pointer text-[13px] text-ink-faint transition-colors duration-[140ms] ' +
         `hover:text-bad disabled:cursor-not-allowed disabled:opacity-60 ${className}`
       }
     >

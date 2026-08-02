@@ -91,7 +91,7 @@ export default async function IncomeStepPage({
 
         <section className="border-t border-line pt-6">
           <h2 className="eyebrow">If you get a bonus</h2>
-          <p className="mt-1.5 max-w-prose text-[13px] text-ink-faint">
+          <p className="mt-1.5 max-w-prose text-[14px] text-ink-faint">
             Leave it at zero if you do not. It matters because a purchase that is
             out of reach today is often just a purchase that waits for March.
           </p>
@@ -137,7 +137,7 @@ export default async function IncomeStepPage({
             Continue
             <IconArrowRight size={15} />
           </SubmitButton>
-          <span className="text-[13px] text-ink-faint">
+          <span className="text-[14px] text-ink-faint">
             Next: what you have saved.
           </span>
         </div>

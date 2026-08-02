@@ -3,6 +3,7 @@ import { currentUser } from '@/lib/supabase/server';
 import { AuthForm } from '@/components/auth-form';
 import { GoogleButton } from '@/components/google-button';
 import { WelcomeCatsArt } from '@/components/illustrations/welcomecats';
+import { AuthShell } from '@/components/auth-shell';
 import { Card } from '@/components/ui';
 
 export const dynamic = 'force-dynamic';
@@ -11,11 +12,12 @@ export default async function SignupPage() {
   if (await currentUser()) redirect('/');
 
   return (
-    <div className="mx-auto max-w-md py-10">
-      <WelcomeCatsArt className="mx-auto mb-7 hidden h-32 w-auto sm:block" />
-
+    <AuthShell
+      art={<WelcomeCatsArt className="h-36 w-auto" />}
+      tagline="If I buy this, what does it cost me in time?"
+    >
       <h1 className="text-2xl font-semibold tracking-tight">Create an account</h1>
-      <p className="mt-1 max-w-prose text-[15px] text-ink-soft">
+      <p className="mt-1 max-w-prose text-[16px] text-ink-soft">
         Wishit answers one question: <em>if I buy this, how much longer do I wait
         for the things I actually want?</em> Setting it up takes about three
         minutes.
@@ -30,6 +32,6 @@ export default async function SignupPage() {
           <AuthForm mode="sign-up" />
         </Card>
       </div>
-    </div>
+    </AuthShell>
   );
 }

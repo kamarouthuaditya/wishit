@@ -40,7 +40,7 @@ export function DeleteAccount({ email }: { email: string }) {
       </Field>
 
       {state.error && (
-        <p role="alert" className="text-[13px] text-bad">
+        <p role="alert" className="text-[14px] text-bad">
           {state.error}
         </p>
       )}

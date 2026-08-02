@@ -70,7 +70,7 @@ export default async function SpendingPage({
             <h1 className="font-display text-[30px] leading-none">Spending</h1>
             <PageGuide guide="spending" />
           </div>
-          <p className="mt-3 max-w-prose text-[14px] text-ink-soft">
+          <p className="mt-3 max-w-prose text-[15px] text-ink-soft">
             Every rupee that actually left, day by day. A record, not a plan —
             logging here never moves your budget or the balance in the header.
             Compare the two on the{' '}
@@ -83,8 +83,7 @@ export default async function SpendingPage({
         <MonthNav month={month} months={months} isCurrentMonth={isCurrentMonth} />
       </header>
 
-      <section className="border-t-2 border-t-accent bg-surface">
-        <div className="grid gap-px bg-line sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <Vital
             label={`Spent in ${monthTitle(month)}`}
             value={inr(summary.total)}
@@ -112,12 +111,11 @@ export default async function SpendingPage({
             tone={summary.oneOff > 0 ? 'warn' : undefined}
           />
         </div>
-      </section>
 
       <section className="border border-line bg-surface p-5">
         <div className="flex flex-wrap items-baseline justify-between gap-3">
           <h2 className="eyebrow">Log a spend</h2>
-          <span className="text-[12px] text-ink-faint">
+          <span className="text-[13px] text-ink-faint">
             Heading for <Money amount={actuals.projected} />
             {actuals.coverage.total > 0 &&
               ` · ${actuals.coverage.logged}/${actuals.coverage.total} categories logged`}
@@ -144,15 +142,15 @@ export default async function SpendingPage({
             <ul className="space-y-4">
               {summary.days.map((day) => (
                 <li key={day.date}>
-                  <div className="flex items-baseline justify-between border-b border-line pb-1.5">
-                    <span className="text-[13px] font-medium">
+                  <div className="flex items-baseline justify-between border-b border-line/70 pb-1.5">
+                    <span className="text-[14px] font-medium">
                       {dayLabel(day.date)}
                     </span>
-                    <span className="text-[13px] font-semibold">
+                    <span className="text-[14px] font-semibold">
                       <Money amount={day.total} />
                     </span>
                   </div>
-                  <ul className="divide-y divide-line">
+                  <ul className="divide-y divide-line/70">
                     {day.rows.map((tx) => (
                       <EntryRow
                         key={tx.id}
@@ -179,10 +177,10 @@ export default async function SpendingPage({
                   return (
                     <li key={line.category}>
                       <div className="flex items-baseline justify-between gap-3">
-                        <span className="text-[14px] capitalize">{line.category}</span>
-                        <span className="text-[14px]">
+                        <span className="text-[15px] capitalize">{line.category}</span>
+                        <span className="text-[15px]">
                           <Money amount={line.total} tone={over ? 'bad' : 'neutral'} />
-                          <span className="ml-2 text-[12px] text-ink-faint">
+                          <span className="ml-2 text-[13px] text-ink-faint">
                             {pct(line.share, 0)}
                           </span>
                         </span>
@@ -194,7 +192,7 @@ export default async function SpendingPage({
                           tone={line.budget == null ? 'neutral' : over ? 'bad' : 'accent'}
                         />
                       </div>
-                      <p className="mt-1 text-[12px] text-ink-faint">
+                      <p className="mt-1 text-[13px] text-ink-faint">
                         {line.budget == null
                           ? 'No budget line for this'
                           : over
@@ -213,7 +211,7 @@ export default async function SpendingPage({
               <a
                 href={`/spending/export?month=${month}`}
                 download
-                className="inline-flex items-center justify-center rounded-lg border border-line px-3.5 py-2 text-[14px] font-medium text-ink transition hover:bg-line/40"
+                className="inline-flex items-center justify-center border border-line-strong px-3.5 py-2 text-[15px] font-medium text-ink transition-all hover:border-accent hover:text-accent"
               >
                 {monthTitle(month)}
                 {summary.count > 0 ? ` · ${summary.count}` : ''}
@@ -221,12 +219,12 @@ export default async function SpendingPage({
               <a
                 href="/spending/export"
                 download
-                className="inline-flex items-center justify-center rounded-lg border border-line px-3.5 py-2 text-[14px] font-medium text-ink transition hover:bg-line/40"
+                className="inline-flex items-center justify-center border border-line-strong px-3.5 py-2 text-[15px] font-medium text-ink transition-all hover:border-accent hover:text-accent"
               >
                 Everything
               </a>
             </div>
-            <p className="mt-3 text-[13px] text-ink-faint">
+            <p className="mt-3 text-[14px] text-ink-faint">
               <code>date, amount, category, note, one_off</code> — opens in any
               spreadsheet, and takes your data with you if you ever leave.
             </p>
@@ -252,26 +250,26 @@ function MonthNav({
     <div className="flex flex-wrap items-center gap-2">
       <Link
         href={`/spending?month=${shiftMonth(month, -1)}`}
-        className="rounded-lg border border-line px-2.5 py-1.5 text-[13px] hover:bg-line/40"
+        className="border border-line-strong px-2.5 py-1.5 text-[14px] transition-colors hover:border-accent hover:text-accent"
         aria-label="Previous month"
       >
         ←
       </Link>
-      <span className="text-[14px] font-medium">{monthTitle(month)}</span>
+      <span className="text-[15px] font-medium">{monthTitle(month)}</span>
       <Link
         href={`/spending?month=${shiftMonth(month, 1)}`}
-        className="rounded-lg border border-line px-2.5 py-1.5 text-[13px] hover:bg-line/40"
+        className="border border-line-strong px-2.5 py-1.5 text-[14px] transition-colors hover:border-accent hover:text-accent"
         aria-label="Next month"
       >
         →
       </Link>
       {!isCurrentMonth && (
-        <Link href="/spending" className="text-[13px] text-accent">
+        <Link href="/spending" className="text-[14px] text-accent">
           This month
         </Link>
       )}
       {known.length > 1 && (
-        <span className="flex flex-wrap gap-2 text-[12px] text-ink-faint">
+        <span className="flex flex-wrap gap-2 text-[13px] text-ink-faint">
           {known.slice(0, 6).map((m) => (
             <Link
               key={m}
@@ -301,7 +299,11 @@ function Vital({
   lead?: boolean;
 }) {
   return (
-    <div className="bg-surface p-5">
+    <div
+      className={`rounded-2xl bg-surface p-5 ${
+        lead ? 'border border-line border-t-2 border-t-accent' : 'border border-line'
+      }`}
+    >
       <div className="eyebrow">{label}</div>
       <div
         className={`tnum mt-2 ${lead ? 'font-display text-[30px] leading-none' : 'text-[20px] font-medium'} ${
@@ -310,7 +312,7 @@ function Vital({
       >
         {value}
       </div>
-      <p className="mt-2 text-[12px] leading-snug text-ink-faint">{sub}</p>
+      <p className="mt-2 text-[13px] leading-snug text-ink-faint">{sub}</p>
     </div>
   );
 }
@@ -335,16 +337,16 @@ function EntryRow({
     <li className="group">
       <details>
         <summary className="flex cursor-pointer list-none items-center gap-3 py-2.5 transition-colors duration-[140ms] hover:bg-surface-lift">
-          <span className="text-[14px] capitalize">{tx.category}</span>
+          <span className="text-[15px] capitalize">{tx.category}</span>
           {tx.is_one_off && <Pill tone="neutral">one-off</Pill>}
           {card && (
-            <span className="inline-flex items-center gap-1 text-[11px] text-ink-faint">
+            <span className="inline-flex items-center gap-1 text-[12px] text-ink-faint">
               <IconCard size={12} />
               {card.name}
             </span>
           )}
           {tx.note && (
-            <span className="truncate text-[13px] text-ink-faint">{tx.note}</span>
+            <span className="truncate text-[14px] text-ink-faint">{tx.note}</span>
           )}
           <span className="ml-auto flex items-center gap-3">
             <Money amount={Number(tx.amount)} />
@@ -356,7 +358,7 @@ function EntryRow({
 
         <form
           action={updateTransaction}
-          className="grid gap-3 border-t border-line bg-paper px-3 py-4 sm:grid-cols-2 lg:grid-cols-4"
+          className="grid gap-3 rounded-b-2xl border-t border-line/70 bg-surface-lift/60 px-3 py-4 sm:grid-cols-2 lg:grid-cols-4"
         >
           <input type="hidden" name="id" value={tx.id} />
           <Field label="Date">
@@ -392,7 +394,7 @@ function EntryRow({
               </Select>
             </Field>
           )}
-          <label className="flex items-center gap-2 pb-2 text-[13px]">
+          <label className="flex items-center gap-2 pb-2 text-[14px]">
             <input
               type="checkbox"
               name="is_one_off"

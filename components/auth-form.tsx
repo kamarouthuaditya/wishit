@@ -59,7 +59,7 @@ export function AuthForm({ mode }: { mode: 'sign-in' | 'sign-up' }) {
         hint={signingUp ? 'At least 8 characters' : undefined}
         action={
           signingUp ? undefined : (
-            <Link href="/forgot-password" className="text-[13px] text-accent">
+            <Link href="/forgot-password" className="text-[14px] text-accent">
               Forgot?
             </Link>
           )
@@ -85,7 +85,7 @@ export function AuthForm({ mode }: { mode: 'sign-in' | 'sign-up' }) {
       {state.error && (
         <p
           role="alert"
-          className="rounded-lg border border-bad/30 bg-bad-soft px-4 py-3 text-[14px] text-bad"
+          className="rounded-lg border border-bad/30 bg-bad-soft px-4 py-3 text-[15px] text-bad"
         >
           {state.error}
         </p>
@@ -93,7 +93,7 @@ export function AuthForm({ mode }: { mode: 'sign-in' | 'sign-up' }) {
       {state.notice && (
         <p
           role="status"
-          className="rounded-lg border border-good/30 bg-good-soft px-4 py-3 text-[14px] text-good"
+          className="rounded-lg border border-good/30 bg-good-soft px-4 py-3 text-[15px] text-good"
         >
           {state.notice}
         </p>
@@ -103,7 +103,7 @@ export function AuthForm({ mode }: { mode: 'sign-in' | 'sign-up' }) {
         {pending ? 'One moment…' : signingUp ? 'Create account' : 'Sign in'}
       </Button>
 
-      <p className="text-center text-[14px] text-ink-soft">
+      <p className="text-center text-[15px] text-ink-soft">
         {signingUp ? (
           <>
             Already have an account?{' '}

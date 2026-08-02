@@ -66,7 +66,7 @@ export default async function ExpensesStepPage() {
       {expenses.length === 0 && (
         <form action={seedDefaultExpenses}>
           <div className="border border-dashed border-line px-5 py-4">
-            <p className="max-w-prose text-[14px] text-ink-soft">
+            <p className="max-w-prose text-[15px] text-ink-soft">
               Start from a typical month — rent, food, petrol, insurance, a SIP —
               then edit the amounts. Faster than a blank list, and every line is
               yours to change or delete.
@@ -83,17 +83,17 @@ export default async function ExpensesStepPage() {
       )}
 
       <form action={saveExpense} className="space-y-2">
-        <div className="flex flex-wrap items-stretch gap-px border border-line bg-line">
+        <div className="flex flex-wrap items-stretch gap-px overflow-hidden rounded-xl border border-line bg-line">
           <input
             name="name"
             required
             placeholder="Rent, Gym, Netflix…"
             aria-label="What it is"
-            className="min-w-[9rem] flex-[1.4] bg-paper px-3 py-3 text-[15px] outline-none placeholder:text-ink-faint"
+            className="min-w-[9rem] flex-[1.4] bg-paper px-3 py-3 text-[16px] outline-none placeholder:text-ink-faint"
           />
 
           <div className="flex min-w-[7rem] flex-1 items-center gap-2 bg-paper px-3">
-            <span aria-hidden className="text-[15px] text-ink-faint">
+            <span aria-hidden className="text-[16px] text-ink-faint">
               ₹
             </span>
             <input
@@ -104,7 +104,7 @@ export default async function ExpensesStepPage() {
               required
               placeholder="0"
               aria-label="Amount per bill"
-              className="tnum w-full bg-transparent py-3 text-[16px] font-medium outline-none placeholder:text-ink-faint"
+              className="tnum w-full bg-transparent py-3 text-[17px] font-medium outline-none placeholder:text-ink-faint"
             />
           </div>
 
@@ -112,7 +112,7 @@ export default async function ExpensesStepPage() {
             name="frequency_months"
             defaultValue="1"
             aria-label="How often"
-            className="min-w-[7rem] bg-paper px-3 py-3 text-[14px] text-ink-soft outline-none"
+            className="min-w-[7rem] bg-paper px-3 py-3 text-[15px] text-ink-soft outline-none"
           >
             {Object.entries(FREQUENCY).map(([months, label]) => (
               <option key={months} value={months}>
@@ -125,7 +125,7 @@ export default async function ExpensesStepPage() {
             name="type"
             defaultValue="fixed"
             aria-label="Kind"
-            className="min-w-[7rem] bg-paper px-3 py-3 text-[14px] text-ink-soft outline-none"
+            className="min-w-[7rem] bg-paper px-3 py-3 text-[15px] text-ink-soft outline-none"
           >
             <option value="fixed">fixed</option>
             <option value="variable">varies</option>
@@ -140,36 +140,36 @@ export default async function ExpensesStepPage() {
             was nothing to correct. Blank `from` still means today, and blank
             `until` still means forever; the fields say so instead of assuming.
           */}
-          <label className="flex min-w-[10rem] flex-1 items-center gap-2 bg-paper px-3 text-[13px] text-ink-faint">
+          <label className="flex min-w-[10rem] flex-1 items-center gap-2 bg-paper px-3 text-[14px] text-ink-faint">
             from
             <input
               name="effective_from"
               type="date"
               defaultValue={today}
               aria-label="First month it is charged"
-              className="tnum w-full bg-transparent py-3 text-[14px] text-ink outline-none"
+              className="tnum w-full bg-transparent py-3 text-[15px] text-ink outline-none"
             />
           </label>
 
-          <label className="flex min-w-[10rem] flex-1 items-center gap-2 bg-paper px-3 text-[13px] text-ink-faint">
+          <label className="flex min-w-[10rem] flex-1 items-center gap-2 bg-paper px-3 text-[14px] text-ink-faint">
             until
             <input
               name="effective_to"
               type="date"
               aria-label="Last month it is charged — blank means it keeps running"
-              className="tnum w-full bg-transparent py-3 text-[14px] text-ink outline-none"
+              className="tnum w-full bg-transparent py-3 text-[15px] text-ink outline-none"
             />
           </label>
 
           <SubmitButton
-            className="px-5 py-3 text-[13px]"
+            className="px-5 py-3 text-[14px]"
             pendingLabel="Adding…"
           >
             <IconPlus size={15} />
             Add
           </SubmitButton>
         </div>
-        <p className="text-[12px] text-ink-faint">
+        <p className="text-[13px] text-ink-faint">
           Fixed is the same every month; varies is a budget you spend against.
           Leave <em className="not-italic text-ink-soft">until</em> blank for
           anything that keeps running. Categories and cards wait on the expenses
@@ -182,11 +182,11 @@ export default async function ExpensesStepPage() {
           {expenses.map((expense) => (
             <li
               key={expense.id}
-              className="flex items-baseline justify-between gap-4 py-2.5"
+              className="flex items-baseline justify-between gap-4 px-4 py-2.5"
             >
-              <span className="min-w-0 text-[14px]">
+              <span className="min-w-0 text-[15px]">
                 <span className="truncate">{expense.name}</span>
-                <span className="ml-2 text-[11px] uppercase tracking-[0.06em] text-ink-faint">
+                <span className="ml-2 text-[12px] uppercase tracking-[0.06em] text-ink-faint">
                   {expense.type === 'variable' ? 'varies' : expense.type}
                   {expense.frequency_months !== 1 &&
                     ` · ${FREQUENCY[expense.frequency_months] ?? 'monthly'}`}

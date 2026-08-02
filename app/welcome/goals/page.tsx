@@ -61,7 +61,7 @@ export default async function GoalsStepPage() {
           <input type="hidden" name="priority" value={1} />
           <input type="hidden" name="is_protected" value="on" />
           <div className="border border-dashed border-line px-5 py-4">
-            <p className="max-w-prose text-[14px] text-ink-soft">
+            <p className="max-w-prose text-[15px] text-ink-soft">
               Six months of what your month costs is{' '}
               <span className="tnum text-ink">{inr(suggested)}</span>. That is the
               usual first goal, and it is protected — nothing else is allowed to
@@ -80,17 +80,17 @@ export default async function GoalsStepPage() {
       )}
 
       <form action={saveGoal} className="space-y-2">
-        <div className="flex flex-wrap items-stretch gap-px border border-line bg-line">
+        <div className="flex flex-wrap items-stretch gap-px overflow-hidden rounded-xl border border-line bg-line">
           <input
             name="name"
             required
             placeholder="Trip, laptop, house deposit…"
             aria-label="What you are saving for"
-            className="min-w-[10rem] flex-[1.6] bg-paper px-3 py-3 text-[15px] outline-none placeholder:text-ink-faint"
+            className="min-w-[10rem] flex-[1.6] bg-paper px-3 py-3 text-[16px] outline-none placeholder:text-ink-faint"
           />
 
           <div className="flex min-w-[8rem] flex-1 items-center gap-2 bg-paper px-3">
-            <span aria-hidden className="text-[15px] text-ink-faint">
+            <span aria-hidden className="text-[16px] text-ink-faint">
               ₹
             </span>
             <input
@@ -101,11 +101,11 @@ export default async function GoalsStepPage() {
               required
               placeholder="target"
               aria-label="Target amount"
-              className="tnum w-full bg-transparent py-3 text-[16px] font-medium outline-none placeholder:text-ink-faint"
+              className="tnum w-full bg-transparent py-3 text-[17px] font-medium outline-none placeholder:text-ink-faint"
             />
           </div>
 
-          <label className="flex min-w-[9rem] items-center gap-2 bg-paper px-3 text-[13px] text-ink-faint">
+          <label className="flex min-w-[9rem] items-center gap-2 bg-paper px-3 text-[14px] text-ink-faint">
             saved
             <input
               name="current_amount"
@@ -114,29 +114,29 @@ export default async function GoalsStepPage() {
               inputMode="numeric"
               defaultValue={0}
               aria-label="Saved so far"
-              className="tnum w-20 bg-transparent py-3 text-[15px] text-ink outline-none"
+              className="tnum w-20 bg-transparent py-3 text-[16px] text-ink outline-none"
             />
           </label>
 
-          <label className="flex min-w-[9rem] items-center gap-2 bg-paper px-3 text-[13px] text-ink-faint">
+          <label className="flex min-w-[9rem] items-center gap-2 bg-paper px-3 text-[14px] text-ink-faint">
             by
             <input
               name="deadline"
               type="date"
               aria-label="Target date"
-              className="w-full bg-transparent py-3 text-[13px] text-ink outline-none"
+              className="w-full bg-transparent py-3 text-[14px] text-ink outline-none"
             />
           </label>
 
           <SubmitButton
-            className="px-5 py-3 text-[13px]"
+            className="px-5 py-3 text-[14px]"
             pendingLabel="Adding…"
           >
             <IconPlus size={15} />
             Add goal
           </SubmitButton>
         </div>
-        <p className="text-[12px] text-ink-faint">
+        <p className="text-[13px] text-ink-faint">
           A date makes it a commitment the app funds at the rate it needs. No
           date means it is filled from whatever is spare, in priority order.
         </p>
@@ -147,14 +147,14 @@ export default async function GoalsStepPage() {
           {goals.map((goal) => (
             <li
               key={goal.id}
-              className="flex items-baseline justify-between gap-4 py-2.5"
+              className="flex items-baseline justify-between gap-4 px-4 py-2.5"
             >
-              <span className="flex min-w-0 items-center gap-2 text-[14px]">
+              <span className="flex min-w-0 items-center gap-2 text-[15px]">
                 <span className="truncate">{goal.name}</span>
                 {goal.is_protected && <Pill tone="accent">protected</Pill>}
               </span>
               <span className="flex shrink-0 items-baseline gap-4">
-                <span className="tnum text-[13px] text-ink-soft">
+                <span className="tnum text-[14px] text-ink-soft">
                   {inr(Number(goal.current_amount), { compact: true })} /{' '}
                   <Money amount={Number(goal.target)} compact />
                 </span>

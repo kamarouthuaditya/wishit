@@ -35,11 +35,11 @@ export function ContributionNote({
   if (!message) return null;
 
   if (compact) {
-    return <span className={`text-[12px] ${tone.text}`}>{message}</span>;
+    return <span className={`text-[13px] ${tone.text}`}>{message}</span>;
   }
 
   return (
-    <p className={`mt-3 rounded-lg border px-4 py-3 text-[14px] ${tone.box}`}>
+    <p className={`mt-3 rounded-xl px-4 py-3 text-[15px] ${tone.box}`}>
       {message}
     </p>
   );
@@ -49,12 +49,12 @@ function toneFor(check: ContributionCheck) {
   switch (check.status) {
     case 'complete':
     case 'on-track':
-      return { text: 'text-good', box: 'border-good/30 bg-good-soft text-good' };
+      return { text: 'text-good', box: 'bg-good-soft text-good' };
     case 'short':
     case 'unfunded':
-      return { text: 'text-warn', box: 'border-warn/30 bg-warn-soft text-warn' };
+      return { text: 'text-warn', box: 'bg-warn-soft text-warn' };
     default:
-      return { text: 'text-ink-soft', box: 'border-line bg-paper text-ink-soft' };
+      return { text: 'text-ink-soft', box: 'bg-surface-lift text-ink-soft' };
   }
 }
 
@@ -120,11 +120,11 @@ export function ContributionSummary(props: {
   });
 
   if (check.status === 'complete') {
-    return <span className="text-[12px] text-good">target reached</span>;
+    return <span className="text-[13px] text-good">target reached</span>;
   }
   if (check.required == null) {
     return (
-      <span className="text-[12px] text-ink-faint">
+      <span className="text-[13px] text-ink-faint">
         {check.monthsAtFunding == null
           ? 'no target date'
           : `about ${Math.ceil(check.monthsAtFunding)} months`}
@@ -140,7 +140,7 @@ export function ContributionSummary(props: {
         : 'text-warn';
 
   return (
-    <span className={`text-[12px] ${tone}`}>
+    <span className={`text-[13px] ${tone}`}>
       needs <Money amount={check.required} />
       {check.status !== 'on-track' && (
         <>

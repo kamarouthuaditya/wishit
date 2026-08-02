@@ -21,7 +21,7 @@ export function GoogleButton({ next }: { next?: string }) {
         {next && <input type="hidden" name="next" value={next} />}
         <button
           type="submit"
-          className="inline-flex w-full cursor-pointer items-center justify-center gap-3 border border-line-strong px-4 py-2.5 text-[13px] font-medium uppercase tracking-[0.06em] text-ink transition-all duration-[140ms] hover:border-accent hover:text-accent active:scale-[0.985]"
+          className="inline-flex w-full cursor-pointer items-center justify-center gap-3 border border-line-strong px-4 py-2.5 text-[14px] font-medium uppercase tracking-[0.06em] text-ink transition-all duration-[140ms] hover:border-accent hover:text-accent active:scale-[0.97]"
         >
           <GoogleMark />
           Continue with Google
@@ -32,7 +32,7 @@ export function GoogleButton({ next }: { next?: string }) {
           sequence, and a bare gap makes the second look like a footnote. */}
       <div className="my-5 flex items-center gap-3">
         <span className="h-px flex-1 bg-line" />
-        <span className="text-[11px] uppercase tracking-[0.08em] text-ink-faint">
+        <span className="text-[12px] uppercase tracking-[0.08em] text-ink-faint">
           or
         </span>
         <span className="h-px flex-1 bg-line" />

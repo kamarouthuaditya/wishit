@@ -15,7 +15,7 @@ export default async function VerifyPage() {
   return (
     <div className="mx-auto max-w-md py-10">
       <h1 className="text-2xl font-semibold tracking-tight">Check your email</h1>
-      <p className="mt-1 max-w-prose text-[15px] text-ink-soft">
+      <p className="mt-1 max-w-prose text-[16px] text-ink-soft">
         {email
           ? 'We sent a code. Enter it here and your account is ready.'
           : 'This step follows signing up.'}
@@ -25,7 +25,7 @@ export default async function VerifyPage() {
           {email ? (
             <VerifyForm email={email} />
           ) : (
-            <p className="text-[15px] text-ink-soft">
+            <p className="text-[16px] text-ink-soft">
               We do not have a sign-up in progress — codes expire after an hour.{' '}
               <Link href="/signup" className="text-accent">
                 Start again

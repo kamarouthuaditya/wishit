@@ -22,14 +22,19 @@ export function LogForm({
   defaultDate,
   cards = [],
   listId = 'wishit-log-categories',
+  defaultExpanded = false,
 }: {
   categories: string[];
   defaultDate: string;
   /** Tagging a card moves the money to its due date, not out of your budget. */
   cards?: { id: string; name: string }[];
   listId?: string;
+  /** Shows date, note, card and one-off up front instead of behind the
+   *  toggle — for a dialog with room to spare, where hiding them just adds
+   *  a click rather than saving space. */
+  defaultExpanded?: boolean;
 }) {
-  const [showDetail, setShowDetail] = useState(false);
+  const [showDetail, setShowDetail] = useState(defaultExpanded);
   const amountRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -44,9 +49,9 @@ export function LogForm({
       }}
       className="space-y-3"
     >
-      <div className="flex flex-wrap items-stretch gap-px border border-line bg-line">
+      <div className="flex flex-wrap items-stretch gap-px overflow-hidden rounded-xl border border-line bg-line">
         <div className="flex min-w-[7.5rem] flex-1 items-center gap-2 bg-paper px-3">
-          <span aria-hidden className="text-[15px] text-ink-faint">
+          <span aria-hidden className="text-[16px] text-ink-faint">
             ₹
           </span>
           <input
@@ -58,7 +63,7 @@ export function LogForm({
             required
             placeholder="0"
             aria-label="Amount"
-            className="tnum w-full bg-transparent py-3 text-[17px] font-medium outline-none placeholder:text-ink-faint"
+            className="tnum w-full bg-transparent py-3 text-[18px] font-medium outline-none placeholder:text-ink-faint"
           />
         </div>
 
@@ -68,19 +73,19 @@ export function LogForm({
           required
           placeholder="what for"
           aria-label="Category"
-          className="min-w-[8rem] flex-[1.2] bg-paper px-3 py-3 text-[15px] outline-none placeholder:text-ink-faint"
+          className="min-w-[8rem] flex-[1.2] bg-paper px-3 py-3 text-[16px] outline-none placeholder:text-ink-faint"
         />
 
         <Button
           type="submit"
-          className="px-5 py-3 text-[13px]"
+          className="px-5 py-3 text-[14px]"
         >
           <IconPlus size={15} />
           Log
         </Button>
       </div>
 
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[12px]">
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px]">
         <button
           type="button"
           onClick={() => setShowDetail((shown) => !shown)}
@@ -98,14 +103,14 @@ export function LogForm({
                 name="date"
                 type="date"
                 defaultValue={defaultDate}
-                className="border border-line bg-paper px-2 py-1 text-[12px] text-ink outline-none focus:border-accent"
+                className="rounded-lg border border-line bg-paper px-2.5 py-1 text-[13px] text-ink outline-none focus:border-accent"
               />
             </label>
             <input
               name="note"
               placeholder="note"
               aria-label="Note"
-              className="border border-line bg-paper px-2 py-1 text-[12px] outline-none placeholder:text-ink-faint focus:border-accent"
+              className="rounded-lg border border-line bg-paper px-2.5 py-1 text-[13px] outline-none placeholder:text-ink-faint focus:border-accent"
             />
             {cards.length > 0 && (
               <label className="flex items-center gap-2 text-ink-faint">
@@ -113,7 +118,7 @@ export function LogForm({
                 <select
                   name="paid_by_card_id"
                   defaultValue=""
-                  className="border border-line bg-paper px-2 py-1 text-[12px] text-ink outline-none focus:border-accent"
+                  className="rounded-lg border border-line bg-paper px-2.5 py-1 text-[13px] text-ink outline-none focus:border-accent"
                 >
                   <option value="">bank account</option>
                   {cards.map((card) => (

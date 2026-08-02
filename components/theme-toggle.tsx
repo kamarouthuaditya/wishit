@@ -144,7 +144,7 @@ function Choice({
           <span className={on ? 'text-accent' : 'text-ink-faint'}>{icon}</span>
           <span
             className={
-              'text-[12px] uppercase tracking-[0.07em] ' +
+              'text-[13px] uppercase tracking-[0.07em] ' +
               (on ? 'font-bold text-ink' : 'font-medium text-ink-soft')
             }
           >
@@ -152,7 +152,7 @@ function Choice({
           </span>
         </span>
       </span>
-      <span className="mt-0.5 block px-1 pb-1 text-[11px] text-ink-faint">
+      <span className="mt-0.5 block px-1 pb-1 text-[12px] text-ink-faint">
         {note}
       </span>
     </button>
@@ -174,7 +174,7 @@ function ThemeWindow({ theme }: { theme: Theme }) {
          turns the last step of the sequence into a scroll. */
       className="block aspect-[5/2] bg-paper p-1.5 sm:aspect-[4/3] sm:p-2"
     >
-      <span className="flex h-full border border-line bg-paper">
+      <span className="flex h-full overflow-hidden rounded-lg border border-line bg-paper">
         {/* The nav rail. */}
         <span className="flex w-1/4 shrink-0 flex-col gap-1 border-r border-line bg-surface p-1.5">
           <span className="h-1 w-full bg-accent" />

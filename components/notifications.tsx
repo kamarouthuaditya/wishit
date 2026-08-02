@@ -76,7 +76,7 @@ export function Notifications({ notices }: { notices: Notice[] }) {
             ? `Notifications, ${unread.length} unread`
             : 'Notifications'
         }
-        className="relative inline-flex cursor-pointer items-center p-1.5 text-ink-soft transition-colors duration-[140ms] hover:text-accent"
+        className="relative inline-flex cursor-pointer items-center p-1.5 text-ink-soft transition-colors duration-[140ms] hover:bg-surface-lift hover:text-accent"
       >
         <Bell />
         {unread.length > 0 && (
@@ -94,9 +94,9 @@ export function Notifications({ notices }: { notices: Notice[] }) {
         <div
           role="dialog"
           aria-label="Notifications"
-          className="rise absolute right-0 top-[calc(100%+0.6rem)] z-50 w-[min(24rem,calc(100vw-2.5rem))] border border-line-strong bg-surface shadow-[0_18px_40px_-12px_rgba(0,0,0,0.8)]"
+          className="rise absolute right-0 top-[calc(100%+0.6rem)] z-50 w-[min(24rem,calc(100vw-2.5rem))] overflow-hidden rounded-2xl bg-surface shadow-lg ring-1 ring-line-strong/60"
         >
-          <div className="flex items-center justify-between border-b border-line px-4 py-3">
+          <div className="flex items-center justify-between border-b border-line/70 px-4 py-3">
             <span className="eyebrow">
               {notices.length === 0 ? 'Nothing needs you' : 'Needs a look'}
             </span>
@@ -105,7 +105,7 @@ export function Notifications({ notices }: { notices: Notice[] }) {
                 <button
                   type="button"
                   onClick={dismissAll}
-                  className="inline-flex cursor-pointer items-center gap-1 text-[11px] text-ink-faint transition-colors hover:text-accent"
+                  className="inline-flex cursor-pointer items-center gap-1 text-[12px] text-ink-faint transition-colors hover:text-accent"
                 >
                   <IconCheck size={12} />
                   Mark seen
@@ -123,13 +123,13 @@ export function Notifications({ notices }: { notices: Notice[] }) {
           </div>
 
           {notices.length === 0 ? (
-            <p className="px-4 py-6 text-center text-[13px] text-ink-faint">
+            <p className="px-4 py-6 text-center text-[14px] text-ink-faint">
               No bills due, nothing overspent, no goal off track.
             </p>
           ) : (
             <ul className="max-h-[60vh] overflow-y-auto">
               {notices.map((notice) => (
-                <li key={notice.id} className="border-b border-line last:border-0">
+                <li key={notice.id} className="border-b border-line/70 last:border-0">
                   <Link
                     href={notice.href}
                     onClick={() => setOpen(false)}
@@ -146,8 +146,8 @@ export function Notifications({ notices }: { notices: Notice[] }) {
                       } ${seen.includes(notice.id) ? 'opacity-30' : ''}`}
                     />
                     <span>
-                      <span className="block text-[13px] text-ink">{notice.title}</span>
-                      <span className="mt-0.5 block text-[12px] leading-snug text-ink-faint">
+                      <span className="block text-[14px] text-ink">{notice.title}</span>
+                      <span className="mt-0.5 block text-[13px] leading-snug text-ink-faint">
                         {notice.detail}
                       </span>
                     </span>

@@ -72,17 +72,17 @@ export default async function ReviewPage({
             <h1 className="font-display text-[30px] leading-none">Review</h1>
             <PageGuide guide="review" />
           </div>
-          <p className="mt-3 max-w-prose text-[14px] text-ink-soft">
+          <p className="mt-3 max-w-prose text-[15px] text-ink-soft">
             Projections run on your budget. Once a month you check that against
             what actually happened — this is the step that stops the model
             drifting away from your life.
           </p>
         </div>
 
-        <nav className="flex items-center gap-2 text-[13px]" aria-label="Month">
+        <nav className="flex items-center gap-2 text-[14px]" aria-label="Month">
           <Link
             href={href(prevMonth)}
-            className="border border-line px-2.5 py-1.5 text-ink-soft transition-colors hover:border-accent hover:text-accent"
+            className="border border-line-strong px-2.5 py-1.5 text-ink-soft transition-all duration-[140ms] hover:border-accent hover:text-accent"
             aria-label={`Go to ${monthLabelOf(prevMonth)}`}
           >
             ←
@@ -92,7 +92,7 @@ export default async function ReviewPage({
           </span>
           <Link
             href={href(nextMonth)}
-            className="border border-line px-2.5 py-1.5 text-ink-soft transition-colors hover:border-accent hover:text-accent"
+            className="border border-line-strong px-2.5 py-1.5 text-ink-soft transition-all duration-[140ms] hover:border-accent hover:text-accent"
             aria-label={`Go to ${monthLabelOf(nextMonth)}`}
           >
             →
@@ -101,8 +101,7 @@ export default async function ReviewPage({
       </header>
 
       {/* 1. Did the month go the way the plan said it would? */}
-      <section className="border-t-2 border-t-accent bg-surface">
-        <div className="grid gap-px bg-line sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <Vital
             label="Planned surplus"
             value={inr(review.plannedSurplus)}
@@ -156,7 +155,6 @@ export default async function ReviewPage({
             }
           />
         </div>
-      </section>
 
       {/*
         2. Close out. This is the page's one verb, so it sits directly under the
@@ -166,7 +164,7 @@ export default async function ReviewPage({
       */}
       <Card title="Close out the month" icon={<IconCheck size={15} />} lead>
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <p className="max-w-prose text-[13px] text-ink-soft">
+          <p className="max-w-prose text-[14px] text-ink-soft">
             {stored ? (
               <>
                 Recorded: <Money amount={Number(stored.corpus)} compact /> savings ·{' '}
@@ -193,7 +191,7 @@ export default async function ReviewPage({
         hint="One-off spends are shown separately so they don’t skew future months"
         action={
           review.hasActuals ? (
-            <span className={`text-[14px] font-semibold ${overspent ? 'text-bad' : 'text-good'}`}>
+            <span className={`text-[15px] font-semibold ${overspent ? 'text-bad' : 'text-good'}`}>
               {inr(review.totals.delta, { sign: true })}
             </span>
           ) : null
@@ -203,9 +201,9 @@ export default async function ReviewPage({
           <Empty>No budget lines yet. Add them on the expenses page.</Empty>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[600px] text-[14px]">
+            <table className="w-full min-w-[600px] text-[15px]">
               <thead>
-                <tr className="border-b border-line text-left text-[12px] uppercase tracking-wide text-ink-faint">
+                <tr className="border-b border-line text-left text-[13px] uppercase tracking-wide text-ink-faint">
                   <th className="py-2 pr-4 font-medium">Category</th>
                   <th className="py-2 pr-4 font-medium">Type</th>
                   <th className="py-2 pr-4 text-right font-medium">Budget</th>
@@ -214,11 +212,11 @@ export default async function ReviewPage({
                   <th className="py-2 text-right font-medium">Of which one-off</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-line">
+              <tbody className="divide-y divide-line/70">
                 {review.categories.map((line) => (
                   <tr key={line.category}>
                     <td className="py-2 pr-4 capitalize">{line.category}</td>
-                    <td className="py-2 pr-4 text-[13px] text-ink-faint">
+                    <td className="py-2 pr-4 text-[14px] text-ink-faint">
                       {line.type === 'uncategorised'
                         ? 'unbudgeted'
                         : line.type === 'fixed'
@@ -289,7 +287,7 @@ export default async function ReviewPage({
           {review.goals.length === 0 ? (
             <Empty>No goals yet.</Empty>
           ) : (
-            <ul className="divide-y divide-line">
+            <ul className="divide-y divide-line/70">
               {review.goals.map((goal) => (
                 <li key={goal.goalId} className="flex items-start gap-3 py-3">
                   <span className="mt-1.5">
@@ -297,13 +295,13 @@ export default async function ReviewPage({
                   </span>
                   <div className="grow">
                     <div className="flex items-baseline justify-between gap-3">
-                      <span className="text-[14px] font-medium">{goal.name}</span>
-                      <span className="tnum text-[13px] text-ink-soft">
+                      <span className="text-[15px] font-medium">{goal.name}</span>
+                      <span className="tnum text-[14px] text-ink-soft">
                         {inr(goal.current, { compact: true })} /{' '}
                         {inr(goal.target, { compact: true })}
                       </span>
                     </div>
-                    <p className="mt-0.5 text-[12px] text-ink-faint">
+                    <p className="mt-0.5 text-[13px] text-ink-faint">
                       {goal.completionMonth == null
                         ? 'Not funded at this rate'
                         : `Ready by ${monthLabel(goal.completionMonth, anchor)}`}
@@ -330,12 +328,12 @@ export default async function ReviewPage({
           {review.wishlist.length === 0 ? (
             <Empty>No wishlist items to evaluate.</Empty>
           ) : (
-            <ul className="divide-y divide-line">
+            <ul className="divide-y divide-line/70">
               {review.wishlist.map((item) => (
                 <li key={item.id} className="flex flex-wrap items-center gap-3 py-3">
                   <Link
                     href={`/wishlist/${item.id}`}
-                    className="text-[14px] font-medium hover:text-accent"
+                    className="text-[15px] font-medium hover:text-accent"
                   >
                     {item.name}
                   </Link>
@@ -346,7 +344,7 @@ export default async function ReviewPage({
                     <Pill tone="warn">slipped</Pill>
                   )}
                   <span className="ml-auto flex items-center gap-3">
-                    <span className="text-[12px] text-ink-faint">
+                    <span className="text-[13px] text-ink-faint">
                       {item.affordableNow
                         ? item.delayMonths && item.delayMonths >= 0.05
                           ? `delays goals by ${item.delayMonths.toFixed(1)} months`
@@ -401,7 +399,7 @@ export default async function ReviewPage({
             </Field>
           ))}
         </form>
-        <p className="mt-4 text-[13px] text-ink-faint">
+        <p className="mt-4 text-[14px] text-ink-faint">
           Rent gone up? Subscription cancelled? Edit those on the{' '}
           <Link href="/expenses" className="text-accent">
             expenses page
@@ -419,7 +417,7 @@ export default async function ReviewPage({
         action={
           <Link
             href={`/spending?month=${month.slice(0, 7)}`}
-            className="text-[13px] text-accent"
+            className="text-[14px] text-accent"
           >
             Log spending
           </Link>
@@ -439,16 +437,16 @@ export default async function ReviewPage({
         )}
 
         {transactions.length > 0 && (
-          <ul className="mt-4 divide-y divide-line">
+          <ul className="mt-4 divide-y divide-line/70">
             {transactions.map((tx) => (
               <li key={tx.id} className="flex items-center gap-3 py-2">
-                <span className="tnum text-[13px] text-ink-faint">
+                <span className="tnum text-[14px] text-ink-faint">
                   {tx.date.slice(8, 10)}
                 </span>
-                <span className="text-[14px] capitalize">{tx.category}</span>
+                <span className="text-[15px] capitalize">{tx.category}</span>
                 {tx.is_one_off && <Pill tone="neutral">one-off</Pill>}
                 {tx.note && (
-                  <span className="text-[13px] text-ink-faint">{tx.note}</span>
+                  <span className="text-[14px] text-ink-faint">{tx.note}</span>
                 )}
                 <span className="ml-auto flex items-center gap-3">
                   <Money amount={Number(tx.amount)} />
@@ -506,14 +504,18 @@ function Vital({
           : 'text-ink';
 
   return (
-    <div className={`bg-surface p-5 ${lead ? 'border-t-2 border-t-accent' : ''}`}>
+    <div
+      className={`rounded-2xl bg-surface p-5 ${
+        lead ? 'border border-line border-t-2 border-t-accent' : 'border border-line'
+      }`}
+    >
       <div className="eyebrow">{label}</div>
       <div
         className={`tnum mt-2 ${lead ? 'font-display text-[28px] leading-none' : 'text-[20px] font-medium'} ${colour}`}
       >
         {value}
       </div>
-      {sub && <p className="mt-2 text-[12px] leading-snug text-ink-faint">{sub}</p>}
+      {sub && <p className="mt-2 text-[13px] leading-snug text-ink-faint">{sub}</p>}
     </div>
   );
 }

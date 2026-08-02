@@ -58,7 +58,7 @@ export function VerifyForm({
             autoFocus
             required
             placeholder="A1B2-C3D4-E5F6"
-            className="text-center font-mono text-[19px] uppercase tracking-[0.18em] placeholder:tracking-[0.18em] placeholder:text-ink-faint"
+            className="text-center font-mono text-[20px] uppercase tracking-[0.18em] placeholder:tracking-[0.18em] placeholder:text-ink-faint"
             aria-invalid={Boolean(state.error) || undefined}
           />
         </Field>
@@ -68,8 +68,8 @@ export function VerifyForm({
             role={isError ? 'alert' : 'status'}
             className={
               isError
-                ? 'rounded-lg border border-bad/30 bg-bad-soft px-4 py-3 text-[14px] text-bad'
-                : 'rounded-lg border border-good/30 bg-good-soft px-4 py-3 text-[14px] text-good'
+                ? 'rounded-lg border border-bad/30 bg-bad-soft px-4 py-3 text-[15px] text-bad'
+                : 'rounded-lg border border-good/30 bg-good-soft px-4 py-3 text-[15px] text-good'
             }
           >
             {message}
@@ -89,7 +89,7 @@ export function VerifyForm({
         </Button>
       </form>
 
-      <p className="text-center text-[14px] text-ink-soft">
+      <p className="text-center text-[15px] text-ink-soft">
         Nothing arrived?{' '}
         <button
           type="button"

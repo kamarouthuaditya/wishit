@@ -74,7 +74,7 @@ export function NetWorthTrend({ snapshots }: { snapshots: MonthlySnapshotRow[] }
       title="Net worth"
       hint={`${rows.length} months recorded — savings less liabilities`}
       action={
-        <span className="text-[15px] font-semibold">
+        <span className="text-[16px] font-semibold">
           <Money amount={change} tone={change >= 0 ? 'good' : 'bad'} sign compact />
         </span>
       }
@@ -125,7 +125,7 @@ export function NetWorthTrend({ snapshots }: { snapshots: MonthlySnapshotRow[] }
           ))}
         </svg>
 
-        <figcaption className="mt-2 flex justify-between text-[11px] text-ink-faint">
+        <figcaption className="mt-2 flex justify-between text-[12px] text-ink-faint">
           <span>
             {label(rows[0].month)} · {inr(first, { compact: true })}
           </span>
@@ -135,7 +135,7 @@ export function NetWorthTrend({ snapshots }: { snapshots: MonthlySnapshotRow[] }
         </figcaption>
       </figure>
 
-      <dl className="mt-6 grid gap-px border border-line bg-line sm:grid-cols-3">
+      <dl className="mt-6 grid gap-3 sm:grid-cols-3">
         <Figure label="Latest balance" value={inr(Number(rows.at(-1)!.corpus), { compact: true })} />
         <Figure label="Surplus that month" value={inr(Number(rows.at(-1)!.surplus))} />
         <Figure label="Savings rate" value={pct(Number(rows.at(-1)!.savings_rate), 1)} />
@@ -146,9 +146,9 @@ export function NetWorthTrend({ snapshots }: { snapshots: MonthlySnapshotRow[] }
 
 function Figure({ label, value }: { label: string; value: string }) {
   return (
-    <div className="bg-surface px-4 py-3">
-      <dt className="eyebrow text-[10px]">{label}</dt>
-      <dd className="tnum mt-1 text-[16px]">{value}</dd>
+    <div className="rounded-xl bg-surface-lift px-4 py-3">
+      <dt className="eyebrow text-[11px]">{label}</dt>
+      <dd className="tnum mt-1 text-[17px]">{value}</dd>
     </div>
   );
 }

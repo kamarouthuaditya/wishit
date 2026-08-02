@@ -36,11 +36,11 @@ export function OnboardingRail({ done }: { done: number }) {
             {ONBOARDING_STEPS[index].title}
           </span>
         </p>
-        <ol className="mt-2 flex gap-1" aria-hidden>
+        <ol className="mt-2 flex gap-1.5" aria-hidden>
           {ONBOARDING_STEPS.map((step, i) => (
             <li
               key={step.slug}
-              className={`h-1 flex-1 ${
+              className={`h-1.5 flex-1 ${
                 i < index ? 'bg-accent/45' : i === index ? 'bg-accent' : 'bg-line'
               }`}
             />
@@ -62,14 +62,14 @@ export function OnboardingRail({ done }: { done: number }) {
           const body = (
             <span className="block pt-2.5">
               <span
-                className={`tnum flex h-3.5 items-center text-[11px] ${
+                className={`tnum flex h-3.5 items-center text-[12px] ${
                   here ? 'text-accent' : finished ? 'text-ink-faint' : 'text-ink-faint/50'
                 }`}
               >
                 {finished ? <IconCheck size={12} /> : String(i + 1).padStart(2, '0')}
               </span>
               <span
-                className={`mt-1 block text-[12px] leading-snug ${
+                className={`mt-1 block text-[13px] leading-snug ${
                   here
                     ? 'font-semibold text-ink'
                     : finished
@@ -80,7 +80,7 @@ export function OnboardingRail({ done }: { done: number }) {
                 {step.title}
               </span>
               {here && !step.required && (
-                <span className="mt-0.5 block text-[11px] text-ink-faint/70">
+                <span className="mt-0.5 block text-[12px] text-ink-faint/70">
                   optional
                 </span>
               )}

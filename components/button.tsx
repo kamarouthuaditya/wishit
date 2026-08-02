@@ -55,8 +55,8 @@ function nearestEdge(event: MouseEvent, el: HTMLElement): Edge {
  * whole page.
  */
 const SIZE = {
-  md: 'px-4 py-2 text-[13px] tracking-[0.06em]',
-  sm: 'px-3 py-1.5 text-[12px] tracking-[0.05em]',
+  md: 'px-4 py-2 text-[14px] tracking-[0.06em]',
+  sm: 'px-3 py-1.5 text-[13px] tracking-[0.05em]',
 } as const;
 
 export function Button({

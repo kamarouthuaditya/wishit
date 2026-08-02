@@ -63,9 +63,9 @@ export function Dialog({
        * reading. Kept at 3px: enough to defocus, not enough to smear the page
        * into frosted glass.
        */
-      className="rise m-auto w-[min(56rem,calc(100vw-2rem))] border border-line-strong bg-surface p-0 text-ink backdrop:bg-[oklch(0_0_0/0.55)] backdrop:backdrop-blur-[3px]"
+      className="rise m-auto w-[min(56rem,calc(100vw-2rem))] overflow-hidden rounded-3xl bg-surface p-0 text-ink shadow-lg ring-1 ring-line-strong/60 backdrop:bg-[oklch(0_0_0/0.55)] backdrop:backdrop-blur-[3px]"
     >
-      <header className="flex items-baseline justify-between gap-4 border-b-2 border-line-strong bg-surface-lift px-5 py-3.5">
+      <header className="flex items-baseline justify-between gap-4 border-b border-line/70 bg-surface-lift px-5 py-4">
         <div className="min-w-0">
           <h2 className="section-title">{title}</h2>
           {hint && (
@@ -77,7 +77,7 @@ export function Dialog({
         <button
           type="button"
           onClick={() => ref.current?.close()}
-          className="cursor-pointer text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-faint transition-colors duration-[140ms] hover:text-accent"
+          className="cursor-pointer px-2.5 py-1 text-[12px] font-semibold uppercase tracking-[0.08em] text-ink-faint transition-colors duration-[140ms] hover:bg-surface hover:text-accent"
         >
           Close
         </button>

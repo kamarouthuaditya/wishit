@@ -34,7 +34,7 @@ export async function BalanceStrip({
 
   return (
     <div className="border-t border-line bg-surface/70">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-baseline gap-x-5 gap-y-1 px-5 py-2 text-[13px]">
+      <div className="mx-auto flex max-w-[1440px] flex-wrap items-baseline gap-x-5 gap-y-1 px-6 py-2 text-[14px] lg:px-9">
         {/* The workings, hidden on phones where only the answer fits. */}
         <span className="hidden flex-wrap items-baseline gap-x-2 text-ink-faint sm:flex">
           <Term label="Income" value={balance.income} />
@@ -57,13 +57,13 @@ export async function BalanceStrip({
         </span>
 
         <span className="ml-auto flex items-baseline gap-2">
-          <span className="text-[12px] font-medium uppercase tracking-wide text-ink-faint">
+          <span className="text-[13px] font-medium uppercase tracking-wide text-ink-faint">
             Balance left
           </span>
-          <strong className={`tnum text-[15px] font-semibold ${toneText(tone)}`}>
+          <strong className={`tnum text-[16px] font-semibold ${toneText(tone)}`}>
             {inr(balance.balance)}
           </strong>
-          <span className="text-[12px] text-ink-faint">/month</span>
+          <span className="text-[13px] text-ink-faint">/month</span>
         </span>
       </div>
     </div>
@@ -108,7 +108,7 @@ export function BalanceCallout({
       className={`border border-line border-t-2 bg-surface px-5 py-4 ${CALLOUT_TONE[tone]}`}
     >
       <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
-        <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1 text-[13px] text-ink-soft">
+        <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1 text-[14px] text-ink-soft">
           <Term label="Income" value={balance.income} />
           <span className="text-ink-faint">−</span>
           <Term label="Expenses" value={balance.expenses} />
@@ -128,7 +128,7 @@ export function BalanceCallout({
           )}
         </div>
         <div className="text-right">
-          <div className="text-[12px] font-medium uppercase tracking-wide text-ink-faint">
+          <div className="text-[13px] font-medium uppercase tracking-wide text-ink-faint">
             Balance left
           </div>
           <div className={`tnum text-2xl font-semibold ${toneText(tone)}`}>
@@ -137,12 +137,12 @@ export function BalanceCallout({
         </div>
       </div>
       {balance.notYetStarted > 0 && (
-        <p className="mt-2 text-[13px] text-ink-faint">
+        <p className="mt-2 text-[14px] text-ink-faint">
           {inr(balance.notYetStarted)} a month of budget lines start later and are
           not counted yet.
         </p>
       )}
-      {note && <p className="mt-2 text-[13px] text-ink-soft">{note}</p>}
+      {note && <p className="mt-2 text-[14px] text-ink-soft">{note}</p>}
     </div>
   );
 }

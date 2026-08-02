@@ -64,8 +64,8 @@ function Group({
     <fieldset className="border-t border-line pt-4 first:border-t-0 first:pt-0">
       <legend className="sr-only">{title}</legend>
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <h3 className="section-title text-[12px]">{title}</h3>
-        {note && <p className="text-[12px] text-ink-faint">{note}</p>}
+        <h3 className="section-title text-[13px]">{title}</h3>
+        {note && <p className="text-[13px] text-ink-faint">{note}</p>}
       </div>
       <div className="mt-3 grid gap-x-4 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
         {children}
@@ -211,7 +211,7 @@ export function WishlistItemForm({
         )}
 
         {rules.rate && (
-          <label className="flex items-center gap-2 self-end pb-2 text-[14px]">
+          <label className="flex items-center gap-2 self-end pb-2 text-[15px]">
             <input
               type="checkbox"
               name="is_no_cost"

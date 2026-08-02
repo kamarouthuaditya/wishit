@@ -41,7 +41,7 @@ export default async function AccountPage() {
       <header className="flex items-center gap-4">
         <span
           style={{ borderRadius: '9999px' }}
-          className="inline-flex size-14 items-center justify-center border border-line-strong bg-forest text-[18px] font-bold uppercase text-ink"
+          className="inline-flex size-14 items-center justify-center border border-line-strong bg-forest text-[19px] font-bold uppercase text-ink"
           aria-hidden
         >
           {initials(fullName || user?.email || 'Account')}
@@ -53,7 +53,7 @@ export default async function AccountPage() {
             </h1>
             <PageGuide guide="account" />
           </div>
-          {user && <p className="mt-2 text-[14px] text-ink-soft">{user.email}</p>}
+          {user && <p className="mt-2 text-[15px] text-ink-soft">{user.email}</p>}
         </div>
       </header>
 
@@ -97,7 +97,7 @@ export default async function AccountPage() {
             now, and squeezed into the right half of a row they are too small
             to be previews of anything. */}
         <div className="space-y-4 p-5">
-          <p className="max-w-prose text-[13px] text-ink-soft">
+          <p className="max-w-prose text-[14px] text-ink-soft">
             Light by default, for logging in daylight. Dark and money both suit
             the late session, money in black with note green on the buttons and
             the figures. Remembered on this device.
@@ -109,7 +109,7 @@ export default async function AccountPage() {
       <section className="border border-line bg-surface">
         <h2 className="eyebrow border-b border-line px-5 py-3">Your data</h2>
         <div className="space-y-4 p-5">
-          <p className="text-[13px] text-ink-soft">
+          <p className="text-[14px] text-ink-soft">
             Everything you log can leave with you. Spending as CSV for a
             spreadsheet; everything else — income, expenses, goals, loans,
             cards, wishlist and snapshots — as JSON, because flattening a model
@@ -120,7 +120,7 @@ export default async function AccountPage() {
             <a
               href="/spending/export"
               download
-              className="inline-flex items-center gap-2 border border-line-strong px-4 py-2 text-[13px] font-medium uppercase tracking-[0.06em] text-ink transition-colors duration-[140ms] hover:border-accent hover:text-accent"
+              className="inline-flex items-center gap-2 border border-line-strong px-4 py-2 text-[14px] font-medium uppercase tracking-[0.06em] text-ink transition-all duration-[140ms] hover:border-accent hover:text-accent active:scale-[0.97]"
             >
               <IconDownload size={15} />
               Spending (CSV)
@@ -128,7 +128,7 @@ export default async function AccountPage() {
             <a
               href="/account/export"
               download
-              className="inline-flex items-center gap-2 border border-line-strong px-4 py-2 text-[13px] font-medium uppercase tracking-[0.06em] text-ink transition-colors duration-[140ms] hover:border-accent hover:text-accent"
+              className="inline-flex items-center gap-2 border border-line-strong px-4 py-2 text-[14px] font-medium uppercase tracking-[0.06em] text-ink transition-all duration-[140ms] hover:border-accent hover:text-accent active:scale-[0.97]"
             >
               <IconDownload size={15} />
               Everything (JSON)
@@ -143,7 +143,7 @@ export default async function AccountPage() {
             Close your account
           </h2>
           <div className="space-y-4 p-5">
-            <p className="max-w-prose text-[13px] text-ink-soft">
+            <p className="max-w-prose text-[14px] text-ink-soft">
               Deleting removes the account and every row attached to it, at
               once and for good. Nothing is archived, and we cannot restore it
               afterwards.
@@ -168,8 +168,8 @@ export default async function AccountPage() {
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="flex flex-wrap items-baseline justify-between gap-4 px-5 py-3.5">
-      <dt className="text-[13px] text-ink-faint">{label}</dt>
-      <dd className="text-[14px]">{value}</dd>
+      <dt className="text-[14px] text-ink-faint">{label}</dt>
+      <dd className="text-[15px]">{value}</dd>
     </div>
   );
 }

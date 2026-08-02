@@ -11,13 +11,13 @@ export default function NotFound() {
       <h1 className="mt-2 font-display text-[30px] leading-none">
         Nothing lives here.
       </h1>
-      <p className="mt-3 text-[15px] leading-relaxed text-ink-soft">
+      <p className="mt-3 text-[16px] leading-relaxed text-ink-soft">
         Either the address is wrong, or whatever used to be at it has been
         deleted since you last looked.
       </p>
       <Link
         href="/"
-        className="mt-6 inline-flex items-center border border-line-strong px-4 py-2 text-[13px] font-medium uppercase tracking-[0.06em] text-ink transition-colors hover:border-accent hover:text-accent"
+        className="mt-6 inline-flex items-center border border-line-strong px-4 py-2 text-[14px] font-medium uppercase tracking-[0.06em] text-ink transition-all hover:border-accent hover:text-accent"
       >
         Back to the dashboard
       </Link>

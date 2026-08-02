@@ -55,7 +55,7 @@ export function FeedbackForm({
 
   if (state.sent) {
     return (
-      <p className="border border-good/40 bg-good-soft px-4 py-3 text-[13px] text-good">
+      <p className="rounded-xl bg-good-soft px-4 py-3 text-[14px] text-good">
         Sent. Thank you — that is genuinely useful.
       </p>
     );
@@ -76,9 +76,9 @@ export function FeedbackForm({
             role="radio"
             aria-checked={kind === option}
             onClick={() => setKind(option)}
-            className={`inline-flex flex-1 cursor-pointer items-center justify-center gap-2 border px-3 py-2 text-[12px] font-semibold uppercase tracking-[0.06em] transition-colors ${
+            className={`inline-flex flex-1 cursor-pointer items-center justify-center gap-2 border px-3 py-2 text-[13px] font-semibold uppercase tracking-[0.06em] transition-all ${
               kind === option
-                ? 'border-accent text-accent'
+                ? 'border-accent bg-accent-soft/40 text-accent'
                 : 'border-line-strong text-ink-faint hover:text-ink'
             }`}
           >
@@ -117,7 +117,7 @@ export function FeedbackForm({
       )}
 
       {state.error && (
-        <p role="alert" className="text-[13px] text-bad">
+        <p role="alert" className="text-[14px] text-bad">
           {state.error}
         </p>
       )}
@@ -160,7 +160,7 @@ export function FeedbackLink({ signedIn }: { signedIn: boolean }) {
         onClick={() => setOpen((shown) => !shown)}
         aria-expanded={open}
         aria-haspopup="dialog"
-        className="cursor-pointer text-[12px] text-ink-faint underline-offset-4 transition-colors hover:text-accent hover:underline"
+        className="cursor-pointer text-[13px] text-ink-faint underline-offset-4 transition-colors hover:text-accent hover:underline"
       >
         Report an issue or suggest something
       </button>
@@ -169,14 +169,14 @@ export function FeedbackLink({ signedIn }: { signedIn: boolean }) {
         <div
           role="dialog"
           aria-label="Feedback"
-          className="rise absolute bottom-[calc(100%+0.6rem)] left-0 z-50 w-[min(24rem,calc(100vw-2.5rem))] border border-line-strong bg-surface p-4 shadow-[0_18px_40px_-12px_rgba(0,0,0,0.8)]"
+          className="rise absolute bottom-[calc(100%+0.6rem)] left-0 z-50 w-[min(24rem,calc(100vw-2.5rem))] rounded-2xl bg-surface p-4 shadow-lg ring-1 ring-line-strong/60"
         >
           <div className="mb-3 flex items-baseline justify-between">
             <h2 className="eyebrow">Tell us</h2>
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="cursor-pointer text-ink-faint transition-colors hover:text-ink"
+              className="cursor-pointer p-1 text-ink-faint transition-colors hover:bg-surface-lift hover:text-ink"
               aria-label="Close"
             >
               <IconClose size={15} />

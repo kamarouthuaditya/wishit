@@ -149,15 +149,15 @@ export function PageGuide({
             aria-modal="true"
             aria-label={`${content.title} — guide`}
             tabIndex={-1}
-            className="rise flex max-h-[88vh] w-full max-w-2xl flex-col border border-line-strong bg-surface outline-none shadow-[0_24px_60px_-20px_rgba(0,0,0,0.8)]"
+            className="rise flex max-h-[88vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-3xl bg-surface shadow-lg outline-none ring-1 ring-line-strong/60 sm:rounded-3xl"
           >
-            <header className="flex items-start justify-between gap-4 border-b border-line border-t-2 border-t-accent px-5 py-4">
+            <header className="flex items-start justify-between gap-4 border-b border-line/70 border-t-2 border-t-accent bg-surface-lift/60 px-5 py-4">
               <div>
-                <p className="eyebrow text-[10px]">Guide</p>
+                <p className="eyebrow text-[11px]">Guide</p>
                 <h2 className="mt-1.5 font-display text-[24px] leading-none">
                   {content.title}
                 </h2>
-                <p className="mt-2 max-w-prose text-[13px] text-ink-soft">
+                <p className="mt-2 max-w-prose text-[14px] text-ink-soft">
                   {content.tagline}
                 </p>
               </div>
@@ -165,7 +165,7 @@ export function PageGuide({
                 type="button"
                 onClick={close}
                 aria-label="Close"
-                className="-mr-1 -mt-1 cursor-pointer p-1 text-ink-faint transition-colors duration-[140ms] hover:text-ink"
+                className="-mr-1 -mt-1 cursor-pointer p-1.5 text-ink-faint transition-colors duration-[140ms] hover:bg-surface hover:text-ink"
               >
                 <IconClose size={18} />
               </button>
@@ -174,7 +174,7 @@ export function PageGuide({
             <div className="overflow-y-auto px-5 py-5">
               <Section label="What this page is">
                 {content.what.map((para) => (
-                  <p key={para} className="text-[14px] leading-relaxed text-ink">
+                  <p key={para} className="text-[15px] leading-relaxed text-ink">
                     {para}
                   </p>
                 ))}
@@ -182,18 +182,18 @@ export function PageGuide({
 
               {content.notThis && content.notThis.length > 0 && (
                 <Section label="Not the same as">
-                  <ul className="divide-y divide-line border-y border-line">
+                  <ul className="divide-y divide-line/70">
                     {content.notThis.map((row) => (
                       <li key={row.href} className="py-3">
                         <Link
                           href={row.href}
                           onClick={close}
-                          className="inline-flex items-center gap-1.5 text-[14px] font-medium text-accent"
+                          className="inline-flex items-center gap-1.5 text-[15px] font-medium text-accent"
                         >
                           {row.page}
                           <IconArrowRight size={13} />
                         </Link>
-                        <p className="mt-1 text-[13px] leading-relaxed text-ink-soft">
+                        <p className="mt-1 text-[14px] leading-relaxed text-ink-soft">
                           {row.line}
                         </p>
                       </li>
@@ -203,28 +203,28 @@ export function PageGuide({
               )}
 
               <Section label="Walk through an example">
-                <p className="border-l-2 border-l-accent bg-paper px-3.5 py-2.5 text-[13px] leading-relaxed text-ink-soft">
+                <p className="rounded-r-xl border-l-2 border-l-accent bg-surface-lift px-3.5 py-2.5 text-[14px] leading-relaxed text-ink-soft">
                   {content.example.setup}
                 </p>
                 <ol className="mt-4 space-y-4">
                   {content.example.steps.map((step, i) => (
                     <li key={step.action} className="flex gap-3.5">
-                      <span className="tnum mt-0.5 shrink-0 border border-line-strong px-1.5 py-0.5 text-[11px] font-semibold text-ink-faint">
+                      <span className="tnum mt-0.5 flex size-5 shrink-0 items-center justify-center border border-line-strong text-[12px] font-semibold text-ink-faint">
                         {i + 1}
                       </span>
                       <span className="min-w-0">
-                        <span className="block text-[14px] font-medium text-ink">
+                        <span className="block text-[15px] font-medium text-ink">
                           {step.action}
                         </span>
-                        <span className="mt-1 block text-[13px] leading-relaxed text-ink-soft">
+                        <span className="mt-1 block text-[14px] leading-relaxed text-ink-soft">
                           {step.result}
                         </span>
                       </span>
                     </li>
                   ))}
                 </ol>
-                <p className="mt-4 border border-line bg-paper px-3.5 py-3 text-[13px] leading-relaxed text-ink">
-                  <span className="eyebrow mr-2 text-[10px]">In short</span>
+                <p className="mt-4 rounded-xl bg-surface-lift px-3.5 py-3 text-[14px] leading-relaxed text-ink">
+                  <span className="eyebrow mr-2 text-[11px]">In short</span>
                   {content.example.takeaway}
                 </p>
               </Section>
@@ -235,7 +235,7 @@ export function PageGuide({
                     {content.notes.map((note) => (
                       <li
                         key={note}
-                        className="flex gap-2.5 text-[13px] leading-relaxed text-ink-soft"
+                        className="flex gap-2.5 text-[14px] leading-relaxed text-ink-soft"
                       >
                         <span aria-hidden className="mt-[7px] size-1 shrink-0 bg-accent" />
                         {note}
@@ -246,11 +246,11 @@ export function PageGuide({
               )}
             </div>
 
-            <footer className="border-t border-line px-5 py-3 text-right">
+            <footer className="border-t border-line/70 px-5 py-3 text-right">
               <button
                 type="button"
                 onClick={close}
-                className="cursor-pointer border border-line-strong px-4 py-2 text-[13px] font-medium uppercase tracking-[0.06em] text-ink transition-colors duration-[140ms] hover:border-accent hover:text-accent"
+                className="cursor-pointer border border-line-strong px-4 py-2 text-[14px] font-medium uppercase tracking-[0.06em] text-ink transition-all duration-[140ms] hover:border-accent hover:text-accent"
               >
                 Got it
               </button>
@@ -266,7 +266,7 @@ export function PageGuide({
 function Section({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <section className="mt-6 space-y-3 first:mt-0">
-      <h3 className="eyebrow text-[10px]">{label}</h3>
+      <h3 className="eyebrow text-[11px]">{label}</h3>
       {children}
     </section>
   );

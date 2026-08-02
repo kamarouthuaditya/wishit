@@ -37,8 +37,8 @@ export function PasswordInput({
         required
         aria-invalid={invalid || undefined}
         className={
-          'mt-1 w-full rounded-lg border border-line bg-paper py-2 pl-3 pr-16 text-[14px] outline-none ' +
-          'focus:border-accent focus:ring-2 focus:ring-accent/20'
+          'mt-1.5 w-full rounded-xl border border-line bg-paper py-2.5 pl-3.5 pr-16 text-[15px] outline-none transition-all duration-[140ms] ' +
+          'hover:border-line-strong focus:border-accent focus:shadow-[0_0_0_4px_var(--accent-dim)]'
         }
       />
       <button
@@ -46,7 +46,7 @@ export function PasswordInput({
         onClick={() => setVisible((shown) => !shown)}
         aria-controls={id}
         aria-pressed={visible}
-        className="absolute inset-y-0 right-0 mt-1 px-3 text-[12px] font-medium text-ink-soft transition hover:text-ink"
+        className="absolute inset-y-0 right-0 mt-1.5 px-3 text-[13px] font-medium text-ink-soft transition hover:text-ink"
       >
         {visible ? 'Hide' : 'Show'}
       </button>

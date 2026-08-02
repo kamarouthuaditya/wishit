@@ -13,7 +13,7 @@ export default async function NewPasswordPage() {
       <h1 className="text-2xl font-semibold tracking-tight">Choose a new password</h1>
       {user ? (
         <>
-          <p className="mt-1 text-[15px] text-ink-soft">
+          <p className="mt-1 text-[16px] text-ink-soft">
             Setting the password for {user.email}.
           </p>
           <div className="mt-6">
@@ -25,7 +25,7 @@ export default async function NewPasswordPage() {
       ) : (
         <div className="mt-6">
           <Card>
-            <p className="text-[15px] text-ink-soft">
+            <p className="text-[16px] text-ink-soft">
               This page opens from a reset link, and that one seems to have
               expired — they last an hour.{' '}
               <Link href="/forgot-password" className="text-accent">

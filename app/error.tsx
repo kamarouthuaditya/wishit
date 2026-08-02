@@ -35,13 +35,13 @@ export default function ErrorBoundary({
       <h1 className="mt-2 font-display text-[30px] leading-none">
         That did not work.
       </h1>
-      <p className="mt-3 text-[15px] leading-relaxed text-ink-soft">
+      <p className="mt-3 text-[16px] leading-relaxed text-ink-soft">
         The page stopped rather than show you a number it was not sure about.
         Nothing you had already saved is lost.
       </p>
 
       {error.digest && (
-        <p className="mt-4 border border-line bg-surface px-3 py-2 text-[12px] text-ink-faint">
+        <p className="mt-4 rounded-xl bg-surface-lift px-3 py-2 text-[13px] text-ink-faint">
           Reference <code className="text-ink">{error.digest}</code> — quoting
           this lets us find the exact failure in the log.
         </p>
@@ -53,7 +53,7 @@ export default function ErrorBoundary({
         </Button>
         <Link
           href="/"
-          className="inline-flex items-center border border-line-strong px-4 py-2 text-[13px] font-medium uppercase tracking-[0.06em] text-ink transition-colors hover:border-accent hover:text-accent"
+          className="inline-flex items-center border border-line-strong px-4 py-2 text-[14px] font-medium uppercase tracking-[0.06em] text-ink transition-all hover:border-accent hover:text-accent"
         >
           Back to the dashboard
         </Link>
@@ -61,7 +61,7 @@ export default function ErrorBoundary({
 
       <div className="mt-8 border-t border-line pt-6">
         <p className="eyebrow">Tell us what you were doing</p>
-        <p className="mb-3 mt-1 text-[13px] text-ink-faint">
+        <p className="mb-3 mt-1 text-[14px] text-ink-faint">
           One line is enough. It arrives with the reference above attached.
         </p>
         {/*

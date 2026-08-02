@@ -25,7 +25,7 @@ export function Avatar({
       aria-label={`Account: ${label}`}
       title={label}
       style={{ borderRadius: '9999px' }}
-      className="inline-flex size-8 items-center justify-center border border-line-strong bg-forest text-[11px] font-bold uppercase tracking-[0.04em] text-ink transition-colors duration-[140ms] hover:border-accent hover:text-accent"
+      className="inline-flex size-8 items-center justify-center border border-line-strong bg-forest text-[12px] font-bold uppercase tracking-[0.04em] text-ink transition-colors duration-[140ms] hover:border-accent hover:text-accent"
     >
       {initials(label)}
     </Link>

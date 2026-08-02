@@ -27,7 +27,7 @@ export function ImpactHeadline({
           <TrafficLight tone={tone} />
         </span>
         <div>
-          <h2 className="text-[13px] font-semibold uppercase tracking-wide text-ink-soft">
+          <h2 className="text-[14px] font-semibold uppercase tracking-wide text-ink-soft">
             {title}
           </h2>
           <p className="mt-2 max-w-prose text-2xl font-semibold leading-snug tracking-tight">
@@ -47,7 +47,7 @@ export function ImpactHeadline({
             )}
           </p>
 
-          <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-[14px] text-ink-soft">
+          <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-[15px] text-ink-soft">
             <span>
               Total cost <Money amount={impact.totalCost} className="font-semibold" />
             </span>
@@ -68,14 +68,14 @@ export function ImpactHeadline({
                     : 'very tight'}
               </Pill>
             </span>
-            <span className="text-[13px] text-ink-faint">
+            <span className="text-[14px] text-ink-faint">
               Tightest month leaves {inr(impact.confidence.worstBuffer)} spare —{' '}
               {pct(impact.confidence.bufferPct, 0)} of that month’s surplus.
             </span>
           </div>
 
           {impact.earliestSafeDelay != null && impact.earliestSafeDelay > 0 && (
-            <p className="mt-4 rounded-lg border border-line bg-paper px-4 py-3 text-[14px]">
+            <p className="mt-4 rounded-xl bg-surface-lift px-4 py-3 text-[15px]">
               Wait until{' '}
               <strong>{monthLabel(impact.earliestSafeDelay + 1, anchor)}</strong> —{' '}
               {impact.earliestSafeDelay} month
@@ -84,7 +84,7 @@ export function ImpactHeadline({
             </p>
           )}
           {impact.earliestSafeDelay == null && (
-            <p className="mt-4 rounded-lg border border-bad/30 bg-bad-soft px-4 py-3 text-[14px] text-bad">
+            <p className="mt-4 rounded-xl bg-bad-soft px-4 py-3 text-[15px] text-bad">
               Waiting does not fix this, even two years out. It needs a different
               payment method or a smaller amount.
             </p>
@@ -105,7 +105,7 @@ export function BreachList({
   if (impact.newBreaches.length === 0) {
     return (
       <Card title="Warnings">
-        <p className="text-[14px] text-good">
+        <p className="text-[15px] text-good">
           None. Your savings stay above the emergency floor, your surplus never goes
           negative, and no goal slips past its target date.
         </p>
@@ -121,7 +121,7 @@ export function BreachList({
             <span className="mt-1.5">
               <TrafficLight tone={breach.severity === 'red' ? 'bad' : 'warn'} />
             </span>
-            <span className="text-[14px] text-ink-soft">
+            <span className="text-[15px] text-ink-soft">
               {breach.message}{' '}
               <span className="text-ink-faint">({monthLabel(breach.month, anchor)})</span>
             </span>
@@ -147,9 +147,9 @@ export function CheckpointTable({
       hint="Baseline against this purchase, at each checkpoint"
     >
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[640px] text-[14px]">
+        <table className="w-full min-w-[640px] text-[15px]">
           <thead>
-            <tr className="border-b border-line text-left text-[12px] uppercase tracking-wide text-ink-faint">
+            <tr className="border-b border-line text-left text-[13px] uppercase tracking-wide text-ink-faint">
               <th className="py-2 pr-4 font-medium">Month</th>
               <th className="py-2 pr-4 text-right font-medium">Without</th>
               <th className="py-2 pr-4 text-right font-medium">With</th>
@@ -184,7 +184,7 @@ export function CheckpointTable({
                   <td key={goal.goalId} className="py-2 pr-4 text-right text-ink-soft">
                     <Money amount={goal.scenarioBalance} compact />
                     {Math.abs(goal.delta) >= 1 && (
-                      <span className="ml-1 text-[12px] text-bad">
+                      <span className="ml-1 text-[13px] text-bad">
                         ({inr(goal.delta, { compact: true })})
                       </span>
                     )}
@@ -204,9 +204,9 @@ export function GoalDelayTable({ impact }: { impact: ImpactResult }) {
   return (
     <Card title="Goal impact">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[520px] text-[14px]">
+        <table className="w-full min-w-[520px] text-[15px]">
           <thead>
-            <tr className="border-b border-line text-left text-[12px] uppercase tracking-wide text-ink-faint">
+            <tr className="border-b border-line text-left text-[13px] uppercase tracking-wide text-ink-faint">
               <th className="py-2 pr-4 font-medium">Goal</th>
               <th className="py-2 pr-4 text-right font-medium">Baseline</th>
               <th className="py-2 pr-4 text-right font-medium">With purchase</th>
@@ -254,45 +254,76 @@ export function GoalDelayTable({ impact }: { impact: ImpactResult }) {
   );
 }
 
-export function ModeComparison({ rows }: { rows: ModeComparisonRow[] }) {
+/**
+ * Same item, four+ ways: the doc's plain hairline table (no card, no
+ * shading beyond the selected row) carrying the full column set — total
+ * cost, monthly outflow, goal delay, lowest balance, when it's owned, and a
+ * feasibility verdict. The selected row (whichever mode the item is
+ * actually set to) carries a 2px accent left edge and a lifted background,
+ * the same treatment as a picked row in the rail beside it.
+ */
+export function ModeComparison({
+  rows,
+  selectedMode,
+}: {
+  rows: ModeComparisonRow[];
+  selectedMode: ModeComparisonRow['mode'];
+}) {
   const cheapest = Math.min(...rows.map((r) => r.totalPaid));
   const leastDelay = Math.min(
     ...rows.map((r) => r.goalDelayMonths ?? Number.POSITIVE_INFINITY),
   );
 
   return (
-    <Card
-      title="Payment options"
-      hint="EMI usually costs more overall but delays your goals less"
-    >
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[680px] text-[14px]">
-          <thead>
-            <tr className="border-b border-line text-left text-[12px] uppercase tracking-wide text-ink-faint">
-              <th className="py-2 pr-4 font-medium">Method</th>
-              <th className="py-2 pr-4 text-right font-medium">Total cost</th>
-              <th className="py-2 pr-4 text-right font-medium">Per month</th>
-              <th className="py-2 pr-4 text-right font-medium">Goal delay</th>
-              <th className="py-2 pr-4 text-right font-medium">Lowest balance</th>
-              <th className="py-2 pr-4 text-right font-medium">Owned</th>
-              <th className="py-2 text-right font-medium">Verdict</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-line">
-            {rows.map((row) => (
-              <tr key={row.mode}>
-                <td className="py-2.5 pr-4">{row.label}</td>
-                <td className="py-2.5 pr-4 text-right">
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[720px] text-[14px]">
+        <thead>
+          <tr className="border-b border-line">
+            <th className="py-[9px] text-left text-[11px] font-medium uppercase tracking-[0.08em] text-ink-faint">
+              Method
+            </th>
+            <th className="py-[9px] text-right text-[11px] font-medium uppercase tracking-[0.08em] text-ink-faint">
+              Total cost
+            </th>
+            <th className="py-[9px] text-right text-[11px] font-medium uppercase tracking-[0.08em] text-ink-faint">
+              Per month
+            </th>
+            <th className="py-[9px] text-right text-[11px] font-medium uppercase tracking-[0.08em] text-ink-faint">
+              Goal delay
+            </th>
+            <th className="py-[9px] text-right text-[11px] font-medium uppercase tracking-[0.08em] text-ink-faint">
+              Lowest balance
+            </th>
+            <th className="py-[9px] text-right text-[11px] font-medium uppercase tracking-[0.08em] text-ink-faint">
+              Owned
+            </th>
+            <th className="py-[9px] text-right text-[11px] font-medium uppercase tracking-[0.08em] text-ink-faint">
+              Verdict
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => {
+            const selected = row.mode === selectedMode;
+            return (
+              <tr
+                key={row.mode}
+                className={`border-b border-line ${selected ? 'bg-surface' : ''}`}
+              >
+                <td className={`py-[9px] ${selected ? 'border-l-2 border-l-accent pl-3' : ''}`}>
+                  {row.label}
+                </td>
+                <td className="tnum py-[9px] text-right">
                   <Money
                     amount={row.totalPaid}
                     tone={row.totalPaid === cheapest ? 'good' : 'neutral'}
                   />
                 </td>
-                <td className="py-2.5 pr-4 text-right text-ink-soft">
+                <td className="tnum py-[9px] text-right text-ink-soft">
                   {row.monthlyOutflow > 0 ? <Money amount={row.monthlyOutflow} /> : '—'}
                 </td>
                 <td
-                  className={`tnum py-2.5 pr-4 text-right ${
+                  className={`tnum py-[9px] text-right ${
                     row.goalDelayMonths === leastDelay ? 'text-good' : ''
                   }`}
                 >
@@ -300,19 +331,19 @@ export function ModeComparison({ rows }: { rows: ModeComparisonRow[] }) {
                     ? '—'
                     : row.goalDelayMonths < 0.05
                       ? 'none'
-                      : `${row.goalDelayMonths.toFixed(1)} months`}
+                      : `${row.goalDelayMonths.toFixed(1)} mo`}
                 </td>
-                <td className="py-2.5 pr-4 text-right text-ink-soft">
+                <td className="tnum py-[9px] text-right text-ink-soft">
                   <Money amount={row.lowestCorpus} compact />
                 </td>
-                <td className="tnum py-2.5 pr-4 text-right text-ink-soft">
+                <td className="tnum py-[9px] text-right text-ink-soft">
                   {row.ownedInMonth == null
                     ? 'never'
                     : row.ownedInMonth === 1
                       ? 'immediately'
                       : `month ${row.ownedInMonth}`}
                 </td>
-                <td className="py-2.5 text-right">
+                <td className="py-[9px] text-right">
                   {row.feasible ? (
                     <Pill tone="good">safe</Pill>
                   ) : (
@@ -322,10 +353,10 @@ export function ModeComparison({ rows }: { rows: ModeComparisonRow[] }) {
                   )}
                 </td>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </Card>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 }

@@ -9,6 +9,7 @@ import { monthKey, monthTitle } from '@/lib/model/spending';
 import { inr } from '@/lib/format';
 import { Button, Field, Input, Money, Section, Select } from '@/components/ui';
 import { CategorySelect } from '@/components/category-select';
+import { categoryDot } from '@/lib/category-color';
 import { ExpenseComposer } from '@/components/expense-composer';
 import { IconCard, IconClock, IconEdit } from '@/components/icons';
 import { ConfirmButton } from '@/components/confirm-button';
@@ -70,7 +71,7 @@ export default async function ExpensesPage() {
             <h1 className="font-display text-[30px] leading-none">Expenses</h1>
             <PageGuide guide="expenses" />
           </div>
-          <p className="mt-3 max-w-prose text-[14px] text-ink-soft">
+          <p className="mt-3 max-w-prose text-[15px] text-ink-soft">
             What your month costs, before anything is saved. This is the budget;
             what actually leaves is whatever you log on the{' '}
             <Link href="/spending" className="text-accent">
@@ -80,7 +81,7 @@ export default async function ExpensesPage() {
           </p>
         </div>
 
-        <dl className="flex items-end gap-px border border-line bg-line">
+        <dl className="flex items-end divide-x divide-line">
           <Total label="Fixed" value={plan.fixed} />
           <Total label="Variable" value={plan.variable} />
           <Total label="Total" value={plan.fixed + plan.variable} lead />
@@ -88,7 +89,7 @@ export default async function ExpensesPage() {
       </header>
 
       {balance.notYetStarted > 0 && (
-        <p className="flex items-center gap-2 border border-line bg-surface px-4 py-3 text-[13px] text-ink-faint">
+        <p className="flex items-center gap-2 text-[14px] text-ink-faint">
           <IconClock size={15} />
           {inr(balance.notYetStarted)} of lines start later and are not in the
           balance yet.
@@ -101,7 +102,7 @@ export default async function ExpensesPage() {
         looks cheaper than the year is.
       */}
       {balance.notDueThisMonth > 0 && (
-        <p className="flex items-center gap-2 border border-line bg-surface px-4 py-3 text-[13px] text-ink-faint">
+        <p className="flex items-center gap-2 text-[14px] text-ink-faint">
           <IconClock size={15} />
           {inr(balance.notDueThisMonth)} of periodic bills are not due this month.
           They land whole in the months they renew.
@@ -110,7 +111,7 @@ export default async function ExpensesPage() {
 
       {snapshot.expenses.length === 0 && (
         <div className="border border-dashed border-line px-5 py-8 text-center">
-          <p className="text-[15px] text-ink-soft">
+          <p className="text-[16px] text-ink-soft">
             Nothing here yet. Add lines below, or start from a typical month.
           </p>
           <form action={seedDefaultExpenses} className="mt-4">
@@ -133,13 +134,13 @@ export default async function ExpensesPage() {
             aside={
               <>
                 <Money amount={group.total} />
-                <span className="ml-1 text-[11px] font-normal text-ink-faint">
+                <span className="ml-1 text-[12px] font-normal text-ink-faint">
                   this month
                 </span>
               </>
             }
           >
-            <ul className="divide-y divide-line">
+            <ul className="divide-y divide-line/70">
               {rows.map((row) => (
                 <ExpenseRow
                   key={row.id}
@@ -168,9 +169,9 @@ function Total({
   lead?: boolean;
 }) {
   return (
-    <div className={`bg-surface px-4 py-2.5 ${lead ? 'border-t-2 border-t-accent' : ''}`}>
-      <dt className="eyebrow text-[10px]">{label}</dt>
-      <dd className={`tnum mt-1 ${lead ? 'text-[17px] font-semibold' : 'text-[15px]'}`}>
+    <div className="px-4 first:pl-0 last:pr-0">
+      <dt className="eyebrow text-[11px]">{label}</dt>
+      <dd className={`tnum mt-1 ${lead ? 'text-[18px] font-semibold' : 'text-[16px]'}`}>
         {inr(value)}
       </dd>
     </div>
@@ -209,11 +210,14 @@ function ExpenseRow({
         border instead of stopping short of it inside the body padding.
       */}
       <details className="group">
-        <summary className="-mx-5 flex cursor-pointer list-none items-baseline gap-4 px-5 py-3 transition-colors duration-[140ms] hover:bg-paper group-open:bg-paper">
+        <summary className="-mx-5 flex cursor-pointer list-none items-baseline gap-4 rounded-xl px-5 py-3 transition-colors duration-[140ms] hover:bg-surface-lift group-open:bg-surface-lift">
           <span className="min-w-0 flex-1">
-            <span className="block truncate text-[15px]">{row.name}</span>
-            <span className="mt-0.5 flex flex-wrap items-center gap-x-3 text-[12px] text-ink-faint">
-              <span>{row.category}</span>
+            <span className="block truncate text-[16px]">{row.name}</span>
+            <span className="mt-0.5 flex flex-wrap items-center gap-x-3 text-[13px] text-ink-faint">
+              <span className="inline-flex items-center gap-1.5">
+                <span className={`size-1.5 ${categoryDot(row.category)}`} aria-hidden />
+                {row.category}
+              </span>
               {every > 1 && (
                 <span>
                   every {every} months
@@ -231,9 +235,9 @@ function ExpenseRow({
             </span>
           </span>
 
-          <span className="tnum shrink-0 text-[15px]">
+          <span className="tnum shrink-0 text-[16px]">
             {inr(Number(row.amount))}
-            <span className="ml-1 text-[11px] text-ink-faint">
+            <span className="ml-1 text-[12px] text-ink-faint">
               {every > 1 ? 'a bill' : '/mo'}
             </span>
           </span>
@@ -245,7 +249,7 @@ function ExpenseRow({
 
         <form
           action={saveExpense}
-          className="-mx-5 grid gap-x-4 gap-y-5 border-y border-line bg-paper px-5 py-5 sm:grid-cols-2 lg:grid-cols-4"
+          className="-mx-5 mb-1 grid gap-x-4 gap-y-5 rounded-2xl bg-surface-lift/60 px-5 py-5 sm:grid-cols-2 lg:grid-cols-4"
         >
           <input type="hidden" name="id" value={row.id} />
           <input type="hidden" name="type" value={row.type} />

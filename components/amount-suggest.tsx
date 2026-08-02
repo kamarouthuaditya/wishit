@@ -34,7 +34,7 @@ export function AmountSuggest({
           key={option.label}
           type="button"
           onClick={() => fill(option.value)}
-          className="cursor-pointer border border-line px-2.5 py-1 text-[12px] text-ink-soft transition-colors duration-[140ms] hover:border-accent hover:text-accent"
+          className="cursor-pointer border border-line-strong px-2.5 py-1 text-[13px] text-ink-soft transition-colors duration-[140ms] hover:border-accent hover:text-accent"
         >
           {option.label}
         </button>

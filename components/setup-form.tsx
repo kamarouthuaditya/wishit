@@ -182,7 +182,7 @@ export function SetupForm({
           under it is a Save button that does not exist.
         */}
         <div className="sticky bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-20 -mx-5 mt-8 flex items-center justify-between gap-4 border-t border-line-strong bg-surface px-5 py-3.5 md:bottom-0">
-          <p className="text-[12px] text-ink-faint">
+          <p className="text-[13px] text-ink-faint">
             {touched
               ? 'Unsaved edits — nothing is in your projections yet.'
               : 'Every number here feeds the dashboard.'}
@@ -231,10 +231,10 @@ function Section({
       }
     >
       <header className="flex gap-4">
-        <span className="tnum mt-0.5 text-[12px] text-accent">{index}</span>
+        <span className="tnum mt-0.5 text-[13px] text-accent">{index}</span>
         <div>
           <h2 className="font-display text-[20px] leading-none">{title}</h2>
-          <p className="mt-2 max-w-prose text-[13px] text-ink-faint">{hint}</p>
+          <p className="mt-2 max-w-prose text-[14px] text-ink-faint">{hint}</p>
         </div>
       </header>
       <div className="mt-6 grid gap-5 sm:grid-cols-2 sm:pl-10">{children}</div>
@@ -255,13 +255,13 @@ function SaveDialog({ result, onClose }: { result: SetupResult; onClose: () => v
       onClick={onClose}
     >
       <div
-        className="rise w-full max-w-md border border-line-strong bg-surface"
+        className="rise w-full max-w-md overflow-hidden rounded-3xl bg-surface shadow-lg ring-1 ring-line-strong/60"
         onClick={(event) => event.stopPropagation()}
       >
-        <header className="flex items-center justify-between gap-4 border-b border-line px-5 py-3.5">
+        <header className="flex items-center justify-between gap-4 border-b border-line/70 bg-surface-lift/60 px-5 py-3.5">
           <h2
             id="setup-saved-title"
-            className="flex items-center gap-2 font-display text-[18px] leading-none"
+            className="flex items-center gap-2 font-display text-[19px] leading-none"
           >
             <span className={changed ? 'text-accent' : 'text-ink-faint'}>
               {changed ? <IconCheck size={16} /> : <IconClose size={16} />}
@@ -272,7 +272,7 @@ function SaveDialog({ result, onClose }: { result: SetupResult; onClose: () => v
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="cursor-pointer text-ink-faint transition-colors duration-[140ms] hover:text-ink"
+            className="cursor-pointer p-1 text-ink-faint transition-colors duration-[140ms] hover:bg-surface hover:text-ink"
           >
             <IconClose size={16} />
           </button>
@@ -281,14 +281,14 @@ function SaveDialog({ result, onClose }: { result: SetupResult; onClose: () => v
         <div className="px-5 py-4">
           {changed ? (
             <>
-              <p className="text-[13px] text-ink-soft">
+              <p className="text-[14px] text-ink-soft">
                 {result.changes.length === 1
                   ? 'One change is now in every projection:'
                   : `${result.changes.length} changes are now in every projection:`}
               </p>
-              <ul className="mt-3 divide-y divide-line border-y border-line">
+              <ul className="mt-3 divide-y divide-line/70 rounded-xl bg-surface-lift/60 px-3">
                 {result.changes.map((line) => (
-                  <li key={line} className="flex gap-2.5 py-2.5 text-[14px]">
+                  <li key={line} className="flex gap-2.5 py-2.5 text-[15px]">
                     <span aria-hidden className="mt-0.5 text-accent">
                       <IconCheck size={14} />
                     </span>
@@ -298,7 +298,7 @@ function SaveDialog({ result, onClose }: { result: SetupResult; onClose: () => v
               </ul>
             </>
           ) : (
-            <p className="text-[13px] text-ink-soft">
+            <p className="text-[14px] text-ink-soft">
               Everything already matched what you had. Nothing moved.
             </p>
           )}

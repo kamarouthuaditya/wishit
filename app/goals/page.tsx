@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import {
   deleteExpense,
   deleteGoal,
@@ -89,13 +90,13 @@ export default async function GoalsPage() {
             <h1 className="font-display text-[30px] leading-none">Goals</h1>
             <PageGuide guide="goals" />
           </div>
-          <p className="mt-3 max-w-prose text-[14px] text-ink-soft">
+          <p className="mt-3 max-w-prose text-[15px] text-ink-soft">
             Everything you are building up. Ranked: when money is tight the ones
             lower down get squeezed first, and protected goals are drawn on last.
           </p>
         </div>
 
-        <dl className="flex items-end gap-px border border-line bg-line">
+        <dl className="flex items-end divide-x divide-line">
           <Figure label="Into goals" value={balance.goalContributions} />
           <Figure label="Into savings" value={plan.investments} />
           <Figure label="Balance left" value={balance.balance} lead />
@@ -115,7 +116,7 @@ export default async function GoalsPage() {
           <Select
             name="allocation_mode"
             defaultValue={snapshot.profile.allocation_mode}
-            className="mt-0 py-1.5 text-[13px]"
+            className="mt-0 py-1.5 text-[14px]"
           >
             <option value="waterfall">Priority order — fill the top goal first</option>
             <option value="fixed">Fixed amount into each</option>
@@ -138,13 +139,13 @@ export default async function GoalsPage() {
           aside={
             <>
               <Money amount={balance.goalContributions} />
-              <span className="ml-1 text-[11px] font-normal text-ink-faint">
+              <span className="ml-1 text-[12px] font-normal text-ink-faint">
                 /mo
               </span>
             </>
           }
         >
-          <ul className="divide-y divide-line">
+          <ul className="divide-y divide-line/70">
             {snapshot.goals.map((row) => (
               <GoalRow
                 key={row.id}
@@ -166,18 +167,18 @@ export default async function GoalsPage() {
         aside={
           <>
             <Money amount={plan.investments} />
-            <span className="ml-1 text-[11px] font-normal text-ink-faint">
+            <span className="ml-1 text-[12px] font-normal text-ink-faint">
               this month
             </span>
           </>
         }
       >
         {savingsLines.length === 0 ? (
-          <p className="py-4 text-[13px] text-ink-faint">
+          <p className="py-4 text-[14px] text-ink-faint">
             Nothing yet. Add one below — a SIP or a recurring deposit.
           </p>
         ) : (
-          <ul className="divide-y divide-line">
+          <ul className="divide-y divide-line/70">
             {savingsLines.map((line) => (
               <SavingsRow key={line.id} row={line} />
             ))}
@@ -186,6 +187,16 @@ export default async function GoalsPage() {
       </Section>
 
       <GoalsAdd categories={categories} nextPriority={nextPriority} />
+
+      <nav
+        aria-label="More pages"
+        className="flex flex-wrap gap-x-5 gap-y-2 border-t border-line py-6 text-[14px] text-ink-faint md:hidden"
+      >
+        <Link href="/expenses" className="hover:text-accent">Expenses</Link>
+        <Link href="/loans" className="hover:text-accent">Loans</Link>
+        <Link href="/cards" className="hover:text-accent">Cards</Link>
+        <Link href="/setup" className="hover:text-accent">Settings</Link>
+      </nav>
     </div>
   );
 }
@@ -200,9 +211,9 @@ function Figure({
   lead?: boolean;
 }) {
   return (
-    <div className={`bg-surface px-4 py-2.5 ${lead ? 'border-t-2 border-t-accent' : ''}`}>
-      <dt className="eyebrow text-[10px]">{label}</dt>
-      <dd className={`tnum mt-1 ${lead ? 'text-[17px] font-semibold' : 'text-[15px]'}`}>
+    <div className="px-4 first:pl-0 last:pr-0">
+      <dt className="eyebrow text-[11px]">{label}</dt>
+      <dd className={`tnum mt-1 ${lead ? 'text-[18px] font-semibold' : 'text-[16px]'}`}>
         <Money amount={value} />
       </dd>
     </div>
@@ -275,11 +286,11 @@ function GoalRow({
   return (
     <li className={dormant ? 'opacity-60' : ''}>
       <details className="group">
-        <summary className="-mx-5 grid cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] items-center gap-x-5 gap-y-2 px-5 py-4 transition-colors duration-[140ms] hover:bg-paper group-open:bg-paper">
+        <summary className="-mx-5 grid cursor-pointer list-none grid-cols-[minmax(0,1fr)_auto] items-center gap-x-5 gap-y-2 rounded-xl px-5 py-4 transition-colors duration-[140ms] hover:bg-surface-lift group-open:bg-surface-lift">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[16px]">{row.name}</span>
-              <span className="text-[11px] text-ink-faint">#{row.priority}</span>
+              <span className="text-[17px]">{row.name}</span>
+              <span className="text-[12px] text-ink-faint">#{row.priority}</span>
               {isDone && <Pill tone="good">done</Pill>}
               {!isDone && stopped && <Pill tone="neutral">not funded</Pill>}
               {!isDone && !stopped && funded && <Pill tone="good">reached</Pill>}
@@ -295,7 +306,7 @@ function GoalRow({
               />
             </div>
 
-            <p className="mt-1.5 text-[12px] text-ink-faint">
+            <p className="mt-1.5 text-[13px] text-ink-faint">
               {inr(current, { compact: true })} of {inr(target, { compact: true })}
               {' · '}
               {dormant
@@ -310,12 +321,12 @@ function GoalRow({
 
           <div className="flex items-center gap-4">
             <div className="text-right">
-              <div className="tnum text-[17px]">
+              <div className="tnum text-[18px]">
                 {takes > 0 ? inr(takes) : '—'}
-                <span className="ml-1 text-[11px] text-ink-faint">/mo</span>
+                <span className="ml-1 text-[12px] text-ink-faint">/mo</span>
               </div>
               {delta != null && delta > 0.05 && (
-                <div className="text-[11px] text-warn">
+                <div className="text-[12px] text-warn">
                   +{delta.toFixed(1)}mo from purchases
                 </div>
               )}
@@ -333,9 +344,9 @@ function GoalRow({
           it, which is what made a long expanded goal read as page furniture
           rather than as one goal's controls.
         */}
-        <div className="-mx-5 space-y-6 border-y border-line bg-paper px-5 py-5">
+        <div className="-mx-5 mb-1 space-y-6 rounded-2xl bg-surface-lift/60 px-5 py-5">
           {dormant ? (
-            <p className="text-[14px] text-ink-soft">
+            <p className="text-[15px] text-ink-soft">
               {isDone
                 ? `Marked done. The ${inr(current)} saved stays here; nothing more goes in.`
                 : `Funding stopped after ${monthTitle(stopDate!.slice(0, 7))}. The ${inr(current)} saved stays here — clear the stop date below to resume.`}
@@ -375,7 +386,7 @@ function GoalRow({
                 <Button variant="ghost" type="submit" size="sm">
                   Save
                 </Button>
-                <p className="flex-1 text-[12px] text-ink-faint">
+                <p className="flex-1 text-[13px] text-ink-faint">
                   Leave it blank and the goal is filled from what is left, in
                   priority order.
                 </p>
@@ -391,7 +402,7 @@ function GoalRow({
           )}
 
           <div className="border-t border-line pt-5">
-            <h3 className="section-title flex items-center gap-2 text-[12px]">
+            <h3 className="section-title flex items-center gap-2 text-[13px]">
               <IconTransfer size={13} />
               Move money in
             </h3>
@@ -412,7 +423,7 @@ function GoalRow({
                 {isDone ? 'Reopen' : 'Mark done'}
               </Button>
             </form>
-            <details className="flex-1 text-[13px]">
+            <details className="flex-1 text-[14px]">
               <summary className="cursor-pointer text-ink-faint transition-colors hover:text-accent">
                 Edit the details
               </summary>
@@ -476,7 +487,7 @@ function GoalEditor({ row }: { row: GoalRow }) {
         />
       </Field>
 
-      <label className="flex items-center gap-2 pb-2 text-[13px]">
+      <label className="flex items-center gap-2 pb-2 text-[14px]">
         <input
           type="checkbox"
           name="stop_at_deadline"
@@ -485,7 +496,7 @@ function GoalEditor({ row }: { row: GoalRow }) {
         />
         Stop at the target date
       </label>
-      <label className="flex items-center gap-2 pb-2 text-[13px]">
+      <label className="flex items-center gap-2 pb-2 text-[14px]">
         <input
           type="checkbox"
           name="is_protected"
@@ -526,7 +537,7 @@ function SavingsPace({
 
   if (plan.remaining <= 0) {
     return (
-      <p className="border-t border-good/40 pt-3 text-[14px] text-good">
+      <p className="border-t border-good/40 pt-3 text-[15px] text-good">
         Target reached — {inr(current)} against {inr(target)}.
       </p>
     );
@@ -534,21 +545,21 @@ function SavingsPace({
 
   return (
     <details className="border-t border-line pt-4">
-      <summary className="cursor-pointer text-[13px] text-ink-faint transition-colors hover:text-accent">
+      <summary className="cursor-pointer text-[14px] text-ink-faint transition-colors hover:text-accent">
         {inr(plan.remaining)} still to go — what each pace costs
       </summary>
 
       <div className="mt-3 overflow-x-auto">
-        <table className="w-full min-w-[380px] text-[13px]">
+        <table className="w-full min-w-[380px] text-[14px]">
           <thead>
-            <tr className="border-b border-line text-left text-[11px] uppercase tracking-[0.08em] text-ink-faint">
+            <tr className="border-b border-line text-left text-[12px] uppercase tracking-[0.08em] text-ink-faint">
               <th className="py-2 pr-4 font-semibold">Timeframe</th>
               <th className="py-2 pr-4 text-right font-semibold">Per month</th>
               <th className="py-2 pr-4 text-right font-semibold">% of balance</th>
               <th className="py-2 text-right font-semibold">Fits</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-line">
+          <tbody className="divide-y divide-line/70">
             {plan.options.map((option) => (
               <tr key={option.months}>
                 <td className="py-2 pr-4 text-ink-soft">{option.months} months</td>
@@ -576,7 +587,7 @@ function SavingsPace({
         </table>
       </div>
 
-      <p className="mt-3 text-[12px] text-ink-soft">
+      <p className="mt-3 text-[13px] text-ink-soft">
         {spare <= 0 ? (
           <span className="text-bad">
             Nothing is left over once expenses, EMIs and other commitments are paid,
@@ -608,19 +619,19 @@ function SavingsRow({ row }: { row: ExpenseItemRow }) {
   return (
     <li>
       <details className="group">
-        <summary className="-mx-5 flex cursor-pointer list-none items-baseline gap-4 px-5 py-3 transition-colors duration-[140ms] hover:bg-paper group-open:bg-paper">
+        <summary className="-mx-5 flex cursor-pointer list-none items-baseline gap-4 rounded-xl px-5 py-3 transition-colors duration-[140ms] hover:bg-surface-lift group-open:bg-surface-lift">
           <span className="min-w-0 flex-1">
-            <span className="block truncate text-[15px]">{row.name}</span>
+            <span className="block truncate text-[16px]">{row.name}</span>
             {every > 1 && (
-              <span className="text-[12px] text-ink-faint">
+              <span className="text-[13px] text-ink-faint">
                 every {every} months
                 {nextDue ? ` · next ${monthTitle(nextDue)}` : ' · ended'}
               </span>
             )}
           </span>
-          <span className="tnum shrink-0 text-[15px]">
+          <span className="tnum shrink-0 text-[16px]">
             {inr(Number(row.amount))}
-            <span className="ml-1 text-[11px] text-ink-faint">
+            <span className="ml-1 text-[12px] text-ink-faint">
               {every > 1 ? 'a time' : '/mo'}
             </span>
           </span>
@@ -631,7 +642,7 @@ function SavingsRow({ row }: { row: ExpenseItemRow }) {
 
         <form
           action={saveExpense}
-          className="-mx-5 grid gap-x-4 gap-y-5 border-y border-line bg-paper px-5 py-5 sm:grid-cols-2 lg:grid-cols-4"
+          className="-mx-5 mb-1 grid gap-x-4 gap-y-5 rounded-2xl bg-surface-lift/60 px-5 py-5 sm:grid-cols-2 lg:grid-cols-4"
         >
           <input type="hidden" name="id" value={row.id} />
           <input type="hidden" name="type" value="investment" />

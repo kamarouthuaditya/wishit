@@ -11,7 +11,7 @@ export default async function VerifyResetPage() {
   return (
     <div className="mx-auto max-w-md py-10">
       <h1 className="text-2xl font-semibold tracking-tight">Enter your code</h1>
-      <p className="mt-1 max-w-prose text-[15px] text-ink-soft">
+      <p className="mt-1 max-w-prose text-[16px] text-ink-soft">
         {email
           ? 'If that address has an account, a code is on its way.'
           : 'This step follows asking for a reset.'}
@@ -21,7 +21,7 @@ export default async function VerifyResetPage() {
           {email ? (
             <VerifyForm email={email} purpose="password-reset" />
           ) : (
-            <p className="text-[15px] text-ink-soft">
+            <p className="text-[16px] text-ink-soft">
               We do not have a reset in progress — codes expire after an hour.{' '}
               <Link href="/forgot-password" className="text-accent">
                 Ask for a new one

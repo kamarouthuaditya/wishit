@@ -54,7 +54,7 @@ export function CategorySelect({
         <button
           type="button"
           onClick={() => setTyping(false)}
-          className="cursor-pointer text-[12px] text-ink-faint transition-colors duration-[140ms] hover:text-accent"
+          className="cursor-pointer text-[13px] text-ink-faint transition-colors duration-[140ms] hover:text-accent"
         >
           Pick one
         </button>
@@ -83,6 +83,6 @@ export function CategorySelect({
 }
 
 const field =
-  'mt-1.5 border border-line bg-paper px-3 py-2 text-[14px] text-ink outline-none ' +
-  'transition-colors duration-[140ms] hover:border-line-strong focus:border-accent ' +
+  'mt-1.5 rounded-xl border border-line bg-paper px-3.5 py-2.5 text-[15px] text-ink outline-none ' +
+  'transition-all duration-[140ms] hover:border-line-strong focus:border-accent focus:shadow-[0_0_0_4px_var(--accent-dim)] ' +
   'placeholder:text-ink-faint';

@@ -9,8 +9,8 @@ import { isoDate } from '@/lib/format';
 
 /** One control's box: the field treatment, minus the label a `Field` adds. */
 const control =
-  'border border-line bg-paper px-3 py-2.5 text-ink outline-none ' +
-  'transition-colors duration-[140ms] hover:border-line-strong focus:border-accent ' +
+  'rounded-xl border border-line bg-paper px-3.5 py-2.5 text-ink outline-none ' +
+  'transition-all duration-[140ms] hover:border-line-strong focus:border-accent focus:shadow-[0_0_0_4px_var(--accent-dim)] ' +
   'placeholder:text-ink-faint';
 
 /**
@@ -37,7 +37,7 @@ export function ExpenseComposer({
   const nameRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div className="sticky bottom-14 z-10 -mx-5 border-t border-line bg-paper px-5 py-4 md:bottom-0">
+    <div className="sticky bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-10 -mx-5 border-t border-line bg-paper px-5 py-4 md:bottom-0">
       <form
         ref={formRef}
         action={async (formData) => {
@@ -46,7 +46,7 @@ export function ExpenseComposer({
           setOpen(false);
           nameRef.current?.focus();
         }}
-        className="mx-auto max-w-6xl space-y-3"
+        className="mx-auto max-w-[1440px] space-y-3"
       >
         <p className="eyebrow">New line</p>
 
@@ -64,13 +64,13 @@ export function ExpenseComposer({
             required
             placeholder="Rent, Gym, Netflix…"
             aria-label="What it is"
-            className={`${control} min-w-[9rem] flex-[1.4] text-[15px]`}
+            className={`${control} min-w-[9rem] flex-[1.4] text-[16px]`}
           />
 
           <div
             className={`${control} flex min-w-[7rem] flex-1 items-center gap-2 px-3 py-0`}
           >
-            <span aria-hidden className="text-[15px] text-ink-faint">
+            <span aria-hidden className="text-[16px] text-ink-faint">
               ₹
             </span>
             <input
@@ -81,7 +81,7 @@ export function ExpenseComposer({
               required
               placeholder="0"
               aria-label="Amount per bill"
-              className="tnum w-full bg-transparent py-2.5 text-[16px] font-medium outline-none placeholder:text-ink-faint"
+              className="tnum w-full bg-transparent py-2.5 text-[17px] font-medium outline-none placeholder:text-ink-faint"
             />
           </div>
 
@@ -89,7 +89,7 @@ export function ExpenseComposer({
             name="frequency_months"
             defaultValue="1"
             aria-label="How often"
-            className={`${control} min-w-[8rem] text-[14px]`}
+            className={`${control} min-w-[8rem] text-[15px]`}
           >
             <option value="1">monthly</option>
             <option value="3">quarterly</option>
@@ -101,7 +101,7 @@ export function ExpenseComposer({
             name="type"
             defaultValue="fixed"
             aria-label="Kind"
-            className={`${control} min-w-[8rem] text-[14px]`}
+            className={`${control} min-w-[8rem] text-[15px]`}
           >
             <option value="fixed">fixed</option>
             <option value="variable">variable</option>
@@ -113,7 +113,7 @@ export function ExpenseComposer({
           </Button>
         </div>
 
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[12px]">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px]">
           <button
             type="button"
             onClick={() => setOpen((shown) => !shown)}
@@ -127,13 +127,13 @@ export function ExpenseComposer({
             <div className="rise flex flex-wrap items-center gap-x-3 gap-y-2">
               <CategorySelect
                 categories={categories}
-                className="mt-0 min-w-[9rem] py-1 text-[12px]"
+                className="mt-0 min-w-[9rem] py-1 text-[13px]"
               />
               <select
                 name="paid_by_card_id"
                 defaultValue=""
                 aria-label="Paid from"
-                className="border border-line bg-paper px-2 py-1 text-[12px] text-ink outline-none transition-colors duration-[140ms] hover:border-line-strong focus:border-accent"
+                className="rounded-lg border border-line bg-paper px-2.5 py-1 text-[13px] text-ink outline-none transition-colors duration-[140ms] hover:border-line-strong focus:border-accent"
               >
                 <option value="">bank account</option>
                 {cards.map((card) => (
@@ -148,7 +148,7 @@ export function ExpenseComposer({
                   name="effective_from"
                   type="date"
                   defaultValue={isoDate()}
-                  className="border border-line bg-paper px-2 py-1 text-[12px] text-ink outline-none focus:border-accent"
+                  className="rounded-lg border border-line bg-paper px-2.5 py-1 text-[13px] text-ink outline-none focus:border-accent"
                 />
               </label>
             </div>

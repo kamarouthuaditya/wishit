@@ -6,6 +6,7 @@ import { driver } from '@/lib/db/driver';
 import { getProfile, loadSnapshot } from '@/lib/db/repository';
 import { rewriteMonthlySnapshot } from '@/lib/snapshot';
 import { planTransfer, type TransferParty } from '@/lib/model/transfer';
+import { emiFor } from '@/lib/engine';
 import { supabaseServer } from '@/lib/supabase/server';
 import {
   ONBOARDING_STEPS,
@@ -447,6 +448,53 @@ export async function saveLoan(formData: FormData): Promise<void> {
 
   if (id) await db.update<LoanRow>('loan', id, row);
   else await db.insert<LoanRow>('loan', row);
+  refresh();
+}
+
+/** A sane starting tenure per loan type, so a new loan needs outstanding and
+ *  rate but not a guess at how many months are left — the edit form is one
+ *  disclosure away if this is wrong. */
+const DEFAULT_TENURE: Record<LoanRow['type'], number> = {
+  home: 240,
+  education: 84,
+  vehicle: 60,
+  personal: 36,
+  'consumer-emi': 12,
+  'no-cost-emi': 6,
+  other: 36,
+};
+
+/**
+ * The four facts the loans page composer asks for: name, type, outstanding,
+ * rate. EMI and tenure are derived from a type-appropriate default rather
+ * than asked for, since the real numbers are almost always on the loan's own
+ * statement, not front of mind — the edit form in the open row is where they
+ * get corrected.
+ */
+export async function addLoanQuick(formData: FormData): Promise<void> {
+  const outstanding = num(formData.get('outstanding'));
+  if (outstanding <= 0) return;
+
+  const type = str(formData.get('type'), 'other') as LoanRow['type'];
+  const rate = num(formData.get('annual_rate_pct'));
+  const tenure = DEFAULT_TENURE[type] ?? 36;
+  const emi = emiFor(outstanding, rate, tenure);
+
+  await driver().insert<LoanRow>('loan', {
+    name: str(formData.get('name'), 'Loan'),
+    type,
+    principal: outstanding,
+    outstanding,
+    annual_rate_pct: rate,
+    emi,
+    tenure_months: tenure,
+    start_date: isoDate(),
+    due_day: 5,
+    is_no_cost: false,
+    cash_discount: 0,
+    processing_fee: 0,
+    notional_rate_pct: 15,
+  });
   refresh();
 }
 

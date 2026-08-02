@@ -47,8 +47,8 @@ export function GoalsAdd({
   const close = () => setOpen(null);
 
   return (
-    <div className="sticky bottom-14 z-10 -mx-5 border-t border-line bg-paper px-5 py-3 md:bottom-0">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-2">
+    <div className="sticky bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-10 -mx-5 border-t border-line bg-paper px-5 py-3 md:bottom-0">
+      <div className="mx-auto flex max-w-[1440px] flex-wrap items-center gap-2">
         <Button type="button" onClick={() => setOpen('goal')}>
           <IconPlus size={15} />
           New goal
@@ -57,7 +57,7 @@ export function GoalsAdd({
           <IconPlus size={15} />
           New saving line
         </Button>
-        <span className="text-[12px] text-ink-faint">
+        <span className="text-[13px] text-ink-faint">
           A goal is a thing you are saving up for. A saving line is money
           committed every month, before anything is left over.
         </span>
@@ -133,7 +133,7 @@ export function GoalsAdd({
             <Input name="weight" type="number" step="0.1" defaultValue={1} />
           </Field>
 
-          <label className="flex items-center gap-2 text-[13px]">
+          <label className="flex items-center gap-2 text-[14px]">
             <input
               type="checkbox"
               name="stop_at_deadline"
@@ -141,7 +141,7 @@ export function GoalsAdd({
             />
             Stop at the target date
           </label>
-          <label className="flex items-center gap-2 text-[13px]">
+          <label className="flex items-center gap-2 text-[14px]">
             <input
               type="checkbox"
               name="is_protected"
@@ -155,7 +155,7 @@ export function GoalsAdd({
             <button
               type="button"
               onClick={close}
-              className="cursor-pointer text-[12px] text-ink-faint transition-colors duration-[140ms] hover:text-accent"
+              className="cursor-pointer text-[13px] text-ink-faint transition-colors duration-[140ms] hover:text-accent"
             >
               Cancel
             </button>
@@ -223,7 +223,7 @@ export function GoalsAdd({
             <button
               type="button"
               onClick={close}
-              className="cursor-pointer text-[12px] text-ink-faint transition-colors duration-[140ms] hover:text-accent"
+              className="cursor-pointer text-[13px] text-ink-faint transition-colors duration-[140ms] hover:text-accent"
             >
               Cancel
             </button>
